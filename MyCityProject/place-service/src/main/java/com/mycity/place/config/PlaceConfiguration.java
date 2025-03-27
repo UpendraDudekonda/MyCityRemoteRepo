@@ -1,0 +1,10 @@
+package com.mycity.place.config;
+
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class PlaceConfiguration {
+
+	
+	
+}
