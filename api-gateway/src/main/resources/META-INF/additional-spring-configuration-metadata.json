@@ -1,0 +1,127 @@
+{"properties": [
+  {
+    "name": "spring.cloud.eureka.client.serviceUrl.defaultZone",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.eureka.client.serviceUrl.defaultZone'"
+  },
+  {
+    "name": "spring.cloud.eureka.client.fetchRegistry",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.eureka.client.fetchRegistry'"
+  },
+  {
+    "name": "spring.cloud.eureka.client.registerWithEureka",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.eureka.client.registerWithEureka'"
+  },
+  {
+    "name": "spring.cloud.gateway.filters[1].name",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.gateway.filters[1].name'"
+  },
+  {
+    "name": "spring.cloud.gateway.filters[1].args.redis-rate-limiter.replenishRate",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.gateway.filters[1].args.redis-rate-limiter.replenishRate'"
+  },
+  {
+    "name": "spring.cloud.gateway.filters[1].args.redis-rate-limiter.burstCapacity",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.gateway.filters[1].args.redis-rate-limiter.burstCapacity'"
+  },
+  {
+    "name": "spring.cloud.circuitbreaker.enabled",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.circuitbreaker.enabled'"
+  },
+  {
+    "name": "spring.cloud.circuitbreaker.name",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.circuitbreaker.name'"
+  },
+  {
+    "name": "spring.cloud.circuitbreaker.failureRateThreshold",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.circuitbreaker.failureRateThreshold'"
+  },
+  {
+    "name": "spring.cloud.circuitbreaker.slidingWindowSize",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.circuitbreaker.slidingWindowSize'"
+  },
+  {
+    "name": "spring.cloud.gateway.routes[0].id",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.gateway.routes[0].id'"
+  },
+  {
+    "name": "spring.cloud.gateway.routes[0].uri",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.gateway.routes[0].uri'"
+  },
+  {
+    "name": "spring.cloud.gateway.routes[0].predicates[0]",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.gateway.routes[0].predicates[0]'"
+  },
+  {
+    "name": "spring.cloud.gateway.routes[1].id",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.gateway.routes[1].id'"
+  },
+  {
+    "name": "spring.cloud.gateway.routes[1].predicates[0]",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.gateway.routes[1].predicates[0]'"
+  },
+  {
+    "name": "spring.cloud.gateway.routes[1].uri",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.gateway.routes[1].uri'"
+  },
+  {
+    "name": "spring.cloud.gateway.routes[2].uri",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.gateway.routes[2].uri'"
+  },
+  {
+    "name": "spring.cloud.gateway.routes[2].predicates[0]",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.gateway.routes[2].predicates[0]'"
+  },
+  {
+    "name": "spring.cloud.gateway.routes[3].id",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.gateway.routes[3].id'"
+  },
+  {
+    "name": "spring.cloud.gateway.routes[3].uri",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.gateway.routes[3].uri'"
+  },
+  {
+    "name": "spring.cloud.gateway.routes[3].predicates[0]",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.gateway.routes[3].predicates[0]'"
+  },
+  {
+    "name": "spring.cloud.gateway.routes[4].id",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.gateway.routes[4].id'"
+  },
+  {
+    "name": "spring.cloud.gateway.routes[4].uri",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.gateway.routes[4].uri'"
+  },
+  {
+    "name": "spring.cloud.gateway.routes[4].predicates[0]",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.gateway.routes[4].predicates[0]'"
+  },
+  {
+    "name": "spring.cloud.gateway.routes[0].predicates[0]",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.cloud.gateway.routes[0].predicates[0]'"
+  }
+]}
