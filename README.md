@@ -1,3 +1,0 @@
-# MyCityProject
-hhhhhh
-hi ....
