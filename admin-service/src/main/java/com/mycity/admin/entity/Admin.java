@@ -18,23 +18,9 @@ public class Admin {
 	    private String username;
 	    private String email;
 	    private String password; // Remember to hash passwords in a real application
-	    private String firstName;
-	    private String lastName;
 	    private boolean activestatus;
-
-	    public Admin() {
-	    }
-	    // Getters and Setters
 	    
-	    
-	    // Constructor with required fields
-	    public Admin(String username, String email, String password, String firstName, String lastName) {
-	        this.username = username;
-	        this.email = email;
-	        this.password = password;
-	        this.firstName = firstName;
-	        this.lastName = lastName;
-	    }
+	    private String role;
 
 	}
 	

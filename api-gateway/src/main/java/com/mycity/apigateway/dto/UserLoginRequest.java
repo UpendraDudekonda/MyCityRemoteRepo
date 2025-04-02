@@ -1,4 +1,4 @@
-package com.mycity.client.dto;
+package com.mycity.apigateway.dto;
 
 import lombok.Data;
 
