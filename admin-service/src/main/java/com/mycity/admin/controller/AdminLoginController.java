@@ -8,7 +8,7 @@ import com.mycity.admin.entity.Admin;
 
 @Controller
 public class AdminLoginController {
-	// - login();
+
 	
 	
 	
