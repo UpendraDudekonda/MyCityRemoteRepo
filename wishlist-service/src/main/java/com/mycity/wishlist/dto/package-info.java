@@ -1,0 +1,1 @@
+package com.mycity.wishlist.dto;

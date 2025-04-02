@@ -55,6 +55,30 @@
 		    <groupId>org.springframework.cloud</groupId>
 		    <artifactId>spring-cloud-starter-gateway</artifactId>
 		</dependency>
+		<!--JWT JSON  JWT IMPL-->
+				<dependency>
+		    <groupId>io.jsonwebtoken</groupId>
+		    <artifactId>jjwt-api</artifactId>
+		    <version>0.12.5</version> </dependency>
+		<dependency>
+		    <groupId>io.jsonwebtoken</groupId>
+		    <artifactId>jjwt-impl</artifactId>
+		    <version>0.12.5</version> <scope>runtime</scope>
+		</dependency>
+		<dependency>
+		    <groupId>io.jsonwebtoken</groupId>
+		    <artifactId>jjwt-jackson</artifactId>
+		    <version>0.12.5</version> <scope>runtime</scope>
+		</dependency>
+		
+		<!--Jakrta Dependency-->
+			<dependency>
+		        <groupId>jakarta.servlet.jsp</groupId>
+		        <artifactId>jakarta.servlet.jsp-api</artifactId>
+		        <version>4.0.0</version>
+		        <scope>provided</scope>
+		    </dependency>
+
 
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
