@@ -34,4 +34,6 @@ public class LoginController {
                 .toEntity(String.class)
                 .map(response -> ResponseEntity.status(response.getStatusCode()).body(response.getBody()));
     }
+    
+    //merchant too
 }
