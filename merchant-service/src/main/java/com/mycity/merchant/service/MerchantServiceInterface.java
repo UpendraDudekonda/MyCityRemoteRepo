@@ -2,7 +2,7 @@ package com.mycity.merchant.service;
 
 import org.springframework.stereotype.Service;
 
-import com.mycity.merchant.dto.MerchantRegRequest;
+import com.mycity.shared.dto.*;
 
 @Service
 public interface MerchantServiceInterface {

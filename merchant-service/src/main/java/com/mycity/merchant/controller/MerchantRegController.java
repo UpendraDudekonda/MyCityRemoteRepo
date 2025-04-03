@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mycity.merchant.dto.MerchantRegRequest;
+import com.mycity.shared.dto.*;
 import com.mycity.merchant.service.MerchantServiceInterface;
 
 @RestController
