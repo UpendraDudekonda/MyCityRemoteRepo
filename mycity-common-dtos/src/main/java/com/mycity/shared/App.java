@@ -1,4 +1,4 @@
-package com.mycity.shared.mycitycmndtos;
+package com.mycity.shared;
 
 /**
  * Hello world!
