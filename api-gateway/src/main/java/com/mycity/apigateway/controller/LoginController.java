@@ -1,14 +1,14 @@
 package com.mycity.apigateway.controller;
 
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.mycity.apigateway.dto.UserLoginRequest;
-import com.mycity.apigateway.dto.UserRegRequest;
+import com.mycity.shared.dto.UserLoginRequest;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
