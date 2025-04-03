@@ -27,5 +27,6 @@ public class UserLoginController {
 	    return ResponseEntity.ok(token); // Return the token in response
 	}
 
+	//login for merchant
 	
 }
