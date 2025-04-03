@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.mycity.client.dto.UserLoginRequest;
+import com.mycity.shared.dto.UserLoginRequest;
+
+
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -35,10 +37,6 @@ public class ClientLoginService {
 	                            .flatMap(errorBody -> Mono.error(new RuntimeException("Login failed: " + clientResponse.statusCode() + " - " + errorBody))))
 	            .bodyToMono(String.class)
 	            .onErrorResume(e -> Mono.just("Login failed: " + e.getMessage()));
+	    
 	}
-	
-	
-	
-
-	
 }
