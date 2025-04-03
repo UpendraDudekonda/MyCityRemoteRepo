@@ -37,10 +37,6 @@ public class ClientLoginService {
 	                            .flatMap(errorBody -> Mono.error(new RuntimeException("Login failed: " + clientResponse.statusCode() + " - " + errorBody))))
 	            .bodyToMono(String.class)
 	            .onErrorResume(e -> Mono.just("Login failed: " + e.getMessage()));
+	    
 	}
-	
-	
-	
-
-	
 }
