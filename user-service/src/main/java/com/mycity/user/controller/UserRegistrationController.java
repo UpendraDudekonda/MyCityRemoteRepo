@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mycity.user.dto.UserRegistrationRequest;
+import com.mycity.shared.dto.*;
 import com.mycity.user.service.UserServiceInterface;
 
 
@@ -29,7 +29,7 @@ public class UserRegistrationController {
 	private UserServiceInterface userService;
 	
 	 @PostMapping("/register")
-	 public ResponseEntity<String> registerUser(@RequestBody UserRegistrationRequest request) {
+	 public ResponseEntity<String> registerUser(@RequestBody UserRegRequest request) {
 	
 	 try{
 		 userService.registerUser(request);
