@@ -28,4 +28,6 @@ public class UserLoginController {
 
 	//login for merchant
 	
+	//login for admin
+	
 }
