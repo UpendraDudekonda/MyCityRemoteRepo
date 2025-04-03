@@ -14,7 +14,7 @@ public class Admin {
 	    @Id
 	    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	    private Long id;
-
+// theerth iS ADMIN FOR THE MY CITY
 	    private String username;
 	    private String email;
 	    private String password; // Remember to hash passwords in a real application
