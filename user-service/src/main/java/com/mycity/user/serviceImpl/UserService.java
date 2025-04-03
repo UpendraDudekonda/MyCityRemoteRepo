@@ -51,7 +51,7 @@ public class UserService implements UserServiceInterface {
         user.setPassword(encodedPassword);
         user.setCreatedDate(LocalDateTime.now());
         user.setUpdatedDate(LocalDateTime.now());
-        user.setRole("USER");
+        user.setRole("USER");//hardcoded
         
         System.out.println("User registration data is valid. Proceeding with registration...");
         userRepository.save(user);
