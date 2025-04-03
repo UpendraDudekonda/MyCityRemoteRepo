@@ -1,14 +1,16 @@
 package com.mycity.client.controller;
 
 import org.springframework.http.HttpStatusCode;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.mycity.client.dto.ClientMerchantRegRequest;
-import com.mycity.client.dto.UserRegRequest;
+
+import com.mycity.shared.dto.MerchantRegRequest;
+import com.mycity.shared.dto.UserRegRequest;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -41,11 +43,11 @@ public class ClientRegistrationService {
 	}
 	
 	@PostMapping("/merchant")
-	public Mono<String> registerMerchant(@RequestBody ClientMerchantRegRequest request) {
+	public Mono<String> registerMerchant(@RequestBody MerchantRegRequest request) {
 	    return webClientBuilder.build()
 	            .post()
 	            .uri("lb://" + API_GATEWAY_SERVICE_NAME + MERCHANT_REGISTRATION_PATH)
-	            .body(Mono.just(request), ClientMerchantRegRequest.class)
+	            .body(Mono.just(request), MerchantRegRequest.class)
 	            .retrieve()
 	            .onStatus(HttpStatusCode::isError, clientResponse ->
 	                    clientResponse.bodyToMono(String.class)
