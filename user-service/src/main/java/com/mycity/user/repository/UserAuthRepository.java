@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.mycity.user.entity.User;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long>{
+public interface UserAuthRepository extends JpaRepository<User, Long>{
 
 	boolean existsByUsername(String firstname); // Note: Parameter name is 'firstname' here
 
