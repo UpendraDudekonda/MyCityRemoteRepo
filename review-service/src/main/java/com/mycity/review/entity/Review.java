@@ -1,6 +1,4 @@
-package com.mycity.email.entity;
-
-import java.time.LocalDateTime;
+package com.mycity.review.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,30 +9,27 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Email {
+public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long emailId;
+    private Long reviewId;
 
-    private String recipientEmail;
-    private String subject;
-    
+    @Column(name = "user_id")
+    private Long userId; // ID of the user from the User service
+
+    @Column(name = "place_id")
+    private Long placeId; // ID of the place from the Place service
+
     @Column(columnDefinition = "TEXT")
-    private String message;
+    private String reviewDescription;
 
-    private LocalDateTime sentAt;
-    private boolean isDelivered;
+    private String imageUrl;
 
-    
 
-   
 }
-
 

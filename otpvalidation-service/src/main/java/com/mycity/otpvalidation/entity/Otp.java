@@ -1,4 +1,4 @@
-package com.mycity.email.entity;
+package com.mycity.otpvalidation.entity;
 
 import java.time.LocalDateTime;
 
@@ -11,30 +11,25 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Email {
+public class Otp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long emailId;
+    private Long otpId;
 
-    private String recipientEmail;
-    private String subject;
-    
-    @Column(columnDefinition = "TEXT")
-    private String message;
+    @Column(name = "user_id")
+    private String userId; // ID of the user (from User service)
 
-    private LocalDateTime sentAt;
-    private boolean isDelivered;
+    private String otp;
 
-    
+    private LocalDateTime expiryTime;
 
-   
+    private boolean verified;
+
+
 }
-
 

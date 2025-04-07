@@ -1,6 +1,4 @@
-package com.mycity.email.entity;
-
-import java.time.LocalDateTime;
+package com.mycity.weather.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,30 +9,23 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Email {
+public class Weather {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long emailId;
+    private Long weatherId;
 
-    private String recipientEmail;
-    private String subject;
-    
-    @Column(columnDefinition = "TEXT")
-    private String message;
+    @Column(name = "place_id")
+    private Long placeId; // ID of the place from the Place service
 
-    private LocalDateTime sentAt;
-    private boolean isDelivered;
+    private String bestTimeToVisit; // E.g., "Spring and Autumn", "November to February"
 
-    
+    private String bestSeason; // E.g., "Summer", "Winter", "Spring-Autumn"
 
-   
+
 }
-
 

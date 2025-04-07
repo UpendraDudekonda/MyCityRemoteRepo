@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.mycity.shared.dto.MerchantRegRequest;
-import com.mycity.shared.dto.UserRegRequest;
+import com.mycity.shared.merchant.dto.MerchantRegRequest;
+import com.mycity.shared.user.dto.UserRegRequest;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;

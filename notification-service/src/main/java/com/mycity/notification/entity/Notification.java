@@ -1,4 +1,4 @@
-package com.mycity.email.entity;
+package com.mycity.notification.entity;
 
 import java.time.LocalDateTime;
 
@@ -11,30 +11,27 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Email {
+public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long emailId;
+    private Long notificationId;
 
-    private String recipientEmail;
-    private String subject;
-    
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "user_id")
+    private Long userId; // ID of the user (from User service)
+
+    private String title;
+
     private String message;
 
-    private LocalDateTime sentAt;
-    private boolean isDelivered;
+    private String notificationType; // E.g.sms, email.
+
+    private LocalDateTime createdAt;
 
     
-
-   
 }
-
 

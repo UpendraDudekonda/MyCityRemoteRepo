@@ -6,7 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.mycity.merchant.config.JwtService;
-import com.mycity.shared.dto.*;
+import com.mycity.shared.merchant.dto.MerchantRegRequest;
 import com.mycity.merchant.entity.Merchant;
 import com.mycity.merchant.repository.MerchantRepository;
 import com.mycity.merchant.service.MerchantServiceInterface;
