@@ -78,6 +78,6 @@ public class UserService implements UserServiceInterface {
 
         System.out.println("Login Successfull");
         // Authentication successful, generate JWT token
-        return jwtservice.generateToken(user.getId(), user.getEmail(), user.getRole()); // Assuming User entity has getId(), getEmail(), and getRole()
+        return jwtservice.generateToken(user.getId(), user.getEmail(), user.getRole()); 
     }
 }
