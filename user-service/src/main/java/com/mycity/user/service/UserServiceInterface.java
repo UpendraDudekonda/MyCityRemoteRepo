@@ -2,13 +2,13 @@ package com.mycity.user.service;
 
 import org.springframework.stereotype.Service;
 
-import com.mycity.user.dto.UserLoginRequest;
-import com.mycity.user.dto.UserRegistrationRequest;
+import com.mycity.shared.userdto.UserLoginRequest;
+import com.mycity.shared.userdto.UserRegRequest;
 
 @Service
 public interface UserServiceInterface {
 
-	void registerUser(UserRegistrationRequest request);
+	void registerUser(UserRegRequest request);
 
 
 	String LoginUser(UserLoginRequest request);

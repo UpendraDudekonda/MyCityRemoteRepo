@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mycity.user.dto.UserLoginRequest;
+import com.mycity.shared.userdto.UserLoginRequest;
 import com.mycity.user.service.UserServiceInterface;
 
 import lombok.RequiredArgsConstructor;
@@ -27,5 +27,9 @@ public class UserLoginController {
 	}
 
 	//login for merchant
+	
+	//login for admin 
+	
+	
 	
 }

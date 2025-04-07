@@ -6,9 +6,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.mycity.shared.userdto.UserLoginRequest;
+import com.mycity.shared.userdto.UserRegRequest;
 import com.mycity.user.config.JwtService;
-import com.mycity.user.dto.UserLoginRequest;
-import com.mycity.user.dto.UserRegistrationRequest;
 import com.mycity.user.entity.User;
 import com.mycity.user.repository.UserRepository;
 import com.mycity.user.service.UserServiceInterface;
@@ -26,7 +26,7 @@ public class UserService implements UserServiceInterface {
     private final JwtService jwtservice;
 
     @Override
-    public void registerUser(UserRegistrationRequest request) {
+    public void registerUser(UserRegRequest request) {
         // Manual validation checks
         if (request.getFirstname() == null || request.getFirstname().trim().isEmpty()) {
             throw new IllegalArgumentException("First name cannot be blank");
