@@ -7,14 +7,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity
 @Table(name = "categories")
+@Data
 public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long categoryId;
 
     
     private String name;  // Example: "Historical", "Adventure", "Wildlife"
@@ -23,14 +25,7 @@ public class Category {
     private String description; // Description about the category
 
     
-//    private List<Place> places; // List of places under this category
+//    private List<place> places; // List of places under this category
 
-    public Category() {}
-
-    public Category(String name, String description) {
-        this.name = name;
-        this.description = description;
-    }
-
-    // Getters and Setters
+    
 }
