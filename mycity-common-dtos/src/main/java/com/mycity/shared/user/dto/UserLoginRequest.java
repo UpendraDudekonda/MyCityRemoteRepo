@@ -1,5 +1,4 @@
-package com.mycity.shared.dto;
-
+package com.mycity.shared.user.dto;
 
 import lombok.Data;
 
@@ -12,4 +11,3 @@ public class UserLoginRequest {
 	
 	
 }
-

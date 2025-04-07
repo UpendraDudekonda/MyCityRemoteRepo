@@ -1,4 +1,4 @@
-package com.mycity.shared.dto;
+package com.mycity.shared.merchant.dto;
 
 
 import lombok.AllArgsConstructor;
