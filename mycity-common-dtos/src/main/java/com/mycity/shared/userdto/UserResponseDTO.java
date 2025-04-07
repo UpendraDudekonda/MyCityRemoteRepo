@@ -1,4 +1,4 @@
-package com.mycity.shared.user;
+package com.mycity.shared.userdto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
