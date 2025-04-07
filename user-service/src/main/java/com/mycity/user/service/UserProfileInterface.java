@@ -2,7 +2,7 @@ package com.mycity.user.service;
 
 import org.springframework.stereotype.Service;
 
-import com.mycity.shared.user.UserResponseDTO;
+import com.mycity.shared.userdto.UserResponseDTO;
 
 @Service
 public interface UserProfileInterface {

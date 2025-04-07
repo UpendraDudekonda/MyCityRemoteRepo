@@ -2,7 +2,7 @@ package com.mycity.user.serviceImpl;
 
 import org.springframework.stereotype.Service;
 
-import com.mycity.shared.user.UserResponseDTO;
+import com.mycity.shared.userdto.UserResponseDTO;
 import com.mycity.user.entity.User;
 import com.mycity.user.exception.UserNotFoundException;
 import com.mycity.user.repository.UserProfileRepository;

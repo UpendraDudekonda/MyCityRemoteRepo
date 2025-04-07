@@ -10,7 +10,7 @@ import com.mycity.shared.userdto.UserLoginRequest;
 import com.mycity.shared.userdto.UserRegRequest;
 import com.mycity.user.config.JwtService;
 import com.mycity.user.entity.User;
-import com.mycity.user.repository.UserRepository;
+import com.mycity.user.repository.UserAuthRepository;
 import com.mycity.user.service.UserServiceInterface;
 
 import lombok.RequiredArgsConstructor;
@@ -19,8 +19,8 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserServiceInterface {
-///	
-	private  final UserRepository userRepository;
+	
+	private  final UserAuthRepository userRepository;
     private  final PasswordEncoder passwordEncoder; 
     
     private final JwtService jwtservice;
@@ -78,6 +78,6 @@ public class UserService implements UserServiceInterface {
 
         System.out.println("Login Successfull");
         // Authentication successful, generate JWT token
-        return jwtservice.GenerateToken(user.getId(), user.getEmail(), user.getRole()); // Assuming User entity has getId(), getEmail(), and getRole()
+        return jwtservice.generateToken(user.getId(), user.getEmail(), user.getRole()); // Assuming User entity has getId(), getEmail(), and getRole()
     }
 }
