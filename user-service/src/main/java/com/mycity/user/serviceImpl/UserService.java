@@ -6,8 +6,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.mycity.shared.user.dto.UserLoginRequest;
-import com.mycity.shared.user.dto.UserRegRequest;
+import com.mycity.shared.userdto.UserLoginRequest;
+import com.mycity.shared.userdto.UserRegRequest;
 import com.mycity.user.config.JwtService;
 import com.mycity.user.entity.User;
 import com.mycity.user.repository.UserRepository;
