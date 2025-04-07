@@ -22,11 +22,11 @@ public class RegistrationController {
 	
 	private final WebClient.Builder webClientBuilder;
 	
-	 	private static final String USER_SERVICE_NAME = "USER-SERVICE"; // Using service name for discovery
+	 	private static final String USER_SERVICE_NAME = "user-service"; // Using service name for discovery
 	    private static final String USER_REGISTER_PATH = "/auth/user/register";
 	    
 	    
-	    private static final String MERCHANT_SERVICE_NAME = "MERCHANT-SERVICE"; // Using service name for discovery
+	    private static final String MERCHANT_SERVICE_NAME = "merchant-service"; // Using service name for discovery
 	    private static final String MERCHANT_REGISTER_PATH = "/auth/merchant/register";
 	    
 	 	@PostMapping("/user")

@@ -1,16 +1,14 @@
 package com.mycity.apigateway.controller;
 
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.mycity.shared.userdto.*;
+import com.mycity.shared.userdto.UserLoginRequest;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
@@ -21,7 +19,7 @@ public class LoginController {
 
     private final WebClient.Builder webClientBuilder;
 
-    private static final String USER_SERVICE_NAME = "USER-SERVICE"; // Using service name for discovery
+    private static final String USER_SERVICE_NAME = "user-service"; // Using service name for discovery
     private static final String USER_LOGIN_PATH = "/auth/user/login";
 
     @PostMapping("/user")

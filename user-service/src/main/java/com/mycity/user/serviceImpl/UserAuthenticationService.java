@@ -6,21 +6,21 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.mycity.shared.userdto.UserLoginRequest;
-import com.mycity.shared.userdto.UserRegRequest;
+import com.mycity.shared.dto.UserLoginRequest;
+import com.mycity.shared.dto.UserRegRequest;
 import com.mycity.user.config.JwtService;
 import com.mycity.user.entity.User;
 import com.mycity.user.repository.UserAuthRepository;
-import com.mycity.user.service.UserServiceInterface;
+import com.mycity.user.service.UserAuthenticationInterface;
 
 import lombok.RequiredArgsConstructor;
 
 
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserServiceInterface {
-	
-	private  final UserAuthRepository userRepository;
+public class UserAuthenticationService implements UserAuthenticationInterface {
+///	
+	private  final UserAuthRepository userAuthRepository;
     private  final PasswordEncoder passwordEncoder; 
     
     private final JwtService jwtservice;
@@ -54,7 +54,7 @@ public class UserService implements UserServiceInterface {
         user.setRole("USER");//hardcoded
         
         System.out.println("User registration data is valid. Proceeding with registration...");
-        userRepository.save(user);
+        userAuthRepository.save(user);
     }
     
     private boolean isValidEmail(String email) {
@@ -68,7 +68,7 @@ public class UserService implements UserServiceInterface {
         String password = request.getPassword();
 
         // Find the user by email
-        User user = userRepository.findByEmail(email)
+        User user = userAuthRepository.findByEmail(email)
                 .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
 
         // Validate the password
@@ -78,6 +78,8 @@ public class UserService implements UserServiceInterface {
 
         System.out.println("Login Successfull");
         // Authentication successful, generate JWT token
-        return jwtservice.generateToken(user.getId(), user.getEmail(), user.getRole()); 
+        return jwtservice.generateToken(user.getId(), user.getEmail(), user.getRole()); // Assuming User entity has getId(), getEmail(), and getRole()
     }
+
+
 }

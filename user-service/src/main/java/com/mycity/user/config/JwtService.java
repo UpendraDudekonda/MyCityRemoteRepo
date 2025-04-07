@@ -27,7 +27,7 @@ public class JwtService {
 		return Keys.hmacShaKeyFor(secretkey.getBytes());	
 		}
 
-	public String GenerateToken(Long UserId, String email, String role)
+	public String generateToken(Long UserId, String email, String role)
 	{
 		return Jwts.builder()
 				.setSubject(email)
