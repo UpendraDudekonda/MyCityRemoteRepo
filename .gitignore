@@ -1,0 +1,19 @@
+/mycity-common-dtos/
+
+# Eclipse specific files
+.project
+.classpath
+.settings/
+
+# Maven Eclipse Plugin metadata
+*.prefs
+
+# Maven target build folder
+target/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Others (optional but safe)
+*.log
