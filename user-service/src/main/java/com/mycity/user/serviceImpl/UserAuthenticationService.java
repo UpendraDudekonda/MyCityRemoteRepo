@@ -6,8 +6,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.mycity.shared.dto.UserLoginRequest;
-import com.mycity.shared.dto.UserRegRequest;
+import com.mycity.shared.userdto.UserLoginRequest;
+import com.mycity.shared.userdto.UserRegRequest;
 import com.mycity.user.config.JwtService;
 import com.mycity.user.entity.User;
 import com.mycity.user.repository.UserAuthRepository;
@@ -80,6 +80,7 @@ public class UserAuthenticationService implements UserAuthenticationInterface {
         // Authentication successful, generate JWT token
         return jwtservice.generateToken(user.getId(), user.getEmail(), user.getRole()); // Assuming User entity has getId(), getEmail(), and getRole()
     }
+
 
 
 }
