@@ -20,4 +20,5 @@ public class UserProfileController {
         UserResponseDTO user = userProfile.getUserById(userId);
         return ResponseEntity.ok(user);
     }
+    
 }
