@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/user/profile")
+@RequestMapping("/user")
 public class UserProfileController {
 
     private final UserProfileInterface userProfile;
@@ -15,7 +15,7 @@ public class UserProfileController {
         this.userProfile = userProfile;
     }
 
-    @GetMapping
+    @GetMapping("/account/profile")
     public ResponseEntity<UserResponseDTO> getUserProfile(@RequestHeader("X-User-Id") String userId) {
         UserResponseDTO user = userProfile.getUserById(userId);
         return ResponseEntity.ok(user);
