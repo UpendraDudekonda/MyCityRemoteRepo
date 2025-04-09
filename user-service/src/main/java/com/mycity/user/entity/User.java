@@ -34,7 +34,7 @@ public class User {
 	    private LocalDateTime updatedDate;
 
 	    
-	    private long mobilenumber;
+	    private String mobilenumber;
 	    
 	    private String role;
 

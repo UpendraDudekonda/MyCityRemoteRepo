@@ -17,6 +17,6 @@ public class UserRegRequest {
     
     private String password;
     
-    private long phoneNumber;
+    private String mobilenumber;
     
 }
