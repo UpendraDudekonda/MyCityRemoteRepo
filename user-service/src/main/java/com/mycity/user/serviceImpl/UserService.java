@@ -1,10 +1,12 @@
 package com.mycity.user.serviceImpl;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.mycity.shared.userdto.UserLoginRequest;
 import com.mycity.shared.userdto.UserRegRequest;
@@ -19,58 +21,26 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserService implements UserServiceInterface {
 
-	private final UserAuthRepository userRepository;
-	private final PasswordEncoder passwordEncoder;
+	private final UserAuthRepository userAuthRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final WebClient.Builder webClientBuilder;
+
+    // Define constants for API Gateway URL and paths
+   // Replace with the actual service name if required
+    private static final String EMAIL_SERVICE_NAME = "EMAIL-SERVICE"; 
+    private static final String OTP_SERVICE_NAME = "OTP-SERVICE"; // URL to your email service
+
+    private static final String OTP_REQUEST_PATH = "/auth/request-otp/user"; // Path for sending OTP
+    private static final String OTP_VERIFY_PATH = "/auth/verify-otp/user";   // Path for verifying OTP
+;
 
 	private final JwtService jwtservice;
 
-	@Override
-	public void registerUser(UserRegRequest request) {
-		// Manual validation checks
-		if (request.getFirstname() == null || request.getFirstname().trim().isEmpty()) {
-			throw new IllegalArgumentException("First name cannot be blank");
-		}
-		if (request.getLastname() == null || request.getLastname().trim().isEmpty()) {
-			throw new IllegalArgumentException("Last name cannot be blank");
-		}
-		if (request.getEmail() == null || request.getEmail().trim().isEmpty() || !isValidEmail(request.getEmail())) {
-			throw new IllegalArgumentException("Invalid email format");
-		}
-		if (request.getPassword() == null || request.getPassword().length() < 6) {
-			throw new IllegalArgumentException("Password must be at least 6 characters long");
-		}
-		if (request.getMobilenumber() == null || request.getMobilenumber().trim().isEmpty()) {
-			throw new IllegalArgumentException("Mobile number cannot be blank");
-		}
-		// Add more mobile number validation if needed (e.g., length, format)
 
-		// Check if the email already exists
-		if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-			throw new IllegalArgumentException("Email address already registered");
-		}
-
-		// Encode the password
-		String encodedPassword = passwordEncoder.encode(request.getPassword());
-
-		// Create a new User entity
-		User user = new User();
-		user.setUsername(request.getFirstname() + " " + request.getLastname()); // Concatenate firstname and lastname
-																				// with a space
-		user.setEmail(request.getEmail());
-		user.setPassword(encodedPassword);
-		user.setCreatedDate(LocalDateTime.now());
-		user.setUpdatedDate(LocalDateTime.now());
-		user.setRole("USER");// hardcoded
-		user.setMobilenumber(request.getMobilenumber()); // Store the mobile
-
-		System.out.println("User registration data is valid. Proceeding with registration...");
-		userRepository.save(user);
-	}
-
-	private boolean isValidEmail(String email) {
-		// A more robust email validation using a regular expression is recommended
-		return email.contains("@") && email.contains(".");
-	}
+//	private boolean isValidEmail(String email) {
+//		// A more robust email validation using a regular expression is recommended
+//		return email.contains("@") && email.contains(".");
+//	}
 
 	@Override
 	public String LoginUser(UserLoginRequest request) {
@@ -78,7 +48,7 @@ public class UserService implements UserServiceInterface {
 		String password = request.getPassword();
 
 		// Find the user by email
-		User user = userRepository.findByEmail(email)
+		User user = userAuthRepository.findByEmail(email)
 				.orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
 
 		// Validate the password
@@ -90,4 +60,53 @@ public class UserService implements UserServiceInterface {
 		// Authentication successful, generate JWT token
 		return jwtservice.generateToken(user.getId(), user.getEmail(), user.getRole());
 	}
+    // Step 1: Start Registration (Send OTP)
+    @Override
+    public void startRegistration(UserRegRequest request) {
+        // Check if email already exists
+        if (userAuthRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("User already exists with this email.");
+        }
+
+        // Call email-service to send OTP
+        webClientBuilder.build()
+            .post()
+            .uri("lb://" +EMAIL_SERVICE_NAME + OTP_REQUEST_PATH)  // Construct the URL for OTP request
+            .bodyValue(Map.of("email", request.getEmail()))  // Send the email in the request body
+            .retrieve()
+            .bodyToMono(String.class)  // Response body type
+            .block();  // Blocking until the response is received
+
+        System.out.println("OTP sent to email. Awaiting verification.");
+    }
+
+    // Step 2: Complete Registration (Verify OTP and Register User)
+    @Override
+    public void completeRegistration(UserRegRequest request, String otp) {
+        // Verify OTP via email-service
+        Boolean isValid = webClientBuilder.build()
+            .post()
+            .uri("lb://" +OTP_SERVICE_NAME + OTP_VERIFY_PATH)  // Construct the URL for OTP verification
+            .bodyValue(Map.of("email", request.getEmail(), "otp", otp))  // Send email and OTP in the body
+            .retrieve()
+            .bodyToMono(Boolean.class)  // Response body type (true or false)
+            .block();
+
+        if (Boolean.FALSE.equals(isValid)) {
+            throw new IllegalArgumentException("Invalid or expired OTP.");
+        }
+
+        // Now, register the user
+        User user = new User();
+        user.setUsername(request.getFirstname() + " " + request.getLastname());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setCreatedDate(LocalDateTime.now());
+        user.setUpdatedDate(LocalDateTime.now());
+        user.setRole("USER");
+
+        userAuthRepository.save(user);
+
+        System.out.println("User registered after OTP verification.");
+    }
 }

@@ -1,4 +1,4 @@
-package com.mycity.merchant.config;
+package com.mycity.admin.config;
 
 import java.security.Key;
 import java.util.Date;
@@ -17,21 +17,21 @@ import jakarta.servlet.http.HttpServletResponse;
 @Service
 public class JwtService {
 	
-	@Value("${jwt.secret.merchant}")
+	@Value("${jwt.secret.admin}")
 	private String secretkey;
 	
-	@Value("${jwt.expiry.merchant}")
+	@Value("${jwt.expiry.admin}")
 	private long tokenexpiry;
 	
 	private Key getSigningKey() {
 		return Keys.hmacShaKeyFor(secretkey.getBytes());	
 		}
 
-	public String generateToken(Long merchantId, String email, String role)
+	public String generateToken(Long adminId, String email, String role)
 	{
 		return Jwts.builder()
 				.setSubject(email)
-				.claim("merchantId",merchantId)
+				.claim("adminId",adminId)
 				.claim("role", role) // Add the user's role as a claim
 				.setIssuedAt(new Date())
 				.setExpiration(new Date(System.currentTimeMillis() + tokenexpiry))
@@ -39,7 +39,7 @@ public class JwtService {
 				.compact();
 	}
 	
-	public Claims ValidateToken(String token) {
+	public Claims validateToken(String token) {
 		
 		return Jwts.parserBuilder()
 				.setSigningKey(getSigningKey())
@@ -68,7 +68,7 @@ public class JwtService {
 	
 	
 	public Long ExtractUserId(String token) {
-		return ExtractClaim(token,claims -> claims.get("merchantId",Long.class));
+		return ExtractClaim(token,claims -> claims.get("adminId",Long.class));
 	}
 	
 	public String ExtractUserRole(String token) {
@@ -99,5 +99,5 @@ public class JwtService {
 		
 		response.addCookie(Jwtcookie);		
 	}
-	
+
 }

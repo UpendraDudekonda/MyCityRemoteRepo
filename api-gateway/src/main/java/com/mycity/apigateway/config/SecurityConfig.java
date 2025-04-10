@@ -1,3 +1,4 @@
+
 package com.mycity.apigateway.config;
 
 import org.springframework.context.annotation.Bean;
