@@ -1,5 +1,10 @@
 package com.mycity.admin.service;
 
-public class AdminServiceInterface {
+
+import com.mycity.shared.admindto.AdminLoginRequest;
+
+public interface AdminServiceInterface {
+
+	String loginAdmin(AdminLoginRequest request);
 
 }
