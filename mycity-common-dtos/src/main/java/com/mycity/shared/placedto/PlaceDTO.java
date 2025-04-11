@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PlaceDTO {
-    private Long placeId;
+public class PlaceDTO 
+{
     private String name;
     private String about;
     private String history;
@@ -18,5 +18,6 @@ public class PlaceDTO {
     private String category;
     private Double latitude;
     private Double longitude;
+    private String  placeDistrict;
 }
 
