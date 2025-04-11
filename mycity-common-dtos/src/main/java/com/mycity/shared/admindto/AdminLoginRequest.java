@@ -7,7 +7,7 @@ import lombok.Data;
 public class AdminLoginRequest {
 	   
 	
-	    private String username;
+	    private String password;
 
 	 
 	    private String email;

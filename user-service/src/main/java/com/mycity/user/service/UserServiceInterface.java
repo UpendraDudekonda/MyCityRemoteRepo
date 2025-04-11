@@ -8,8 +8,9 @@ import com.mycity.shared.userdto.UserRegRequest;
 @Service
 public interface UserServiceInterface {
 
-	void registerUser(UserRegRequest request);
+	void startRegistration(UserRegRequest request);
 
+	void completeRegistration(UserRegRequest request, String otp);
 
 	String LoginUser(UserLoginRequest request);
 

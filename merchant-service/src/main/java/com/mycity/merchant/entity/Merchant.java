@@ -31,4 +31,6 @@ public class Merchant {
     
     @Column(unique = true)
     private String gstNumber;
+    
+    private String role;
 }
