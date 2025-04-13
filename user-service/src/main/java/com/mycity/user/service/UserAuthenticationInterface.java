@@ -1,17 +1,21 @@
 package com.mycity.user.service;
 
-import org.springframework.stereotype.Service;
-
-import com.mycity.shared.userdto.UserLoginRequest;
+import com.mycity.shared.emaildto.RequestOtpDTO;
 import com.mycity.shared.userdto.UserRegRequest;
+import com.mycity.user.entity.User;
 
-@Service
 public interface UserAuthenticationInterface {
 
-	void registerUser(UserRegRequest request);
+	String registerUser(UserRegRequest request);
 
 
-	String LoginUser(UserLoginRequest request);
+	User loginUser(String email, String password);
+
+
+	void startRegistration(RequestOtpDTO request);
+
+
+	void completeRegistration(UserRegRequest request, String otp);
 	
 	
 }

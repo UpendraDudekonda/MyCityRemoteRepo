@@ -2,6 +2,10 @@ package com.mycity.email.service;
 
 public interface EmailService {
 
-	void generateAndSendOtp(String email);
+	
+
+	void generateAndSendOTP(String email);
+
+//	boolean verifyOTP(String email, String otp);
 
 }

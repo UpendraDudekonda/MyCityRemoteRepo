@@ -1,14 +1,11 @@
 package com.mycity.merchant.serviceImpl;
 
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.mycity.merchant.config.JwtService;
 import com.mycity.merchant.entity.Merchant;
 import com.mycity.merchant.repository.MerchantRepository;
 import com.mycity.merchant.service.MerchantServiceInterface;
-import com.mycity.shared.merchantdto.MerchantLoginReq;
 import com.mycity.shared.merchantdto.MerchantRegRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -19,7 +16,7 @@ public class MerchantServiceImpl implements MerchantServiceInterface {
 
     private final MerchantRepository merchantRepo;
     private final PasswordEncoder passwordEncoder; 
-    private final JwtService jwtservice;
+   
 
     @Override
     public String registerMerchant(MerchantRegRequest request) {
@@ -75,22 +72,4 @@ public class MerchantServiceImpl implements MerchantServiceInterface {
 		return email.contains("@") && email.contains(".");
 	}
 
-	@Override
-	public String loginMerchant(MerchantLoginReq request) {
-		String email = request.getEmail();
-		String password = request.getPassword();
-
-		// Find the user by email
-		Merchant merchant = merchantRepo.findByEmail(email)
-				.orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
-
-		// Validate the password
-		if (!passwordEncoder.matches(password, merchant.getPassword())) {
-			throw new BadCredentialsException("Invalid email or password");
-		}
-
-		System.out.println("Login Successfull");
-		// Authentication successful, generate JWT token
-		return jwtservice.generateToken(merchant.getId(), merchant.getEmail(), merchant.getRole());
-	}
 }

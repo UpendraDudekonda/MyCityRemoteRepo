@@ -13,18 +13,17 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/client/profile")
+@RequestMapping("/client")
 @RequiredArgsConstructor
 public class ClientUserProfileController {
 
     private final WebClient.Builder webClientBuilder;
 
     private static final Logger logger = LoggerFactory.getLogger(ClientUserProfileController.class);
-
-    private static final String API_GATEWAY_SERVICE_NAME = "api-gateway";
+    private static final String API_GATEWAY_SERVICE_NAME = "API-GATEWAY";
     private static final String USER_PROFILE_PATH_ON_GATEWAY = "/user/account/profile";
 
-    @GetMapping("/user")
+    @GetMapping("/profile/user")
     public Mono<ResponseEntity<String>> getUserProfile(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
 
@@ -33,7 +32,7 @@ public class ClientUserProfileController {
         return webClientBuilder.build()
                 .get()
                 .uri("lb://" + API_GATEWAY_SERVICE_NAME + USER_PROFILE_PATH_ON_GATEWAY)
-                .header(HttpHeaders.AUTHORIZATION, token) 
+                .header(HttpHeaders.AUTHORIZATION, token)
                 .retrieve()
                 .toEntity(String.class)
                 .map(response -> {
