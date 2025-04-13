@@ -16,5 +16,6 @@ public class MerchantRegRequest {
 	    private String phoneNumber;
 	    private String businessName;
 	    private String businessAddress;
-	    private String gstNumber; 
+	    private String gstNumber;
+		private boolean isOtpVerified;
 	}
