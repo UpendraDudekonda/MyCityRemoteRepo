@@ -1,5 +1,9 @@
 package com.mycity.auth.controller;
 
+import java.util.Map;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -31,7 +35,6 @@ public class AuthLoginController {
     @PostMapping("/login/user")
     public ResponseEntity<?> loginUser(@RequestBody UserLoginRequest request) {
         try {
-            
             LoginResponse response = webClientBuilder.build()
                 .post()
                 .uri(USER_SERVICE + "/user/auth/internal/login")
@@ -44,16 +47,23 @@ public class AuthLoginController {
                 .bodyToMono(LoginResponse.class)
                 .block();
 
-            // Check if the response indicates successful login
+            // ✅ If login is successful
             if (response != null && Boolean.TRUE.equals(response.getStatus())) {
-               
-                String token = jwtService.generateToken(response.getId(), request.getEmail(), response.getRole());
-                return ResponseEntity.ok(token);
+                // Generate JWT cookie
+                ResponseCookie jwtCookie = jwtService.generateJwtCookie(
+                    response.getId(), request.getEmail(), response.getRole()
+                );
+
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                        .body(Map.of(
+                            "message", "Login successful",
+                            "role", response.getRole()
+                        ));
             }
 
             throw new RuntimeException("Invalid user credentials");
         } catch (RuntimeException e) {
-           
             return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage(), 400));
         }
     }

@@ -107,21 +107,5 @@ public class ClientAuthController {
             .onErrorResume(e -> Mono.just("{\"error\":\"" + e.getMessage() + "\"}"));
     }
 
-//    // Optional: If you need query param forwarding (not used now)
-//    private <T> Mono<String> forwardRequestWithOtp(T request, String otp, String path, Class<T> typeClass) {
-//        return webClientBuilder.build()
-//            .post()
-//            .uri(uriBuilder -> uriBuilder
-//                    .path(API_GATEWAY_URL + path)
-//                    .queryParam("otp", otp)
-//                    .build())
-//            .bodyValue(request)
-//            .retrieve()
-//            .onStatus(HttpStatusCode::isError, res ->
-//                res.bodyToMono(String.class)
-//                   .flatMap(body -> Mono.error(new RuntimeException(body)))
-//            )
-//            .bodyToMono(String.class)
-//            .onErrorResume(e -> Mono.just("{\"error\":\"" + e.getMessage() + "\"}"));
-//    }
+
 }

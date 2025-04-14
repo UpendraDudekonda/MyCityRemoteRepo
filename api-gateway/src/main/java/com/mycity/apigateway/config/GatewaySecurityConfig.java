@@ -17,26 +17,16 @@ import reactor.core.publisher.Mono;
 @EnableWebFluxSecurity
 public class GatewaySecurityConfig {
 
-    @Bean
-    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-        return http
-            .csrf(ServerHttpSecurity.CsrfSpec::disable)
-            .authorizeExchange(exchange -> exchange
-                .pathMatchers("/auth/**").permitAll() 
-                .anyExchange().authenticated()        
-            )
-            .exceptionHandling(e -> e
-                .authenticationEntryPoint((exchange, ex) -> {
-                    System.out.println("🔐 Authentication Failed: " + ex.getMessage());
-                    return Mono.error(ex);
-                })
-                .accessDeniedHandler((exchange, ex) -> {
-                    System.out.println("⛔ Access Denied: " + ex.getMessage());
-                    return Mono.error(ex);
-                })
-            )
-            .build();
-    }
+	@Bean
+	public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+	    return http
+	        .csrf(ServerHttpSecurity.CsrfSpec::disable)
+	        .authorizeExchange(exchange -> exchange
+	            .anyExchange().permitAll() 
+	        )
+	        .build();
+	}
+
 
     @Bean
     public CorsWebFilter corsWebFilter() {
