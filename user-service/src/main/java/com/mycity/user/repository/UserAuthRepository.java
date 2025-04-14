@@ -10,12 +10,12 @@ import com.mycity.user.entity.User;
 @Repository
 public interface UserAuthRepository extends JpaRepository<User, Long>{
 
-	boolean existsByUsername(String firstname); // Note: Parameter name is 'firstname' here
+	boolean existsByUsername(String firstname); 
 
 	boolean existsByEmail(String email);
 
-	Optional<User> findByUsername(String username); // Corrected return type
+	Optional<User> findByUsername(String username);
 
-	Optional<User> findByEmail(String email);
+	User findByEmail(String email);
 
 }

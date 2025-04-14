@@ -1,14 +1,13 @@
 package com.mycity.apigateway.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
+
 import com.mycity.shared.placedto.PlaceDTO;
-import com.mycity.shared.userdto.UserRegRequest;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
