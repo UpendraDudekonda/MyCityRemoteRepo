@@ -1,8 +1,13 @@
 package com.mycity.client.controller;
 
-import java.util.Map;
+import java.util.List;
 
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,39 +29,43 @@ public class ClientLoginService {
     private static final String API_GATEWAY_SERVICE_NAME = "API-GATEWAY";
 
     @PostMapping("/login/user")
-    public Mono<String> loginUser(@RequestBody UserLoginRequest request) {
+    public Mono<ResponseEntity<String>> loginUser(@RequestBody UserLoginRequest request) {
         return forwardLogin(request, "/auth/login/user", UserLoginRequest.class);
     }
 
     @PostMapping("/login/merchant")
-    public Mono<String> loginMerchant(@RequestBody MerchantLoginRequest request) {
+    public Mono<ResponseEntity<String>> loginMerchant(@RequestBody MerchantLoginRequest request) {
         return forwardLogin(request, "/auth/login/merchant", MerchantLoginRequest.class);
     }
 
     @PostMapping("/login/admin")
-    public Mono<String> loginAdmin(@RequestBody AdminLoginRequest request) {
+    public Mono<ResponseEntity<String>> loginAdmin(@RequestBody AdminLoginRequest request) {
         return forwardLogin(request, "/auth/login/admin", AdminLoginRequest.class);
     }
 
-    private <T> Mono<String> forwardLogin(T request, String path, Class<T> typeclass) {
+    private <T> Mono<ResponseEntity<String>> forwardLogin(T request, String path, Class<T> typeclass) {
         return webClientBuilder.build()
             .post()
             .uri("lb://" + API_GATEWAY_SERVICE_NAME + path)
-            .body(Mono.just(request), typeclass)
-            .retrieve()
-            .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
-                res -> res.bodyToMono(String.class)
-                    .flatMap(body -> {
-                        try {
-                            Map<String, Object> map = objectMapper.readValue(body, Map.class);
-                            String message = (String) map.getOrDefault("message", "Unknown error");
-                            return Mono.error(new RuntimeException(message));
-                        } catch (Exception e) {
-                            return Mono.error(new RuntimeException("Invalid error format"));
-                        }
-                    })
-            )
-            .bodyToMono(String.class)
-            .onErrorResume(e -> Mono.just("{\"error\":\"" + e.getMessage() + "\"}"));
+            .bodyValue(request)
+            .exchangeToMono(response -> {
+                Mono<String> bodyMono = response.bodyToMono(String.class);
+                List<String> cookieHeaders = response.headers().header(HttpHeaders.SET_COOKIE);
+
+                return bodyMono.map(body -> {
+                    ResponseEntity.BodyBuilder builder = ResponseEntity.status(response.statusCode());
+
+                    // Forward all Set-Cookie headers to the client
+                    for (String cookie : cookieHeaders) {
+                        builder.header(HttpHeaders.SET_COOKIE, cookie);
+                    }
+
+                    return builder.body(body);
+                });
+            })
+            .onErrorResume(e -> {
+                String errorJson = "{\"error\":\"" + e.getMessage() + "\"}";
+                return Mono.just(ResponseEntity.badRequest().body(errorJson));
+            });
     }
 }

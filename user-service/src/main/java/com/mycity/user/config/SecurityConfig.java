@@ -26,7 +26,8 @@ public class SecurityConfig {
                     "/user/auth/internal/register",
                     "/user/auth/startreg",
                     "/user/auth/completereg",
-                    "/user/account/profile"
+                    "/user/profile",
+                    "/user/account/updatephone"
                 ).permitAll()
                 .anyRequest().authenticated()
             );
