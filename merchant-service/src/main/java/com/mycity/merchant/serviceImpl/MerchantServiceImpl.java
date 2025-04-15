@@ -4,8 +4,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.mycity.merchant.entity.Merchant;
+import com.mycity.merchant.exception.MerchantNotFoundException;
 import com.mycity.merchant.repository.MerchantRepository;
 import com.mycity.merchant.service.MerchantServiceInterface;
+import com.mycity.shared.merchantdto.MerchantProfileResponse;
 import com.mycity.shared.merchantdto.MerchantRegRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -70,6 +72,31 @@ public class MerchantServiceImpl implements MerchantServiceInterface {
 	private boolean isValidEmail(String email) {
 		// TODO Auto-generated method stub
 		return email.contains("@") && email.contains(".");
+	}
+
+	@Override
+	public MerchantProfileResponse getMerchantById(String merchantIdStr) {
+
+	    if (!merchantIdStr.matches("\\d+")) {
+	        throw new IllegalArgumentException("Invalid Merchant ID format. Must be a number.");
+	    }
+
+	    Long merchantId = Long.parseLong(merchantIdStr);
+
+	    Merchant merchant = merchantRepo.findById(merchantId)
+	            .orElseThrow(() -> new MerchantNotFoundException("Merchant not found with ID: " + merchantId));
+
+	    return new MerchantProfileResponse(
+	            merchant.getId(),
+	            merchant.getName(),
+	            merchant.getEmail(),
+	            merchant.getPhoneNumber(),
+	            merchant.getBusinessName(),
+	            merchant.getBusinessAddress(),
+	            String.valueOf(merchant.getGstNumber()) // Assuming contactNumber is Long in the entity
+	           // merchant.getUpdatedDate(),
+	           // merchant.getCreatedDate()
+	    );
 	}
 
 }

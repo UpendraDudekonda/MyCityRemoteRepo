@@ -84,8 +84,17 @@ public class AuthLoginController {
                 .block();
 
             if (response != null) {
-                String token = jwtService.generateToken(response.getId(),request.getEmail(), response.getRole());
-                return ResponseEntity.ok(token);
+                // Generate JWT cookie
+                ResponseCookie jwtCookie = jwtService.generateJwtCookie(
+                    response.getId(), request.getEmail(), response.getRole() // Assuming MerchantDetailsResponse also has a getRole() method
+                );
+
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                        .body(Map.of(
+                            "message", "Login successful",
+                            "role", response.getRole()
+                        ));
             }
 
             throw new RuntimeException("Invalid merchant credentials");
