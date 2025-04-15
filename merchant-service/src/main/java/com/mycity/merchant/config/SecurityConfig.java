@@ -24,7 +24,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/merchant/auth/internal/login",
-                    "/merchant/auth/internal/register"
+                    "/merchant/auth/internal/register",
+                    "/merchant/profile"
                 ).permitAll()
                 .anyRequest().authenticated()
             );

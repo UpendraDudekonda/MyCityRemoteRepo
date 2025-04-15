@@ -7,4 +7,5 @@ public class MerchantLoginRequest {
 
 	private String email;
 	private String password;
+	
 }
