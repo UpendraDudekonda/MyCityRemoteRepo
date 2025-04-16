@@ -21,4 +21,10 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+    
+    @ExceptionHandler(AdminNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(Exception ex) {
+        ErrorResponse error = new ErrorResponse("Admin Not Found", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
 }
