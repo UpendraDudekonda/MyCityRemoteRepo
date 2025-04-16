@@ -5,16 +5,19 @@ import java.util.Map;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.mycity.auth.config.JwtService;
 import com.mycity.shared.admindto.AdminDetailsResponse;
 import com.mycity.shared.admindto.AdminLoginRequest;
 import com.mycity.shared.errordto.ErrorResponse;
-import com.mycity.shared.responsedto.LoginResponse;
 import com.mycity.shared.merchantdto.MerchantDetailsResponse;
 import com.mycity.shared.merchantdto.MerchantLoginRequest;
+import com.mycity.shared.responsedto.LoginResponse;
 import com.mycity.shared.userdto.UserLoginRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -103,6 +106,7 @@ public class AuthLoginController {
         }
     }
     
+
     @PostMapping("/login/admin")
     public ResponseEntity<?> loginAdmin(@RequestBody AdminLoginRequest request) {
         try {
@@ -119,8 +123,17 @@ public class AuthLoginController {
                 .block();
 
             if (response != null) {
-                String token = jwtService.generateToken(response.getId(),request.getEmail(), response.getRole());
-                return ResponseEntity.ok(token);
+                // Generate JWT cookie
+                ResponseCookie jwtCookie = jwtService.generateJwtCookie(
+                    response.getId(), request.getEmail(), response.getRole() // Assuming AdminDetailsResponse also has a getRole() method
+                );
+
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                        .body(Map.of(
+                            "message", "Login successful",
+                            "role", response.getRole()
+                        ));
             }
 
             throw new RuntimeException("Invalid admin credentials");
@@ -128,5 +141,4 @@ public class AuthLoginController {
             return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage(), 400));
         }
     }
-
 }
