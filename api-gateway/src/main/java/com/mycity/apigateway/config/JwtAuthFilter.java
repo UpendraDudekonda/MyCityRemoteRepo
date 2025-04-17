@@ -1,93 +1,108 @@
 package com.mycity.apigateway.config;
 
-import java.util.List;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
-import org.springframework.core.annotation.Order;
+import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.server.ServerWebExchange;
+
+import io.jsonwebtoken.Claims;
 import reactor.core.publisher.Mono;
 
 @Component
-@Order(1)
-public class JwtAuthFilter implements GlobalFilter {
+public class JwtAuthFilter implements GlobalFilter, Ordered {
 
+    private final CorsWebFilter corsWebFilter;
     private final JwtService jwtService;
 
-    private static final Logger logger = LoggerFactory.getLogger(JwtAuthFilter.class);
-
-    // Role to downstream service name mapping
-    private static final Map<String, String> ROLE_SERVICE_MAPPING = Map.of(
-        "ADMIN", "admin-service",
-        "USER", "user-service"
-    );
-
-    // Allow login and register without token
-    private static final List<String> PUBLIC_ENDPOINTS = List.of(
-        "/auth/user/login",
-        "/auth/user/register"
-    );
-
-    public JwtAuthFilter(JwtService jwtService) {
+    public JwtAuthFilter(JwtService jwtService, CorsWebFilter corsWebFilter) {
         this.jwtService = jwtService;
+        this.corsWebFilter = corsWebFilter;
     }
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        ServerHttpRequest request = exchange.getRequest();
-        String requestPath = request.getURI().getPath();
-    System.out.println(requestPath +"request path for user service");
-    
-        // Allow public endpoints
-        if (PUBLIC_ENDPOINTS.stream().anyMatch(requestPath::startsWith)) {
+        String path = exchange.getRequest().getURI().getPath();
+        System.out.println(" Request path: " + path);
+
+        // Allow public auth paths
+        if (path.startsWith("/auth/")) {
+            System.out.println(" Public path - skipping token validation");
             return chain.filter(exchange);
         }
 
-        // Check for Authorization header
-        String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return handleUnauthorized(exchange, "Missing or invalid Authorization header");
+        String token = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+
+        if (token == null || !token.startsWith("Bearer ")) {
+            System.out.println(" No JWT token found in request headers.");
+            return unauthorized(exchange, "Missing Authorization token in headers");
         }
 
-        String token = authHeader.substring(7); // Remove "Bearer "
+        token = token.substring(7); // Extract token from "Bearer <token>"
 
-        try {
-            if (!jwtService.validateToken(token)) {
-                return handleUnauthorized(exchange, "Invalid or expired token");
-            }
-        } catch (Exception e) {
-            return handleUnauthorized(exchange, "Token validation failed: " + e.getMessage());
+        // ✅ Validate token
+        if (!jwtService.validateToken(token)) {
+            System.out.println(" Token is invalid");
+            return unauthorized(exchange, "Invalid JWT token");
         }
 
-        // Extract user info
-        String userId = jwtService.extractUserId(token);
-        String userRole = jwtService.extractRole(token);
-        logger.info("Authenticated request - UserID: {}, Role: {}", userId, userRole);
+        Claims claims = jwtService.extractAllClaims(token);
+        String role = claims.get("role", String.class);
+        Long userId = claims.get("userId", Long.class);
 
-        if (!ROLE_SERVICE_MAPPING.containsKey(userRole.toUpperCase())) {
-            return handleUnauthorized(exchange, "Unauthorized role: " + userRole);
+        System.out.println(" Token validated");
+        System.out.println(" Extracted UserID: " + userId);
+        System.out.println(" Extracted Role: " + role);
+
+        if (role == null || userId == null) {
+            System.out.println(" Token is missing required claims (role/userId)");
+            return unauthorized(exchange, "Missing role or userId in token");
         }
 
-        // Add headers for downstream services (including Authorization)
-        ServerHttpRequest modifiedRequest = request.mutate()
-            .header("X-User-Id", userId)
-            .header("X-User-Role", userRole)
-            .header(HttpHeaders.AUTHORIZATION, authHeader) // 🔐 KEEP token for downstream
-            .build();
+        // ✅ Role-based access check
+        if ("USER".equals(role) && !path.startsWith("/user/")) {
+            System.out.println(" USER role not allowed to access: " + path);
+            return unauthorized(exchange, "Access Denied: USER role not allowed");
+        }
+        if ("MERCHANT".equals(role) && !path.startsWith("/merchant/")) {
+            System.out.println(" MERCHANT role not allowed to access: " + path);
+            return unauthorized(exchange, "Access Denied: MERCHANT role not allowed");
+        }
+        if ("ADMIN".equals(role) && !path.startsWith("/admin/")) {
+            System.out.println(" ADMIN role not allowed to access: " + path);
+            return unauthorized(exchange, "Access Denied: ADMIN role not allowed");
+        }
+        final String finalToken = token;
+        	
+        
+        ServerWebExchange mutatedExchange = exchange.mutate()
+                .request(builder -> builder
+                        .header("X-User-Id", String.valueOf(userId))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + finalToken)
+                        .build())
+                .build();
 
-        return chain.filter(exchange.mutate().request(modifiedRequest).build());
+        System.out.println(" Token validated and user authorized. Continuing to service.");
+        return chain.filter(mutatedExchange);
     }
 
-    private Mono<Void> handleUnauthorized(ServerWebExchange exchange, String message) {
-        logger.warn("Unauthorized access: {}", message);
+    private Mono<Void> unauthorized(ServerWebExchange exchange, String message) {
+        System.out.println(" Unauthorized: " + message);
         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-        return exchange.getResponse().setComplete();
+        exchange.getResponse().getHeaders().add(HttpHeaders.CONTENT_TYPE, "application/json");
+        String body = String.format("{\"error\": \"%s\"}", message);
+        return exchange.getResponse()
+                .writeWith(Mono.just(exchange.getResponse().bufferFactory()
+                        .wrap(body.getBytes(StandardCharsets.UTF_8))));
+    }
+
+    @Override
+    public int getOrder() {
+        return -1; // High priority
     }
 }

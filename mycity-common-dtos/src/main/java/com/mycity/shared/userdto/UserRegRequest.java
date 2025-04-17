@@ -19,4 +19,6 @@ public class UserRegRequest {
     
     private String mobilenumber;
     
+    private boolean OtpVerified;
+    
 }
