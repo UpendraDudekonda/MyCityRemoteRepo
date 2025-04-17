@@ -1,7 +1,6 @@
 package com.mycity.place.entity;
 
 import java.time.LocalTime;
-import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -26,9 +25,6 @@ public class TimeZone
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long timeZoneId;
-
-	@NonNull
-	private String name;
 	
 	@OneToOne(targetEntity = Place.class,cascade = CascadeType.ALL)
 	@JoinColumn(name="place_id",referencedColumnName = "placeId")
@@ -39,4 +35,6 @@ public class TimeZone
 	
 	@NonNull
 	private LocalTime closingTime;
+	
+	
 }
