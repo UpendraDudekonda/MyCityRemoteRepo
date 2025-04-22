@@ -23,7 +23,8 @@ public class SecurityConfig {
 	            .authorizeHttpRequests(auth -> auth
 	                .requestMatchers(
 	                    "/admin/auth/internal/login",
-	                	"/admin/profile"
+	                	"/admin/profile",
+	                	"/admin/events/add"
 	                ).permitAll()
 	                .anyRequest().authenticated()
 	            );

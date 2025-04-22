@@ -2,6 +2,7 @@ package com.mycity.shared.eventsdto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import com.mycity.shared.placedto.PlaceDTO;
 
@@ -12,13 +13,18 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EventDTO {
-
-    private Long eventId;
+public class EventsDTO {
+     	
     private String name;
+    private LocalTime duration;
     private String description;
+   
+    private String city;
     private LocalDate date;
-    private LocalTime time;
-    private PlaceDTO place;
+
+  
+    private List<String> eventPlaces;
+    private List<EventHighlightsDTO> schedule;
+	
 }
 
