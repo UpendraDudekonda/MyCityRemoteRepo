@@ -1,5 +1,7 @@
 package com.mycity.shared.timezonedto;
 
+import java.time.LocalTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,5 +13,7 @@ public class TimezoneDTO {
 	
     private Long timezoneId;
     private String name;
+    private LocalTime OpeningTime;
+    private LocalTime ClosingTime;
 }
 

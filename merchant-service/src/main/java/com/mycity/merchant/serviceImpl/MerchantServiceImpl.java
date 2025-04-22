@@ -1,14 +1,13 @@
 package com.mycity.merchant.serviceImpl;
 
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.mycity.merchant.config.JwtService;
 import com.mycity.merchant.entity.Merchant;
+import com.mycity.merchant.exception.MerchantNotFoundException;
 import com.mycity.merchant.repository.MerchantRepository;
 import com.mycity.merchant.service.MerchantServiceInterface;
-import com.mycity.shared.merchantdto.MerchantLoginReq;
+import com.mycity.shared.merchantdto.MerchantProfileResponse;
 import com.mycity.shared.merchantdto.MerchantRegRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,7 @@ public class MerchantServiceImpl implements MerchantServiceInterface {
 
     private final MerchantRepository merchantRepo;
     private final PasswordEncoder passwordEncoder; 
-    private final JwtService jwtservice;
+   
 
     @Override
     public String registerMerchant(MerchantRegRequest request) {
@@ -76,21 +75,28 @@ public class MerchantServiceImpl implements MerchantServiceInterface {
 	}
 
 	@Override
-	public String loginMerchant(MerchantLoginReq request) {
-		String email = request.getEmail();
-		String password = request.getPassword();
+	public MerchantProfileResponse getMerchantById(String merchantIdStr) {
 
-		// Find the user by email
-		Merchant merchant = merchantRepo.findByEmail(email)
-				.orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
+	    if (!merchantIdStr.matches("\\d+")) {
+	        throw new IllegalArgumentException("Invalid Merchant ID format. Must be a number.");
+	    }
 
-		// Validate the password
-		if (!passwordEncoder.matches(password, merchant.getPassword())) {
-			throw new BadCredentialsException("Invalid email or password");
-		}
+	    Long merchantId = Long.parseLong(merchantIdStr);
 
-		System.out.println("Login Successfull");
-		// Authentication successful, generate JWT token
-		return jwtservice.generateToken(merchant.getId(), merchant.getEmail(), merchant.getRole());
+	    Merchant merchant = merchantRepo.findById(merchantId)
+	            .orElseThrow(() -> new MerchantNotFoundException("Merchant not found with ID: " + merchantId));
+
+	    return new MerchantProfileResponse(
+	            merchant.getId(),
+	            merchant.getName(),
+	            merchant.getEmail(),
+	            merchant.getPhoneNumber(),
+	            merchant.getBusinessName(),
+	            merchant.getBusinessAddress(),
+	            String.valueOf(merchant.getGstNumber()) // Assuming contactNumber is Long in the entity
+	           // merchant.getUpdatedDate(),
+	           // merchant.getCreatedDate()
+	    );
 	}
+
 }

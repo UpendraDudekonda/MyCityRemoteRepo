@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -26,18 +27,27 @@ public class Event {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long eventId;
 
-	private String name;
-
+	private String eventName;
+     
+	 private String city;
+	 
 	@Column(columnDefinition = "TEXT")
 	private String description;
 
 	private LocalDate date;
 
-	private LocalTime time;
+	private LocalTime duration;
+    
 
+ 
 	@ElementCollection
-	@CollectionTable(name = "event_place")
-	@JoinColumn(name = "event_id")
+	@CollectionTable(name = "event_place" ,joinColumns=@JoinColumn(name="event_id"))
+
 	private List<String> eventPlaces;
+	
+	@ElementCollection
+	@CollectionTable(name = "event_schedule", joinColumns = @JoinColumn(name = "event_id"))
+	private List<EventHighlights> schedule;
+
 
 }
