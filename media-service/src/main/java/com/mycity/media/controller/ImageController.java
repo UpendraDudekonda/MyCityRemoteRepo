@@ -1,8 +1,7 @@
 package com.mycity.media.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,7 +18,7 @@ import com.mycity.shared.mediadto.ImageDTO;
 import jakarta.ws.rs.core.MediaType;
 
 @RestController
-@RequestMapping("/image")
+@RequestMapping("/img")
 public class ImageController {
      
 	@Autowired
@@ -32,10 +31,9 @@ public class ImageController {
 	        @RequestPart("image") MultipartFile file,
 	        @RequestParam Long placeId,
 	        @RequestParam String placeName,
-	        @RequestParam String category,
-	        @RequestParam String imageName) {
+	        @RequestParam String category) {
 		
-		imageService.uploadImage(file,placeId,placeName,category,imageName);
+		imageService.uploadImage(file,placeId,placeName,category);
 
 	    return ResponseEntity.ok("Image uploaded successfully");
 	}
@@ -45,10 +43,4 @@ public class ImageController {
 	    ImageDTO imageDTO = imageService.fetchImage(id);
 	    return ResponseEntity.ok(imageDTO);
 	}
-	
-	 @GetMapping("/about{placeId}")
-	    public ResponseEntity<List<String>> getImages(@PathVariable Long placeId) {
-	        List<String> imageUrls = imageService.getImagesByPlaceId(placeId);
-	        return ResponseEntity.ok(imageUrls);
-	    }
 }

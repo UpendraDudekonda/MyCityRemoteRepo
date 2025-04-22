@@ -27,7 +27,5 @@ public class Images {
 
 	@Column(name = "place_id")
 	private Long placeId; // Storing the ID of the place from the other service
-	
-	private String imageName;
 
 }
