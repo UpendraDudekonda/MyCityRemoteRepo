@@ -1,4 +1,4 @@
-package com.mycity.categoryplace.entity;
+package com.mycity.category.entity;
 
 import java.util.List;
 

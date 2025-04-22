@@ -1,4 +1,4 @@
-package com.mycity.categoryplace.dto;
+package com.mycity.category.dto;
 
 public class CategoryDTO {
 

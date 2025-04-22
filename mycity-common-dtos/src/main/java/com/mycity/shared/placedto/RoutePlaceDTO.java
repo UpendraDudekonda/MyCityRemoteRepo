@@ -21,5 +21,7 @@ public class RoutePlaceDTO {
     private List<String> types;
     private Double rating;
     private List<String> photoUrls;
+    private Double distanceFromRoute; 
+    private String operatingHours;   
 }
 
