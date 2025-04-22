@@ -1,6 +1,7 @@
 package com.mycity.media.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -10,5 +11,7 @@ public interface ImageServiceRepository extends JpaRepository<Images, Long>{
 	
 
 	List<String> findImageUrlsByPlaceId(Long placeId);
+
+	Optional<Images> findFirstByCategoryIgnoreCaseOrderByImageIdAsc(String category);
 
 }

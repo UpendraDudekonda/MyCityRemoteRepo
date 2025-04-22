@@ -2,25 +2,33 @@ package com.mycity.trip.entity;
 
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Route {
-    private List<Coordinate> coordinates; // List of latitude/longitude points defining the route
-    private String polyline;             // Encoded polyline string for map display (common in map APIs)
-    private double distance;             // Total distance of the route (in meters or kilometers)
-    private double duration;             // Estimated travel time (in seconds or minutes)
-    // Optional:
-    private List<Waypoint> waypoints;   // Significant points along the route
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    @OneToMany(mappedBy = "route", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Coordinate> coordinates;
+
+    @OneToMany(mappedBy = "route", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Waypoint> waypoints;
+
+    private String polyline;
+    private double distance;
+    private double duration;
     private String startAddress;
     private String endAddress;
-    // Getters and setters
 }
-

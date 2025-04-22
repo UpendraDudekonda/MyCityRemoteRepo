@@ -1,5 +1,6 @@
 package com.mycity.place.serviceImpl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ import com.mycity.shared.tripplannerdto.CoordinateDTO;
 public class PlaceServiceimpl implements PlaceServiceInterface {
 
     @Autowired
-    private PlaceRepository Placerepo;
+    private PlaceRepository placeRepo;
 
     @Override
     public String addPlace(PlaceDTO dto) {
@@ -57,17 +58,17 @@ public class PlaceServiceimpl implements PlaceServiceInterface {
         place.setPlaceDistrict(dto.getPlaceDistrict());
         place.setTimeZone(timezone);
         place.setCoordinate(coordinate);
-        place.setPhotoUrls(dto.getPhotoUrls());
+        
 
         timezone.setPlace(place);
 
-        String name = Placerepo.save(place).getPlaceName();
+        String name = placeRepo.save(place).getPlaceName();
         return "Place with name " + name + " saved Successfully";
     }
 
     @Override
     public Place getPlace(Long placeId) {
-        Optional<Place> opt = Placerepo.findById(placeId);
+        Optional<Place> opt = placeRepo.findById(placeId);
         if (opt.isPresent())
             return opt.get();
         else
@@ -76,7 +77,7 @@ public class PlaceServiceimpl implements PlaceServiceInterface {
 
     @Override
     public String updatePlace(Long placeId, PlaceDTO dto) {
-        Optional<Place> opt = Placerepo.findById(placeId);
+        Optional<Place> opt = placeRepo.findById(placeId);
         if (opt.isPresent()) {
             Place place = opt.get();
             place.setPlaceName(dto.getPlaceName());
@@ -99,9 +100,9 @@ public class PlaceServiceimpl implements PlaceServiceInterface {
             
             place.setTimeZone(time);
 
-            place.setPhotoUrls(dto.getPhotoUrls());
+            
 
-            Long idVal = Placerepo.save(place).getPlaceId();
+            Long idVal = placeRepo.save(place).getPlaceId();
             return "Place With Id ::" + idVal + " is Updated";
         } else {
             throw new IllegalArgumentException("Invalid Place Id..");
@@ -110,7 +111,31 @@ public class PlaceServiceimpl implements PlaceServiceInterface {
 
     @Override
     public String deletePlace(Long placeId) {
-        Placerepo.deleteById(placeId);
+        placeRepo.deleteById(placeId);
         return "Place With Id ::" + placeId + " Deleted Successfully.";
+    }
+
+	@Override
+	public Place savePlace(Place place) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Place getPlaceById(Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object getAllPlaces() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+    @Override
+    public List<String> getAllDistinctCategories() {
+        return placeRepo.findDistinctPlaceCategories();
     }
 }

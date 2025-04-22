@@ -43,4 +43,12 @@ public class ImageController {
 	    ImageDTO imageDTO = imageService.fetchImage(id);
 	    return ResponseEntity.ok(imageDTO);
 	}
+	
+	@GetMapping("/cover-image")
+	public ResponseEntity<String> getCoverImageForCategory(@RequestParam String category) {
+	    // You can return the first image URL from that category for now
+	    String imageUrl = imageService.getFirstImageUrlByCategory(category);
+	    return ResponseEntity.ok(imageUrl);
+	}
+	
 }

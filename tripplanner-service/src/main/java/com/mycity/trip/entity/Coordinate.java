@@ -1,16 +1,21 @@
 package com.mycity.trip.entity;
 
 import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Coordinate {
+    @Id
+    @GeneratedValue
+    private Long id;
+
     private double latitude;
     private double longitude;
-    // Getters and setters
+
+    @ManyToOne
+    private Route route;
 }
+
+

@@ -10,4 +10,6 @@ public interface ImageService {
 
 	ImageDTO fetchImage(Long imageId);
 
+	String getFirstImageUrlByCategory(String category);
+
 }

@@ -35,5 +35,5 @@ public class PlaceDTO {
 
     private CoordinateDTO coordinate;
 
-    private List<String> photoUrls;
+    
 }
