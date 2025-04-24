@@ -27,13 +27,11 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
  
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-    	String path = exchange.getRequest().getURI().getPath();
+        String path = exchange.getRequest().getURI().getPath();
         System.out.println(" Request path: " + path);
-        HttpHeaders headers = exchange.getRequest().getHeaders();
-        System.out.println(" Request Headers: " + headers); // Log all headers
  
         // Allow public auth paths
-		if (path.startsWith("/auth/**") /* || path.startsWith("/place/**") */ ) {
+        if (path.startsWith("/auth/")) {
             System.out.println(" Public path - skipping token validation");
             return chain.filter(exchange);
         }
