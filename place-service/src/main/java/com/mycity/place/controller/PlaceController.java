@@ -16,9 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mycity.place.entity.Place;
 import com.mycity.place.service.PlaceServiceInterface;
-import com.mycity.shared.placedto.PlaceCategoryDTO;
 import com.mycity.shared.placedto.PlaceDTO;
-import com.mycity.shared.placedto.PlaceResponseDTO;
 
 @RestController
 @RequestMapping("/place")
@@ -34,12 +32,13 @@ public class PlaceController {
         return new ResponseEntity<>(msg, HttpStatus.CREATED);
     }
 
+    // Get place by ID (Place entity)
     @GetMapping("/get/{placeId}")
-    public ResponseEntity<PlaceResponseDTO> getPlaceDetails(@PathVariable Long placeId) {
-        PlaceResponseDTO place = placeService.getPlace(placeId);
-        return new ResponseEntity<>(place, HttpStatus.OK);
+    public ResponseEntity<Place> getPlaceDetails(@PathVariable Long placeId) {
+        Place place = placeService.getPlace(placeId);
+        return place != null ? new ResponseEntity<>(place, HttpStatus.OK)
+                             : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-
 
     // Update place using PlaceDTO
     @PutMapping("/update/{placeId}")
@@ -64,17 +63,24 @@ public class PlaceController {
 
     
     @GetMapping("/allplaces")
-    public ResponseEntity<List<PlaceResponseDTO>> getAllPlaces() {
+    public ResponseEntity<Object> getAllPlaces() {
         return ResponseEntity.ok(placeService.getAllPlaces());
     }
 
-
+    
+    @GetMapping("/placeby/{id}")
+    public ResponseEntity<Place> getPlaceById(@PathVariable Long id) {
+        Place place = placeService.getPlaceById(id);
+        return place != null ? ResponseEntity.ok(place) : ResponseEntity.notFound().build();
+    }
+    
     @GetMapping("/places/categories")
-    public ResponseEntity<List<PlaceCategoryDTO>> getAllDistinctCategories() {
-        List<PlaceCategoryDTO> categories = placeService.getAllDistinctCategories();
+    public ResponseEntity<List<String>> getAllDistinctCategories() {
+        List<String> categories = placeService.getAllDistinctCategories();
         return ResponseEntity.ok(categories);
     }
-
+    
+    
     
     
 }
