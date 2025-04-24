@@ -16,7 +16,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class CategorySecurityConfig {
 
 
-
 	@Bean
 	public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
 	    return http

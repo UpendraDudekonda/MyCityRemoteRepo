@@ -4,10 +4,7 @@ package com.mycity.media.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,21 +13,17 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.mycity.media.service.EventImageService;
-import com.mycity.media.service.ImageService;
-import com.mycity.shared.mediadto.EventMainImageDTO;
-import com.mycity.shared.mediadto.EventSubImagesDTO;
-import com.mycity.shared.mediadto.ImageDTO;
 
 import jakarta.ws.rs.core.MediaType;
 
 @RestController
-@RequestMapping("/upload")
+@RequestMapping("/media")
 public class EventImageController {
      
 	@Autowired
 	private EventImageService imageService;
 	
-	@PostMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA)
+	@PostMapping(value = "/upload/image", consumes = MediaType.MULTIPART_FORM_DATA)
 	public ResponseEntity<String> uploadImage(
 						    @RequestPart("file") MultipartFile file,  // <-- match WebClient
 				    @RequestParam Long eventId,

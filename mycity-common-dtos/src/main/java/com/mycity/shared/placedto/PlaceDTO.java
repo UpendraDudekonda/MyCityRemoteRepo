@@ -1,7 +1,5 @@
 package com.mycity.shared.placedto;
 
-import java.util.List;
-
 import com.mycity.shared.timezonedto.TimezoneDTO;
 import com.mycity.shared.tripplannerdto.CoordinateDTO;
 
