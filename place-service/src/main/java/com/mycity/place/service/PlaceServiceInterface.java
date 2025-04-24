@@ -3,17 +3,19 @@ package com.mycity.place.service;
 import java.util.List;
 
 import com.mycity.place.entity.Place;
+import com.mycity.shared.placedto.PlaceCategoryDTO;
 import com.mycity.shared.placedto.PlaceDTO;
+import com.mycity.shared.placedto.PlaceResponseDTO;
 
 public interface PlaceServiceInterface 
 {
     String addPlace(PlaceDTO dto);
-    Place getPlace(Long placeId);
+    PlaceResponseDTO getPlace(Long placeId);
     String updatePlace(Long placeId,PlaceDTO dto);
     String deletePlace(Long placeId);
 	Place savePlace(Place place);
 	Place getPlaceById(Long id);
-	Object getAllPlaces();
-	List<String> getAllDistinctCategories();
+	List<PlaceResponseDTO> getAllPlaces();
+	List<PlaceCategoryDTO> getAllDistinctCategories();
 	
 }

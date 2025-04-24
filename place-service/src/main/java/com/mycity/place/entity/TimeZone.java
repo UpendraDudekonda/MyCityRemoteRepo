@@ -2,7 +2,6 @@ package com.mycity.place.entity;
 
 import java.time.LocalTime;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,19 +21,19 @@ import lombok.Setter;
 @NoArgsConstructor
 public class TimeZone
 {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long timeZoneId;
-	
-	@OneToOne(targetEntity = Place.class,cascade = CascadeType.ALL)
-	@JoinColumn(name="place_id",referencedColumnName = "placeId")
-	private Place place;
-	
-	@NonNull
-	private LocalTime openingTime;
-	
-	@NonNull
-	private LocalTime closingTime;
-	
-	
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long timeZoneId;
+
+
+    @NonNull
+    private LocalTime openingTime;
+
+    @NonNull
+    private LocalTime closingTime;
+    
+    @OneToOne
+    @JoinColumn(name = "place_id", referencedColumnName = "placeId")
+    private Place place;
+
 }

@@ -18,7 +18,7 @@ import com.mycity.shared.mediadto.ImageDTO;
 import jakarta.ws.rs.core.MediaType;
 
 @RestController
-@RequestMapping("/img")
+@RequestMapping("/media")
 public class ImageController {
      
 	@Autowired
