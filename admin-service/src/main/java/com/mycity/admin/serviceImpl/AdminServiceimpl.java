@@ -43,7 +43,7 @@ public class AdminServiceimpl implements AdminServiceInterface
 	    	 response.setCurrentDate(LocalDate.now());
 	    	 response.setPostedOn(place.getPostedOn());
 	    	 response.setImageUrl("");
-	    	 response.setPlaceName(place.getName());
+	    	 response.setPlaceName(place.getPlaceName());
 	    	 
 	    	 System.out.println("Admin Response Data====> ::"+response);
 	    	 //add response to List

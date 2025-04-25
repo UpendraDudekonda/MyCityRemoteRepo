@@ -35,18 +35,21 @@ public class PlaceController {
 	public ResponseEntity<String> addPlaceDetails(@ModelAttribute PlaceDTO placeDto,
 			@RequestPart("images") List<MultipartFile> images) {
 		System.out.println("PlaceController.addPlaceDetails()");
-
+ 
 		try {
-
+ 
 			// Use the service to add the place details and save the images
 			String msg = placeService.addPlace(placeDto, images);
 			return new ResponseEntity<>(msg, HttpStatus.CREATED);
-
+ 
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<>("Error adding place with images", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+
+
 
 	// Create a place using PlaceDTO
 	@PostMapping("/newplace/add")
