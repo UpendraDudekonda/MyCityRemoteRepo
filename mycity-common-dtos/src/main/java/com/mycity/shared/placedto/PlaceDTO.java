@@ -1,5 +1,7 @@
 package com.mycity.shared.placedto;
 
+import java.time.LocalDate;
+
 import com.mycity.shared.timezonedto.TimezoneDTO;
 
 import lombok.AllArgsConstructor;
@@ -15,6 +17,7 @@ public class PlaceDTO
     private String about;
     private String history;
     private TimezoneDTO timezone;
+    private LocalDate postedOn;
     private String category;
     private Double latitude;
     private Double longitude;

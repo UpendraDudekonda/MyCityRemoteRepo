@@ -1,5 +1,7 @@
 package com.mycity.place.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +19,7 @@ import com.mycity.place.service.PlaceServiceInterface;
 import com.mycity.shared.placedto.PlaceDTO;
 
 @RestController
-@RequestMapping("auth/place-api")
+@RequestMapping("/place")
 public class PlaceController 
 {
 	@Autowired
@@ -33,11 +35,22 @@ public class PlaceController
 	}
 	
 	@GetMapping("/getplace/{placeId}")
-	public ResponseEntity<Place> getPlaceDetails(@PathVariable Long PlaceId)
+	public ResponseEntity<PlaceDTO> getPlaceDetails(@PathVariable Long placeId)
 	{
 		//use service
-		Place place=service.getPlace(PlaceId);
-		return new ResponseEntity<Place>(place,HttpStatus.FOUND);	
+		PlaceDTO place=service.getPlace(placeId);
+		return new ResponseEntity<PlaceDTO>(place,HttpStatus.FOUND);	
+	}
+	
+	@GetMapping("/getid/{placeName}") 
+	public ResponseEntity<Long> getPlaceIdByPlaceName(@PathVariable String placeName)
+	{
+		System.out.println("PlaceController.getPlaceIdByPlaceName()");
+		//use service
+		Long id=service.getPlaceIdByName(placeName);
+		System.out.println("id Value ::"+id);
+		return new ResponseEntity<Long>(id,HttpStatus.OK);
+		
 	}
 	
 	@PutMapping("/updateplace/{placeId}")
@@ -54,5 +67,14 @@ public class PlaceController
 		//use service
 		String msg=service.deletePlace(placeId);
 		return new ResponseEntity<String>(msg,HttpStatus.OK);
+	}
+	
+	@GetMapping("/getall") //to get all places when working with admin
+	public ResponseEntity<List<PlaceDTO>> getAllPlaces()
+	{
+		System.out.println("PlaceController.getAllPlaces()............");
+		//use service
+		List<PlaceDTO> places=service.getAllPlaces();
+		return new ResponseEntity<List<PlaceDTO>>(places,HttpStatus.FOUND);
 	}
 }

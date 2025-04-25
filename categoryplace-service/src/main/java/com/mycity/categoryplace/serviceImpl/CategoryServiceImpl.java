@@ -1,5 +1,6 @@
 package com.mycity.categoryplace.serviceImpl;
 
-public class CategoryServiceImpl {
+public class CategoryServiceImpl 
+{
 
 }

@@ -1,5 +1,7 @@
 package com.mycity.review.entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,6 +30,13 @@ public class Review {
     @Column(columnDefinition = "TEXT")
     private String reviewDescription;
 
+    private String placeName;
+   
+    @Column(name="review_Posted_On")
+    private LocalDate postedOn;
+    
+    private String userName;
+    
     private String imageUrl;
 
 

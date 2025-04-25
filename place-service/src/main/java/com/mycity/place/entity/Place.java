@@ -1,5 +1,7 @@
 package com.mycity.place.entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,8 +22,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @RequiredArgsConstructor
-public class Place {
-
+public class Place
+{	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long placeId;
@@ -41,6 +43,8 @@ public class Place {
 	@JoinColumn(name="place_id",referencedColumnName = "placeId")
 	private TimeZone timeZone;
 
+	private LocalDate postedOn;
+	
 	@NonNull
 	private String placeCategory;
 

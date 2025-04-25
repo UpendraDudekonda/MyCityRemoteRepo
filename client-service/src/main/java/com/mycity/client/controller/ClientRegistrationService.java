@@ -27,7 +27,7 @@ public class ClientRegistrationService {
 
     @PostMapping("/register/user")
     public Mono<?> registerUser(@RequestBody UserRegRequest request) {
-        return forwardRegister(request, "/auth/register/user", UserRegRequest.class);
+        return forwardRegister(request,"/auth/register/user", UserRegRequest.class);
     }
 
     @PostMapping("/register/merchant")

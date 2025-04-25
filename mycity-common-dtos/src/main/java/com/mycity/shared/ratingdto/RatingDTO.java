@@ -1,7 +1,5 @@
 package com.mycity.shared.ratingdto;
 
-import java.time.LocalDateTime;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,13 +7,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RatingDTO {
-
-    private Long ratingId;
-    private Long userId;
-    private Long placeId;
-    private Integer ratingValue;
+public class RatingDTO 
+{
+  
+    private String userName;
+    private String placeName;
+    private Double ratingValue;
     private String comment;
-    private LocalDateTime postedDateTime;
 }
 

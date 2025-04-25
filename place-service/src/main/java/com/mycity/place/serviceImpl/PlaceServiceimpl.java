@@ -1,14 +1,19 @@
 package com.mycity.place.serviceImpl;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.mycity.place.entity.Place;
 import com.mycity.place.entity.TimeZone;
 import com.mycity.place.repository.PlaceRepository;
 import com.mycity.place.service.PlaceServiceInterface;
 import com.mycity.shared.placedto.PlaceDTO;
+import com.mycity.shared.timezonedto.TimezoneDTO;
 
 @Service
 public class PlaceServiceimpl implements PlaceServiceInterface
@@ -37,7 +42,6 @@ public class PlaceServiceimpl implements PlaceServiceInterface
     	  throw new IllegalArgumentException("Mention the Place Longitude");
       
       TimeZone timezone=new TimeZone();
-      timezone.setTimeZoneId(dto.getTimezone().getTimezoneId());
       timezone.setOpeningTime(dto.getTimezone().getOpeningTime());
       timezone.setClosingTime(dto.getTimezone().getClosingTime());
       timezone.setName(dto.getTimezone().getName());
@@ -50,6 +54,7 @@ public class PlaceServiceimpl implements PlaceServiceInterface
       place.setLatitude(dto.getLatitude());
       place.setLongitude(dto.getLongitude());
       place.setPlaceDistrict(dto.getPlaceDistrict());
+      place.setPostedOn(LocalDate.now());
       
       place.setTimeZone(timezone);
       timezone.setPlace(place);
@@ -61,12 +66,36 @@ public class PlaceServiceimpl implements PlaceServiceInterface
 	}
 
 	@Override
-	public Place getPlace(Long placeId) 
+	public PlaceDTO getPlace(Long placeId) 
 	{
 		//use repo to find the place based on given Id
 		Optional<Place> opt=Placerepo.findById(placeId);
 		if(opt.isPresent())
-			return opt.get();
+		{
+			   Place place=opt.get();
+			   PlaceDTO dto=new PlaceDTO();
+			   //copy data from Place to PlaecDTO
+			   dto.setName(place.getPlaceName());
+			   dto.setAbout(place.getAboutPlace());
+			   dto.setHistory(place.getPlaceHistory());
+			   dto.setPlaceDistrict(place.getPlaceDistrict());
+			   dto.setPostedOn(place.getPostedOn());
+			   dto.setCategory(place.getPlaceCategory());
+			   dto.setLatitude(place.getLatitude());
+			   dto.setLongitude(place.getLongitude());
+			   
+			   TimeZone zone=place.getTimeZone();
+			   
+			   TimezoneDTO Tdto=new TimezoneDTO();
+			   Tdto.setName(zone.getName());
+			   Tdto.setOpeningTime(zone.getOpeningTime());
+			   Tdto.setClosingTime(zone.getClosingTime());
+		       
+			   //set TimeZoneDTO to PlaceDTO
+			   dto.setTimezone(Tdto);
+			   
+			   return dto;
+		}
 		else
 			throw new IllegalArgumentException("Invalid Place Id..");
 	}
@@ -90,13 +119,28 @@ public class PlaceServiceimpl implements PlaceServiceInterface
 			place.setLongitude(dto.getLongitude());
 			
 			
-			TimeZone time=new TimeZone();
-			time.setTimeZoneId(dto.getTimezone().getTimezoneId());
-            time.setOpeningTime(dto.getTimezone().getOpeningTime());
-            time.setClosingTime(dto.getTimezone().getClosingTime());
-            time.setName(dto.getTimezone().getName());
-            
-            place.setTimeZone(time);
+	        // Update existing TimeZone if present
+	        TimezoneDTO timedto = dto.getTimezone();
+	        if (timedto != null) 
+	         {
+	            TimeZone existingTZ = place.getTimeZone();
+	            if (existingTZ != null) 
+	            {
+	                existingTZ.setName(timedto.getName());
+	                existingTZ.setOpeningTime(timedto.getOpeningTime());
+	                existingTZ.setClosingTime(timedto.getClosingTime());
+	            } 
+	            else 
+	            {
+	                // Optional: create a new timezone if not already present
+	                TimeZone newTZ = new TimeZone();
+	                newTZ.setName(timedto.getName());
+	                newTZ.setOpeningTime(timedto.getOpeningTime());
+	                newTZ.setClosingTime(timedto.getClosingTime());
+	                newTZ.setPlace(place); // bind back to Place
+	                place.setTimeZone(newTZ);
+	            }
+	        }
             
 			//use repo to save the Updated Place Object
 			Long idVal=Placerepo.save(place).getPlaceId();
@@ -109,10 +153,53 @@ public class PlaceServiceimpl implements PlaceServiceInterface
 	}
 
 	@Override
+	public Long getPlaceIdByName(String placeName) 
+	{
+		  //use repo
+	      Long id=Placerepo.findPlaceIdByPlaceNameIgnoreCase(placeName);
+		  return id;
+	}
+	
+	@Override
 	public String deletePlace(Long placeId) 
 	{
 	    //using repo to Delete the Place With Given Id
 		Placerepo.deleteById(placeId);
 		return "Place With Id ::"+placeId+" Deleted Successfully.";
 	}
+	
+	@Override
+	public List<PlaceDTO> getAllPlaces() 
+	{
+		System.out.println("PlaceServiceimpl=======================getAllPlaces()");
+	    List<Place> places=Placerepo.findAll();
+	    
+	    List<PlaceDTO> dtos=new ArrayList<PlaceDTO>();
+	    
+	    for(Place p:places)
+	    {
+	    	PlaceDTO dt=new PlaceDTO();
+	    	System.out.println("Place ::"+p);
+            dt.setName(p.getPlaceName());
+            dt.setAbout(p.getAboutPlace());
+            dt.setHistory(p.getPlaceHistory());
+            dt.setPlaceDistrict(p.getPlaceDistrict());
+            dt.setLatitude(p.getLatitude());
+            dt.setLongitude(p.getLongitude());
+            dt.setCategory(p.getPlaceCategory());
+	    	dt.setPostedOn(p.getPostedOn());
+	    	TimeZone zone=p.getTimeZone();
+	    	TimezoneDTO dto=new TimezoneDTO();
+	    	dto.setName(zone.getName());
+	    	dto.setOpeningTime(zone.getOpeningTime());
+	    	dto.setClosingTime(zone.getClosingTime());
+	    	
+	    	dt.setTimezone(dto);
+	    	
+	    	System.out.println("Place DTO ----->"+dt);
+	    	//Add DTO to List
+	    	dtos.add(dt);
+	    }  
+	    return dtos;
+	}	
 }
