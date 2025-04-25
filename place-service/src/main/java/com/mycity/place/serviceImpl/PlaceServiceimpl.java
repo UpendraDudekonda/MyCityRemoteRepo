@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.mycity.place.entity.Coordinate;
 import com.mycity.place.entity.Place;
@@ -27,6 +28,9 @@ public class PlaceServiceimpl implements PlaceServiceInterface {
 
     @Autowired
     private TimeZoneRepository timeZoneRepo;
+    
+    @Autowired
+    private WebClientMediaService mediaService;
 
     @Override
     public String addPlace(PlaceDTO dto) {
@@ -200,5 +204,76 @@ public class PlaceServiceimpl implements PlaceServiceInterface {
 
         return dto;
     }
+
+    @Override
+    public String addPlace(PlaceDTO dto, List<MultipartFile> images) {
+
+        // === Validation ===
+        if (dto.getPlaceName() == null || dto.getPlaceName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Enter Place Name");
+        } else if (dto.getAboutPlace() == null) {
+            throw new IllegalArgumentException("Mention About the Place");
+        } else if (dto.getPlaceHistory() == null) {
+            throw new IllegalArgumentException("Mention About the Place History");
+        } else if (dto.getPlaceCategory() == null) {
+            throw new IllegalArgumentException("Mention the Category");
+        } else if (dto.getPlaceDistrict() == null) {
+            throw new IllegalArgumentException("Mention the District of the Place");
+        } else if (dto.getTimeZone() == null) {
+            throw new IllegalArgumentException("Mention the place TimeZone");
+        } else if (dto.getCoordinate() == null) {
+            throw new IllegalArgumentException("Mention the Place Coordinates");
+        } else if (dto.getRating() == null) {
+            throw new IllegalArgumentException("Mention the Rating");
+        }
+
+        // === TimeZone Entity ===
+        TimezoneDTO timezoneDTO = dto.getTimeZone();
+        TimeZone timezone = new TimeZone();
+        timezone.setTimeZoneId(timezoneDTO.getTimezoneId());
+        timezone.setOpeningTime(timezoneDTO.getOpeningTime());
+        timezone.setClosingTime(timezoneDTO.getClosingTime());
+
+        // === Coordinate Entity ===
+        CoordinateDTO coordDTO = dto.getCoordinate();
+        Coordinate coordinate = new Coordinate();
+        coordinate.setLatitude(coordDTO.getLatitude());
+        coordinate.setLongitude(coordDTO.getLongitude());
+
+        // === Place Entity ===
+        Place place = new Place();
+        place.setPlaceName(dto.getPlaceName());
+        place.setPlaceHistory(dto.getPlaceHistory());
+        place.setAboutPlace(dto.getAboutPlace());
+        place.setPlaceCategory(dto.getPlaceCategory());
+        place.setPlaceDistrict(dto.getPlaceDistrict());
+        place.setRating(dto.getRating());
+        place.setTimeZone(timezone);
+        place.setCoordinate(coordinate);
+
+        // Set bidirectional relationship
+        timezone.setPlace(place);
+        place.setTimeZone(timezone);
+
+        // === Save to DB ===
+        Place savedPlace = placeRepo.save(place);
+        long placeId = savedPlace.getPlaceId();
+
+        // === Upload Images ===
+        if (images != null && !images.isEmpty()) {
+            for (MultipartFile image : images) {
+                mediaService.uploadImageForPlace(
+                    image,
+                    savedPlace.getPlaceId(),
+                    savedPlace.getPlaceName(),
+                    savedPlace.getPlaceCategory(),
+                    dto.getImageName()
+                );
+            }
+        }
+
+        return "Place with name " + savedPlace.getPlaceName() + " saved Successfully, and image uploads initiated.";
+    }
+
 
 }

@@ -34,6 +34,8 @@ public class PlaceDTO {
     private String placeDistrict;
 
     private CoordinateDTO coordinate;
+    
+    private String imageName;
 
     
 }
