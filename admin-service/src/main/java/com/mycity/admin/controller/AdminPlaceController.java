@@ -1,7 +1,23 @@
 package com.mycity.admin.controller;
 
-public class AdminPlaceController {
+import java.util.List; 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.mycity.admin.service.AdminServiceInterface;
+import com.mycity.shared.admindto.AdminPlaceResponseDTO;
+
+@RestController
+@RequestMapping("/admin")
+public class AdminPlaceController 
+{
+	
+	@Autowired
+	private AdminServiceInterface service;
 //	- `addPlace(@RequestBody PlaceDTO placeDTO)` : Adds a new place.
 //	- `updatePlace(@PathVariable Long placeId, @RequestBody PlaceDTO placeDTO)` : Updates an existing place.
 //	- `deletePlace(@PathVariable Long placeId)` : Deletes a place.
@@ -18,5 +34,14 @@ public class AdminPlaceController {
 //	- `removePlaceEvent(@PathVariable Long placeId, @PathVariable Long eventId)` : removes an event from a place.
 //	- `addPlaceListing(@PathVariable Long placeId, @RequestBody ListingDTO listingDTO)` : adds a listing to a place.
 //	- `removePlaceListing(@PathVariable Long placeId, @PathVariable Lo`
+	
+	@GetMapping("/getallplaces")
+	public ResponseEntity<List<AdminPlaceResponseDTO>> getAllPlacesForAdmin()
+	{
+		System.out.println("AdminPlaceController.getAllPlacesForAdmin()");
+		//use service
+		List<AdminPlaceResponseDTO> response=service.getAllPlaceDetails();
+		return new ResponseEntity<List<AdminPlaceResponseDTO>>(response,HttpStatus.OK);
+	}
 
 }

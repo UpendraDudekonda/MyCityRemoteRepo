@@ -15,8 +15,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Rating {
-
+public class Rating
+{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ratingId;
@@ -24,16 +24,19 @@ public class Rating {
     @Column(name = "user_id")
     private Long userId; // ID of the user from the User service
 
+    private String userName; //to get User Id based on Username..
+    
     @Column(name = "place_id")
     private Long placeId; // ID of the place from the Place service
+    
+    private String placeName; //to get Place_id based on placeName..
 
-    private Integer ratingValue; // Assuming rating is an integer value (e.g., 1-5)
+    private Double ratingValue; // Assuming rating is an integer value (e.g., 1-5)
 
     @Column(columnDefinition = "TEXT")
     private String comment;
 
     private LocalDateTime postedDateTime;
-
 }
 
 

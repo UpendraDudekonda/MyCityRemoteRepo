@@ -1,5 +1,6 @@
 package com.mycity.user.config;
 
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,7 +28,17 @@ public class SecurityConfig {
                     "/user/auth/startreg",
                     "/user/auth/completereg",
                     "/user/profile",
-                    "/user/account/updatephone"
+                    "/user/account/updatephone",
+                    "/user/updatepassword",
+                    "/user/deleteuser/{userId}",
+                    "/user/updateuser/{userId}",
+                    "/user/getuserId/{userName}",
+                    "/user/review/add",
+                    "/user/review/update/{reviewId}",
+                    "/user/review/get/{placeId}",
+                    "/user/review/delete/{reviewId}",
+                    "/user/rating/add"
+                    
                 ).permitAll()
                 .anyRequest().authenticated()
             );
@@ -52,6 +63,7 @@ public class SecurityConfig {
     }
     
     @Bean
+    @LoadBalanced
     public WebClient.Builder webClientBuilder() {
         return WebClient.builder();
     }

@@ -1,8 +1,10 @@
 package com.mycity.admin.config;
 
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -12,9 +14,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
-
-
 
 	 @Bean
 	    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -24,7 +25,10 @@ public class SecurityConfig {
 	                .requestMatchers(
 	                    "/admin/auth/internal/login",
 	                	"/admin/profile",
-	                	"/admin/events/add"
+	                	"/admin/getallplaces",
+	                	"/admin/discoveries/addPlace",
+	                	"/admin/discoveries/getallPlaces",
+	                	"/admin/discoveries/getPlace/{placeName}"
 	                ).permitAll()
 	                .anyRequest().authenticated()
 	            );
@@ -49,6 +53,7 @@ public class SecurityConfig {
     }
     
     @Bean
+    @LoadBalanced
     public WebClient.Builder webClientBuilder() {
         return WebClient.builder();
     }
