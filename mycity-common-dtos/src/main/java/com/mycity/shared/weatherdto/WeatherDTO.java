@@ -8,10 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WeatherDTO {
-
-    private Long weatherId;
-    private Long placeId;
-    private String bestTimeToVisit;
-    private String bestSeason;
+	private String location;
+    private String condition; // e.g., Sunny, Rainy
+    private String description; // more detailed
+    private double temperature; // in Celsius
 }
-

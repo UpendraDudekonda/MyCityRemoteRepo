@@ -1,59 +1,51 @@
 package com.mycity.place.entity;
 
-import java.time.LocalDate;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @RequiredArgsConstructor
-public class Place
-{	
+public class Place {
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long placeId;
-    
-	@NonNull
-	private String placeName;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long placeId;
 
-	@NonNull
-	@Column(columnDefinition = "TEXT")
-	private String aboutPlace;
- 
-	@NonNull
-	@Column(columnDefinition = "TEXT")
-	private String placeHistory;
+    @NonNull
+    private String placeName;
 
-	@OneToOne(targetEntity = TimeZone.class,cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-	@JoinColumn(name="place_id",referencedColumnName = "placeId")
-	private TimeZone timeZone;
+    @NonNull
+    @Column(columnDefinition = "TEXT")
+    private String aboutPlace;
 
-	private LocalDate postedOn;
-	
-	@NonNull
-	private String placeCategory;
+    @NonNull
+    @Column(columnDefinition = "TEXT")
+    private String placeHistory;
 
-	@NonNull
-	private Double latitude;
+    @OneToOne(mappedBy = "place", cascade = CascadeType.ALL)
+    private TimeZone timeZone; // Inverse side of the relationship
 
-	@NonNull
-	private Double longitude;
-	
-	private String  placeDistrict;
+    @Column(nullable = true)
+    private Double rating;
+
+    private String placeCategory;
+
+    private String placeDistrict;
+
+    @Embedded
+    private Coordinate coordinate;
+
 
 }

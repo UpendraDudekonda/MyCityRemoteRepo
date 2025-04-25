@@ -1,5 +1,7 @@
 package com.mycity.media.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.ResponseEntity;
@@ -15,15 +17,15 @@ import org.springframework.web.multipart.MultipartFile;
 import com.mycity.media.service.ImageService;
 import com.mycity.shared.mediadto.ImageDTO;
 
+import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
 
 @RestController
-@RequestMapping("/img")
+@RequestMapping("/media")
 public class ImageController {
      
 	@Autowired
 	private ImageService imageService;
-	
 	
 	
 	@PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA)
@@ -31,9 +33,10 @@ public class ImageController {
 	        @RequestPart("image") MultipartFile file,
 	        @RequestParam Long placeId,
 	        @RequestParam String placeName,
-	        @RequestParam String category) {
+	        @RequestParam String category,
+	        @RequestParam String imageName) {
 		
-		imageService.uploadImage(file,placeId,placeName,category);
+		imageService.uploadImage(file,placeId,placeName,category,imageName);
 
 	    return ResponseEntity.ok("Image uploaded successfully");
 	}
@@ -42,5 +45,18 @@ public class ImageController {
 	public ResponseEntity<ImageDTO> getImage(@PathVariable Long id) {
 	    ImageDTO imageDTO = imageService.fetchImage(id);
 	    return ResponseEntity.ok(imageDTO);
+	}     
+	
+	@GetMapping("/cover-image")
+	public ResponseEntity<String> getCoverImageForCategory(@RequestParam String category) {
+	    String imageUrl = imageService.getFirstImageUrlByCategory(category);
+	    return ResponseEntity.ok(imageUrl);
 	}
+	
+	@GetMapping("/images/{placeId}")
+	public ResponseEntity<List<String>> getAboutPlaceImages(@PathVariable Long placeId) {
+	     List<String> imageUrl = imageService.getAboutPlaceImages(placeId);
+	    return ResponseEntity.ok(imageUrl);
+	}
+	
 }

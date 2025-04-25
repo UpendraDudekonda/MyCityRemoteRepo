@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 public class TripPlannerDTO {
 
     private Long tripId;
-    private String tripName;
-    private Long userId;
+    private String tripName;    
     private String source;
     private String destinations;
-    private String cabDetails;
+
 }
 
 
+ 
