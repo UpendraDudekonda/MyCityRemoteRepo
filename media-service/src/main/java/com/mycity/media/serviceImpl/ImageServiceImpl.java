@@ -1,5 +1,8 @@
 package com.mycity.media.serviceImpl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,7 +23,7 @@ public class ImageServiceImpl implements ImageService {
     private ImageServiceRepository imageServiceRepository;
 
     @Override
-    public void uploadImage(MultipartFile file, Long placeId, String placeName, String category) {
+    public void uploadImage(MultipartFile file, Long placeId, String placeName, String category,String imageName) {
         String imageUrl = cloudinaryHelper.saveImage(file); // your Cloudinary logic
 
         Images img = new Images();
@@ -28,6 +31,7 @@ public class ImageServiceImpl implements ImageService {
         img.setPlaceId(placeId);
         img.setPlaceName(placeName);
         img.setCategory(category);
+        img.setImageName(imageName);
 
         imageServiceRepository.save(img);
     }
@@ -52,5 +56,16 @@ public class ImageServiceImpl implements ImageService {
                 .findFirstByCategoryIgnoreCaseOrderByImageIdAsc(category)
                 .map(Images::getImageUrl)
                 .orElse(null);
+    }
+
+    @Override
+    public List<String> getAboutPlaceImages(Long placeId) {
+        // Fetch all images associated with the placeId
+        List<Images> images = imageServiceRepository.findImagesByPlaceId(placeId);
+
+        // Extract the image URLs from the images
+        return images.stream()
+                     .map(Images::getImageUrl)
+                     .collect(Collectors.toList());
     }
 }
