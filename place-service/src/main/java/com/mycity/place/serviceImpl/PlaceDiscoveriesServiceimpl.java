@@ -67,13 +67,19 @@ public class PlaceDiscoveriesServiceimpl implements PlaceDiscoveriesInterface
 	}
 
 	@Override
-	public PlaceDTO getPlaceDetailsByName(String placeName) 
-	{
-	   //using placeService to get place Id from place_db using place name
-	   Long pId=service.getPlaceIdByName(placeName);
-	   //using placeId to get Complete info about Place
-	   PlaceDTO place=service.getPlace(pId);
-	   return place;
+	public PlaceDTO getPlaceDetailsByName(String placeName) {
+		// TODO Auto-generated method stub
+		return null;
 	}
+
+//	@Override
+//	public PlaceDTO getPlaceDetailsByName(String placeName) 
+//	{
+//	   //using placeService to get place Id from place_db using place name
+//	   Long pId=service.getPlaceIdByName(placeName);
+//	   //using placeId to get Complete info about Place
+//	   PlaceDTO place=service.getPlace(pId);
+//	   return place;
+//	}
     
 }
