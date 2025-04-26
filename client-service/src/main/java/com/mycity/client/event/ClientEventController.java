@@ -1,4 +1,4 @@
-package com.mycity.client.controller;
+package com.mycity.client.event;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

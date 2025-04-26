@@ -96,7 +96,7 @@ public class PlaceController {
 		return place != null ? ResponseEntity.ok(place) : ResponseEntity.notFound().build();
 	}
 
-	@GetMapping("/places/categories")
+	@GetMapping("/placeby/categories")
 	public ResponseEntity<List<PlaceCategoryDTO>> getAllDistinctCategories() {
 		List<PlaceCategoryDTO> categories = placeService.getAllDistinctCategories();
 		return ResponseEntity.ok(categories);

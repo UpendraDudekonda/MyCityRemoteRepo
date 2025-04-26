@@ -14,8 +14,9 @@ import com.mycity.shared.placedto.PlaceCategoryDTO;
 public interface PlaceRepository extends JpaRepository<Place,Long> 
 {
 
-	@Query("SELECT NEW com.mycity.shared.placedto.PlaceCategoryDTO(p.placeId, p.placeCategory) FROM Place p")
- 	List<PlaceCategoryDTO> findPlaceIdsAndCategories();
+	@Query("SELECT NEW com.mycity.shared.placedto.PlaceCategoryDTO(p.placeId, p.placeName, p.placeHistory, p.placeCategory) FROM Place p")
+	List<PlaceCategoryDTO> findPlaceIdsAndCategories();
+
 
 	@Query("SELECT p.placeId FROM Place p WHERE p.placeName = :placeName")
 	Long findPlaceIdByPlaceName(@Param("placeName") String placeName);

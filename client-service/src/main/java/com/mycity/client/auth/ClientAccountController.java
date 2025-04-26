@@ -1,4 +1,4 @@
-package com.mycity.client.controller;
+package com.mycity.client.auth;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.mycity.client.config.CookieTokenExtractor;
+import com.mycity.client.user.ClientUserProfileController;
 import com.mycity.shared.updatedto.UpdatePhoneRequest;
 
 import lombok.RequiredArgsConstructor;

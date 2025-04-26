@@ -1,4 +1,4 @@
-package com.mycity.client.controller;
+package com.mycity.client.place;
 
 import java.util.Collections;
 import java.util.List;
