@@ -101,5 +101,16 @@ public class PlaceController {
 		List<PlaceCategoryDTO> categories = placeService.getAllDistinctCategories();
 		return ResponseEntity.ok(categories);
 	}
+	
+	@GetMapping("/getplaceid/{placeName}")
+	public ResponseEntity<Long> getPlaceIdByName(@PathVariable String placeName) {
+	    Long placeId = placeService.getPlaceIdByName(placeName);
+	    if (placeId != null) {
+	        return new ResponseEntity<>(placeId, HttpStatus.OK);
+	    } else {
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	    }
+	}
+
 
 }

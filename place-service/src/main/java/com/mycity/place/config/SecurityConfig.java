@@ -30,7 +30,7 @@ public class SecurityConfig {
                     "/place/discoveries/add",
                     "/place/discoveries/getall",
                     "/place/discoveries/getplace/{placeName}",
-                    "/place/getid/{placeName}",
+                    "/place/getplaceid/{placeName}",
                     "/place/getplace/{placeId}"
                 ).permitAll()
                 .anyRequest().authenticated()

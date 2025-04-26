@@ -27,7 +27,7 @@ public class ReviewServiceimpl implements ReviewServiceInterface
     private WebClient.Builder webClientBuilder;
     
     private static final String PLACE_SERVICE_NAME="place-service";
-	private static final String PATH_TO_FIND_PLACEID="/place/getid/{placeName}";
+	private static final String PATH_TO_FIND_PLACEID="/place/getplaceid/{placeName}";
 	
 	private static final String USER_SERVICE_NAME="user-service"; 
 	private static final String PATH_TO_FIND_USERID="/user/getuserId/{userName}";
@@ -69,17 +69,17 @@ public class ReviewServiceimpl implements ReviewServiceInterface
 	    review.setPlaceId(placeId);
 	    
 	    //using WebClientBuilder to get UserId using userName
-	    String result2 = webClientBuilder
+	    Long result2 = webClientBuilder
 	            .build()
 	            .get()
 	            .uri("lb://"+USER_SERVICE_NAME+PATH_TO_FIND_USERID, dto.getUserName())
 	            .retrieve()
-	            .bodyToMono(String.class)
+	            .bodyToMono(Long.class)
 	            .block();
 	    
 	    System.out.println("User Id ::"+result2);
 	    //Converting String to Long
-	    Long userId=Long.parseLong(result2);
+	    Long userId=result2;
 	    
 	    //setting userId to review
 	    review.setUserId(userId);
