@@ -276,4 +276,9 @@ public class PlaceServiceimpl implements PlaceServiceInterface {
     }
 
 
+    @Override
+    public Long getPlaceIdByName(String placeName) {
+        return placeRepo.findPlaceIdByPlaceName(placeName);
+    }
+
 }

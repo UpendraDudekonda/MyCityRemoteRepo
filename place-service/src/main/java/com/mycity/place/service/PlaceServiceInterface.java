@@ -28,4 +28,7 @@ public interface PlaceServiceInterface {
 
 	String addPlace(PlaceDTO placeDto, List<MultipartFile> images);
 
+
+	Long getPlaceIdByName(String placeName);
+
 }
