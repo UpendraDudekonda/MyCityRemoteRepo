@@ -1,4 +1,4 @@
-package com.mycity.client.controller;
+package com.mycity.client.auth;
 
 import java.util.Map;
 

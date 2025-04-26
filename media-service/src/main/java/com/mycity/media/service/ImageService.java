@@ -16,4 +16,6 @@ public interface ImageService {
 
 	List<String> getAboutPlaceImages(Long placeId);
 
+	List<String> getAllImageUrlsByCategory(String category);
+
 }

@@ -1,4 +1,4 @@
-package com.mycity.client.controller;
+package com.mycity.client.place;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;

@@ -1,4 +1,4 @@
-package com.mycity.client.controller;
+package com.mycity.client.email;
 
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.bind.annotation.PostMapping;

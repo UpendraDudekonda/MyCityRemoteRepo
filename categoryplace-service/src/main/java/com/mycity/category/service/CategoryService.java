@@ -4,8 +4,10 @@ import java.util.List;
 
 import com.mycity.shared.categorydto.CategoryImageDTO;
 
+import reactor.core.publisher.Mono;
+
 public interface CategoryService {
 
-	List<CategoryImageDTO> fetchCategoriesWithImages();
+	Mono<List<CategoryImageDTO>> fetchCategoriesWithImages();
 
 }

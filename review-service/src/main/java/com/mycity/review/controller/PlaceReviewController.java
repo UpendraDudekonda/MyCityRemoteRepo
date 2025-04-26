@@ -26,11 +26,11 @@ public class PlaceReviewController
 	private ReviewServiceInterface service;
 	
 	@PostMapping("/addreview")
-	public ResponseEntity<String> addReview(@RequestBody ReviewDTO dto)
-	{
-		//use service
-		return new ResponseEntity<String>(service.addPlaceReview(dto),HttpStatus.CREATED);
+	public ResponseEntity<String> addReview(@RequestBody ReviewDTO dto) {
+	    ResponseEntity<String> response = service.addPlaceReview(dto);
+	    return response;  // Use the status code returned by the service
 	}
+
 	
 	@PutMapping("/updatereview/{reviewId}")
 	public ResponseEntity<String> updateReview(@PathVariable Long reviewId,@RequestBody ReviewDTO dto)

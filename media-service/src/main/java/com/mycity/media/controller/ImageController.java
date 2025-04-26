@@ -3,7 +3,6 @@ package com.mycity.media.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.mycity.media.service.ImageService;
 import com.mycity.shared.mediadto.ImageDTO;
 
-import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
 
 @RestController
@@ -47,7 +45,7 @@ public class ImageController {
 	    return ResponseEntity.ok(imageDTO);
 	}     
 	
-	@GetMapping("/cover-image")
+	@GetMapping("/bycategory/image")
 	public ResponseEntity<String> getCoverImageForCategory(@RequestParam String category) {
 	    String imageUrl = imageService.getFirstImageUrlByCategory(category);
 	    return ResponseEntity.ok(imageUrl);

@@ -1,4 +1,4 @@
-package com.mycity.client.controller;
+package com.mycity.client.merchant;
 
 
 import org.slf4j.Logger;

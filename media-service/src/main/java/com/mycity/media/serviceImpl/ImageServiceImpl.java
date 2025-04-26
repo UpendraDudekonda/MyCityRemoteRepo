@@ -68,4 +68,10 @@ public class ImageServiceImpl implements ImageService {
                      .map(Images::getImageUrl)
                      .collect(Collectors.toList());
     }
+
+	@Override
+	public List<String> getAllImageUrlsByCategory(String category) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
