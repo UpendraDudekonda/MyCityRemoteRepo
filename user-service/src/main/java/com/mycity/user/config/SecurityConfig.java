@@ -1,4 +1,4 @@
-package com.mycity.user.config;
+ package com.mycity.user.config;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;

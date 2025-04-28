@@ -18,7 +18,8 @@ import com.mycity.shared.placedto.PlaceCategoryDTO;
 import com.mycity.shared.placedto.PlaceDTO;
 import com.mycity.shared.placedto.PlaceResponseDTO;
 import com.mycity.shared.timezonedto.TimezoneDTO;
-import com.mycity.shared.tripplannerdto.CoordinateDTO;
+
+import com.mycity.shared.tripplannerdto.CoordinateDto;
 
 @Service
 public class PlaceServiceimpl implements PlaceServiceInterface {
@@ -53,7 +54,7 @@ public class PlaceServiceimpl implements PlaceServiceInterface {
             throw new IllegalArgumentException("Mention the Rating");
 
         // Build Place
-        CoordinateDTO coordDTO = dto.getCoordinate();
+        CoordinateDto coordDTO = dto.getCoordinate();
         Coordinate coordinate = new Coordinate();
         coordinate.setLatitude(coordDTO.getLatitude());
         coordinate.setLongitude(coordDTO.getLongitude());
@@ -123,7 +124,7 @@ public class PlaceServiceimpl implements PlaceServiceInterface {
             place.setRating(dto.getRating());
 
             // Update coordinates
-            CoordinateDTO coordDTO = dto.getCoordinate();
+            CoordinateDto coordDTO = dto.getCoordinate();
             Coordinate coordinate = new Coordinate();
             coordinate.setLatitude(coordDTO.getLatitude());
             coordinate.setLongitude(coordDTO.getLongitude());
@@ -235,7 +236,7 @@ public class PlaceServiceimpl implements PlaceServiceInterface {
         timezone.setClosingTime(timezoneDTO.getClosingTime());
 
         // === Coordinate Entity ===
-        CoordinateDTO coordDTO = dto.getCoordinate();
+        CoordinateDto coordDTO = dto.getCoordinate();
         Coordinate coordinate = new Coordinate();
         coordinate.setLatitude(coordDTO.getLatitude());
         coordinate.setLongitude(coordDTO.getLongitude());

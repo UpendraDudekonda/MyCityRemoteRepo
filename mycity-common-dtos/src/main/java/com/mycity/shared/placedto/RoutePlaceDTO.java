@@ -2,7 +2,8 @@ package com.mycity.shared.placedto;
 
 import java.util.List;
 
-import com.mycity.shared.tripplannerdto.CoordinateDTO;
+
+import com.mycity.shared.tripplannerdto.CoordinateDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +16,7 @@ public class RoutePlaceDTO {
 
     private String placeId;
     private String name;
-    private CoordinateDTO coordinate;
+    private CoordinateDto coordinate;
     private String address;
     private String description;
     private List<String> types;
