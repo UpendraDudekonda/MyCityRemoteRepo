@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.mycity.shared.tripplannerdto.CoordinateDto;
+import com.mycity.shared.tripplannerdto.CoordinateDTO;
 import com.mycity.shared.weatherdto.WeatherDTO;
 import com.mycity.weather.service.WeatherServiceInterface; 
 
@@ -17,7 +17,7 @@ public class WeatherService implements WeatherServiceInterface{
 	@Value("${weather.api.key}")
     private String apiKey;
 
-	public WeatherDTO getWeatherByCoordinates(CoordinateDto coordinate) {
+	public WeatherDTO getWeatherByCoordinates(CoordinateDTO coordinate) {
 	    String url = String.format(
 	        "https://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&units=metric&appid=%s",
 	        coordinate.getLatitude(), coordinate.getLongitude(), apiKey
