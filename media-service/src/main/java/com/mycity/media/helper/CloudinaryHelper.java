@@ -69,4 +69,9 @@ public class CloudinaryHelper {
 
         return imageUrls;
     }
+
+//	public void deleteImage(String publicId) {
+//		// TODO Auto-generated method stub
+//		
+//	}
 }

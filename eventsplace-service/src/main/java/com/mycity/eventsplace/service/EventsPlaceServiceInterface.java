@@ -14,6 +14,17 @@ public interface EventsPlaceServiceInterface {
 	    List<EventCardDto> getAllEventCards();
 //	    EventDetailDTO getEventDetails(String eventName);
 	
-		String addEvent(EventsDTO dto, MultipartFile mainImageFile, List<MultipartFile> galleryImages);
+
+
+		String addEvent(EventsDTO dto, List<MultipartFile> galleryImages, List<String> imageNames);
+
+
+
+		String updateEvent(Long eventId, EventsDTO eventDTO, List<MultipartFile> galleryImages,
+				List<String> imageNames);
+
+
+
+		String deleteEvent(Long eventId);
 	
 }
