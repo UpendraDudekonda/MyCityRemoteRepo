@@ -1,5 +1,6 @@
 package com.mycity.weather.service;
 
+
 import com.mycity.shared.tripplannerdto.CoordinateDTO;
 import com.mycity.shared.weatherdto.WeatherDTO;
 
