@@ -33,12 +33,18 @@ public class CategoryServiceImpl implements CategoryService {
 	                    Long placeId = place.getPlaceId();
 	                    String fplaceId = String.valueOf(placeId);
 	                    String placeName = place.getPlaceName();
-	                    String placeHistory = place.getPlaceHistory();
 
-	                    return mediaService.fetchCategoryImage(categoryName)
-	                            .map(imageUrl -> new CategoryImageDTO(categoryName, imageUrl, fplaceId, placeName, placeHistory));
+	                    Mono<String> imageUrlMono = mediaService.fetchCategoryImage(categoryName);
+	                    Mono<String> descriptionMono = fetchCategoryDescription(categoryName);
+
+	                    return Mono.zip(imageUrlMono, descriptionMono)
+	                            .map(tuple -> {
+	                                String imageUrl = tuple.getT1();
+	                                String description = tuple.getT2();
+	                                return new CategoryImageDTO(categoryName, imageUrl, fplaceId, placeName, description);
+	                            });
 	                })
-	                .distinct(CategoryImageDTO::getCategoryName) 
+	                .distinct(CategoryImageDTO::getCategoryName)
 	                .collectList();
 	    }
 
@@ -94,5 +100,18 @@ public class CategoryServiceImpl implements CategoryService {
 	        dto.setDescription(category.getDescription());
 	        return dto;
 	    }
+	    
+	    @Override
+	    public Mono<String> fetchCategoryDescription(String categoryName) {
+	        return Mono.fromCallable(() -> {
+	            List<String> descriptions = categoryRepo.findDescriptionsByNameIgnoreCase(categoryName);
+	            if (descriptions.isEmpty()) {
+	                throw new RuntimeException("Category not found: " + categoryName);
+	            }
+	            return descriptions.get(0); 
+	        });
+	    }
+
+
 
 }

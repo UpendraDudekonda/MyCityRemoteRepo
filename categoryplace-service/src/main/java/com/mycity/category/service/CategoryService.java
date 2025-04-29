@@ -19,4 +19,6 @@ public interface CategoryService {
 
 	boolean categoryExists(String name);
 
+	Mono<String> fetchCategoryDescription(String categoryName);
+
 }
