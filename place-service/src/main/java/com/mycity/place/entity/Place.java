@@ -1,5 +1,8 @@
 package com.mycity.place.entity;
 
+
+import java.time.LocalDate;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -19,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class Place {
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long placeId;
 
@@ -34,18 +37,23 @@ public class Place {
     @Column(columnDefinition = "TEXT")
     private String placeHistory;
 
+    @NonNull
+    private Long categoryId;  
+
+    private String categoryName; 
+    
     @OneToOne(mappedBy = "place", cascade = CascadeType.ALL)
-    private TimeZone timeZone; // Inverse side of the relationship
+    private TimeZone timeZone;  
 
     @Column(nullable = true)
     private Double rating;
 
-    private String placeCategory;
-
     private String placeDistrict;
 
     @Embedded
-    private Coordinate coordinate;
-
+    private Coordinate coordinate;  
+    
+    @Column(nullable = false)
+    private LocalDate postedOn;
 
 }

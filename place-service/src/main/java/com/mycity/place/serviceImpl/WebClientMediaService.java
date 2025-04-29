@@ -23,7 +23,7 @@ public class WebClientMediaService {
     private static final String IMAGE_FETCH_PATH = "/media/images/{placeId}";
 
     // Method to upload an image for a place
-    public void uploadImageForPlace(MultipartFile image, long placeId, String placeName, String placeCategory, String imageName) {
+    public void uploadImageForPlace(MultipartFile image, long placeId, String placeName, String Category, String imageName) {
         try {
             // Build multipart body for the image upload request
             MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
@@ -39,7 +39,7 @@ public class WebClientMediaService {
             // Add place-related metadata to the request
             bodyBuilder.part("placeId", placeId);
             bodyBuilder.part("placeName", placeName);
-            bodyBuilder.part("category", placeCategory);
+            bodyBuilder.part("category", Category);
             bodyBuilder.part("imageName", imageName);
 
             // Use Load Balancer routing to send the request to the IMAGE-SERVICE for image upload

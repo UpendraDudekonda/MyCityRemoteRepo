@@ -19,4 +19,9 @@ public class PlaceResponseDTO {
 
     private LocalTime openingTime;
     private LocalTime closingTime;
+    
+//    private CategoryDTO categoryDetails;
+    
+    private Long categoryId;
+    private String categoryName;
 }

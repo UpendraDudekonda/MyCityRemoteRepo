@@ -9,6 +9,8 @@ import com.mycity.shared.placedto.PlaceCategoryDTO;
 import com.mycity.shared.placedto.PlaceDTO;
 import com.mycity.shared.placedto.PlaceResponseDTO;
 
+import reactor.core.publisher.Mono;
+
 public interface PlaceServiceInterface {
 	String addPlace(PlaceDTO dto);
 
