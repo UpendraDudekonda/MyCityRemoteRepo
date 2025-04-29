@@ -9,10 +9,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TimezoneDTO {
-	
-    private Long timezoneId;
-    private String name;
+public class TimezoneDTO 
+{	
+    private Long TimezoneId;
     private LocalTime OpeningTime;
     private LocalTime ClosingTime;
 }

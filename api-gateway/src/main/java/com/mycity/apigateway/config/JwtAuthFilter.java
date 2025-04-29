@@ -35,6 +35,12 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
             System.out.println(" Public path - skipping token validation");
             return chain.filter(exchange);
         }
+        
+     // Allow public auth paths
+        if (path.startsWith("/tripplanner/trip-plan")) {
+            System.out.println(" Public path - skipping token validation");
+            return chain.filter(exchange);
+        }
  
         String token = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
  

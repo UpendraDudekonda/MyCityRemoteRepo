@@ -7,12 +7,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReviewDTO {
-
-    private Long reviewId;
-    private Long userId;
-    private Long placeId;
-    private String reviewDescription;
-    private String imageUrl;
+public class ReviewDTO 
+{
+	   private String placeName;
+	   private String userName;
+	   private String reviewDescription;
+	   private String imageUrl;
+	       
 }
 
