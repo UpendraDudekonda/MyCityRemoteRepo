@@ -1,7 +1,5 @@
 package com.mycity.category.entity;
 
-import java.util.List;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,14 +16,24 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long categoryId;
 
+    private Long placeId;    
     
-    private String name;  // Example: "Historical", "Adventure", "Wildlife"
+    private String placeName;
+
+    private String name;  
+
+    private String description; 
+    
+
+    public Category() {}
 
     
-    private String description; // Description about the category
-
-    
-//    private List<place> places; // List of places under this category
-
-    
+    public Category(String name, String description) {
+        this.name = name;
+        this.description = description;
+        
+        
+        
+        
+    }
 }

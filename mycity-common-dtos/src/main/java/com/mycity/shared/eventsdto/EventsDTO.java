@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import com.mycity.shared.placedto.PlaceDTO;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,14 +15,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class EventsDTO {
      	
-    private String name;
+    private String eventName;
     private LocalTime duration;
     private String description;
    
+    private LocalTime time;
     private String city;
-    private LocalDate date;
+    private String date;
 
-  
     private List<String> eventPlaces;
     private List<EventHighlightsDTO> schedule;
 	

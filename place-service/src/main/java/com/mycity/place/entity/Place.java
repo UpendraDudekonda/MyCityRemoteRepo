@@ -1,12 +1,10 @@
 package com.mycity.place.entity;
 
-import java.util.List;
 
-import com.mycity.place.config.StringListConverter;
+import java.time.LocalDate;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class Place {
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long placeId;
 
@@ -39,30 +37,23 @@ public class Place {
     @Column(columnDefinition = "TEXT")
     private String placeHistory;
 
+    @NonNull
+    private Long categoryId;  
+
+    private String categoryName; 
+    
     @OneToOne(mappedBy = "place", cascade = CascadeType.ALL)
-    private TimeZone timeZone; // Inverse side of the relationship
+    private TimeZone timeZone;  
 
     @Column(nullable = true)
     private Double rating;
 
-    private String placeCategory;
-
     private String placeDistrict;
 
     @Embedded
-    private Coordinate coordinate;
+    private Coordinate coordinate;  
     
-  
-    @Convert(converter = StringListConverter.class)
-    @Column(name = "local_cuisines", columnDefinition = "TEXT")
-    private List<String> localCuisines;
-
-    @Convert(converter = StringListConverter.class)
-    @Column(name = "nearby_hotels", columnDefinition = "TEXT")
-    private List<String> nearByHotels;
-
-    
-    
-
+    @Column(nullable = false)
+    private LocalDate postedOn;
 
 }

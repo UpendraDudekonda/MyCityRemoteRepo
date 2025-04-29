@@ -9,9 +9,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CategoryDTO {
 
-	private Long categoryId;
+	 	public CategoryDTO(String categoryName, String categoryDescription) {
+		// TODO Auto-generated constructor stub
+	}
 
-	private String name; // Example: "Historical", "Adventure", "Wildlife"
+		private Long categoryId;
 
-	private String description;
+	    private Long placeId;    // You might consider using `placeId` only if needed, it's optional in the `Category` context.
+	    
+	    private String placeName;
+
+	    private String name;  // Name of the category
+
+	    private String description; // Description of the category
 }

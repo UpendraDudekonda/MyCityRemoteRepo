@@ -13,5 +13,5 @@ public class CategoryImageDTO {
     private String imageUrl;
     private String placeId;
     private String placeName;
-    private String placeHistory;
+    private String placeDescription;
 }
