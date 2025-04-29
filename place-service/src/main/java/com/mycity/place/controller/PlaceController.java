@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.mycity.place.entity.Place;
+import com.mycity.place.exception.GlobalExceptionHandler;
 import com.mycity.place.service.PlaceServiceInterface;
 import com.mycity.shared.placedto.PlaceCategoryDTO;
 import com.mycity.shared.placedto.PlaceDTO;
@@ -28,13 +29,20 @@ import com.mycity.shared.placedto.PlaceResponseDTO;
 @RequestMapping("/place")
 public class PlaceController {
 
+    private final GlobalExceptionHandler globalExceptionHandler;
+
 	@Autowired
 	private PlaceServiceInterface placeService;
+
+    PlaceController(GlobalExceptionHandler globalExceptionHandler) {
+        this.globalExceptionHandler = globalExceptionHandler;
+    }
 
 	@PostMapping(value = "/add-place", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> addPlaceDetails(@ModelAttribute PlaceDTO placeDto,
 			@RequestPart("images") List<MultipartFile> images) {
 		System.out.println("PlaceController.addPlaceDetails()");
+		System.out.println(placeDto.getCategoryName());
  
 		try {
  
