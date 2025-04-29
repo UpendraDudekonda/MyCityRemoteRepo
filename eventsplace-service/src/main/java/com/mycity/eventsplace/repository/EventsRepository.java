@@ -7,4 +7,9 @@ import com.mycity.eventsplace.entity.Event;
 
 public interface EventsRepository extends JpaRepository<Event, Long> {
 
+	static Long getEventIdByName(String eventName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
