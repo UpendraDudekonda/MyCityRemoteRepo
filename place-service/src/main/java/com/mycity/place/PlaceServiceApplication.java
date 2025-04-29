@@ -6,8 +6,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-public class PlaceServiceApplication 
-{
+public class PlaceServiceApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(PlaceServiceApplication.class, args);
 	}

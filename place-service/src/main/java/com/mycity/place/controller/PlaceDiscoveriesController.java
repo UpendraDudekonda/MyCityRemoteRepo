@@ -16,33 +16,30 @@ import com.mycity.shared.placedto.PlaceDiscoveriesDTO;
 
 @RestController
 @RequestMapping("/place/discoveries")
-public class PlaceDiscoveriesController 
-{
+public class PlaceDiscoveriesController {
+	
 	@Autowired
-    private PlaceDiscoveriesInterface service;
-	
+	private PlaceDiscoveriesInterface service;
+
 	@PostMapping("/add")
-	public ResponseEntity<String> addPlaceToDiscovery(@RequestBody PlaceDiscoveriesDTO dto)
-	{
-	    //use service
-		String msg=service.addPlaceToDiscoveries(dto);
-		return new ResponseEntity<String>(msg,HttpStatus.CREATED);
-	} 
-	
-	@GetMapping("/getall")
-	public ResponseEntity<List<PlaceDiscoveriesDTO>> getAllPlacesFromDisoveries()
-	{
-		//use service
-		List<PlaceDiscoveriesDTO> discoveries=service.getAllTopDisoveries();
-		return new ResponseEntity<List<PlaceDiscoveriesDTO>>(discoveries,HttpStatus.OK);
+	public ResponseEntity<String> addPlaceToDiscovery(@RequestBody PlaceDiscoveriesDTO dto) {
+		// use service
+		String msg = service.addPlaceToDiscoveries(dto);
+		return new ResponseEntity<String>(msg, HttpStatus.CREATED);
 	}
-	
+
+	@GetMapping("/getall")
+	public ResponseEntity<List<PlaceDiscoveriesDTO>> getAllPlacesFromDisoveries() {
+		// use service
+		List<PlaceDiscoveriesDTO> discoveries = service.getAllTopDisoveries();
+		return new ResponseEntity<List<PlaceDiscoveriesDTO>>(discoveries, HttpStatus.OK);
+	}
+
 	@GetMapping("/getplace/{placeName}")
-	public ResponseEntity<PlaceDTO> getPlaceDetails(@PathVariable String placeName)
-	{
-		//use service
-		PlaceDTO place=service.getPlaceDetailsByName(placeName);
-		return new ResponseEntity<PlaceDTO>(place,HttpStatus.FOUND);
-		
+	public ResponseEntity<PlaceDTO> getPlaceDetails(@PathVariable String placeName) {
+		// use service
+		PlaceDTO place = service.getPlaceDetailsByName(placeName);
+		return new ResponseEntity<PlaceDTO>(place, HttpStatus.FOUND);
+
 	}
 }

@@ -26,7 +26,8 @@ public class SecurityConfig
                     "/review/addreview",
                     "/review/updatereview/{reviewId}",
                     "/review/getreviews/{placeId}",
-                    "/review/deletereview/{reviewId}"
+                    "/review/deletereview/{reviewId}",
+                    "/review/place-reviews/{placeId}"
                 ).permitAll()
                 .anyRequest().authenticated()
             );

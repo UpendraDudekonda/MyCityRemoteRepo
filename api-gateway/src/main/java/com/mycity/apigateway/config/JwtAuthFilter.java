@@ -32,7 +32,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         System.out.println(" Request path: " + path);
  
         // Allow public auth paths
-        List<String> publicPaths = List.of("/auth/", "/client/", "/public/", "/tripplanner/","/category/");
+        List<String> publicPaths = List.of("/auth/", "/client/", "/public/", "/tripplanner/","/category/","/place/");
 
         boolean isPublic = publicPaths.stream().anyMatch(path::startsWith);
 

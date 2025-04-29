@@ -15,6 +15,7 @@ public class WebClientReviewService {
 
     @Autowired
     private WebClient.Builder webClientBuilder;
+    
 
     // Define constants for review service URL and paths
     private static final String REVIEW_SERVICE = "REVIEW-SERVICE";  // The service name in the load balancer or registry

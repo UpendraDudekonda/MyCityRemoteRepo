@@ -20,35 +20,48 @@ import com.mycity.shared.reviewdto.ReviewSummaryDTO;
 
 @RestController
 @RequestMapping("/review")
-public class PlaceReviewController 
-{
+public class PlaceReviewController {
 	@Autowired
 	private ReviewServiceInterface service;
-	
+
 	@PostMapping("/addreview")
 	public ResponseEntity<String> addReview(@RequestBody ReviewDTO dto) {
-	    ResponseEntity<String> response = service.addPlaceReview(dto);
-	    return response;  // Use the status code returned by the service
+		ResponseEntity<String> response = service.addPlaceReview(dto);
+		return response; // Use the status code returned by the service
 	}
 
-	
 	@PutMapping("/updatereview/{reviewId}")
-	public ResponseEntity<String> updateReview(@PathVariable Long reviewId,@RequestBody ReviewDTO dto)
-	{
-		//use service
-		return new ResponseEntity<String>(service.updateReview(reviewId,dto),HttpStatus.OK);
+	public ResponseEntity<String> updateReview(@PathVariable Long reviewId, @RequestBody ReviewDTO dto) {
+		// use service
+		return new ResponseEntity<String>(service.updateReview(reviewId, dto), HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/getreviews/{placeId}")
-	public ResponseEntity<List<ReviewSummaryDTO>> getAllReviews(@PathVariable Long placeId) //gives list of review's for a Particular place
+	public ResponseEntity<List<ReviewSummaryDTO>> getAllReviews(@PathVariable Long placeId) // gives list of review's
+																							// for a Particular place
 	{
-	    return new ResponseEntity<List<ReviewSummaryDTO>>(service.getUserReview(placeId),HttpStatus.FOUND);	 
+		return new ResponseEntity<List<ReviewSummaryDTO>>(service.getUserReview(placeId), HttpStatus.FOUND);
+	}
+
+	@DeleteMapping("/deletereview/{reviewId}")
+	public ResponseEntity<String> deleteReview(@PathVariable Long reviewId) {
+		System.out.println("=========PlaceReviewController.deleteReview()============");
+		return new ResponseEntity<String>(service.deleteReview(reviewId), HttpStatus.OK);
 	}
 	
-	@DeleteMapping("/deletereview/{reviewId}")
-	public ResponseEntity<String> deleteReview(@PathVariable Long reviewId)
-	{
-		System.out.println("=========PlaceReviewController.deleteReview()============");
-		return new ResponseEntity<String>(service.deleteReview(reviewId),HttpStatus.OK);
-	}
+	@GetMapping("/place-reviews/{placeId}")
+    public ResponseEntity<List<ReviewDTO>> getPlaceReviews(@PathVariable Long placeId) {
+        // Fetch the reviews directly (assuming fetchReviews is synchronous or already handles async properly)
+        List<ReviewDTO> reviews = service.fetchReviews(placeId);
+
+        // Check if reviews are found
+        if (reviews != null && !reviews.isEmpty()) {
+            // Return 200 OK with the reviews if found
+            return ResponseEntity.ok(reviews);
+        } else {
+            // Return 404 Not Found if no reviews are found
+            return ResponseEntity.status(404).body(null);
+        }
+    }
+	
 }

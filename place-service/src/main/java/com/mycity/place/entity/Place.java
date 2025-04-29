@@ -1,7 +1,12 @@
 package com.mycity.place.entity;
 
+import java.util.List;
+
+import com.mycity.place.config.StringListConverter;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -46,6 +51,18 @@ public class Place {
 
     @Embedded
     private Coordinate coordinate;
+    
+  
+    @Convert(converter = StringListConverter.class)
+    @Column(name = "local_cuisines", columnDefinition = "TEXT")
+    private List<String> localCuisines;
+
+    @Convert(converter = StringListConverter.class)
+    @Column(name = "nearby_hotels", columnDefinition = "TEXT")
+    private List<String> nearByHotels;
+
+    
+    
 
 
 }

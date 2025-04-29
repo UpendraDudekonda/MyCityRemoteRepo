@@ -26,8 +26,12 @@ public class AboutPlaceResponseDTO {
     private String history;
     private LocalTime openingTime;
     private LocalTime cloingTime;
+    private double latitude;
+    private double longitude;
     private double rating;
     private List<String> placeRelatedImages;
     private List<ReviewDTO> reviews;
-    private LocationDTO location;
+    private List<String> localCuisines;
+    private List<String> nearByHotels;
+    private List<String> nearByPlaces;
 }
