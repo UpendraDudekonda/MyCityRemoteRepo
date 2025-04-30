@@ -34,7 +34,7 @@ public class AuthOtpController {
         try {
             String response = webClientBuilder.build()
                 .post()
-                .uri(EMAIL_SERVICE_URL + "/email/auth/generateotp")
+                .uri(EMAIL_SERVICE_URL + "/email/user/generateotp")
                 .bodyValue(request)
                 .retrieve()
                 .bodyToMono(String.class)

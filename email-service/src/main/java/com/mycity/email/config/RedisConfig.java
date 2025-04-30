@@ -1,4 +1,4 @@
-package com.mycity.otpvalidation.config;
+package com.mycity.email.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,13 +14,15 @@ public class RedisConfig {
 	    public RedisConnectionFactory redisConnectionFactory() {
 	        return new LettuceConnectionFactory("localhost", 6379);
 	    }
+	
 
     @Bean
-    public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory factory) {
+    public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, String> template = new RedisTemplate<>();
-        template.setConnectionFactory(factory);
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new StringRedisSerializer());
+        template.setConnectionFactory(connectionFactory);
+        template.setKeySerializer(new StringRedisSerializer());      // Set key serializer
+        template.setValueSerializer(new StringRedisSerializer());    // Set value serializer
         return template;
     }
+
 }
