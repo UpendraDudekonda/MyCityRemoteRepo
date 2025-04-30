@@ -128,9 +128,10 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-    <groupId>com.fasterxml.jackson.core</groupId>
-    <artifactId>jackson-databind</artifactId>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-loadbalancer</artifactId>
 </dependency>
+
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
