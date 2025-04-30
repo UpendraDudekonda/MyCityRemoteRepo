@@ -18,9 +18,9 @@ public class ClientEmailService {
 
 	private static final String API_GATEWAY_SERVICE_NAME = "API-GATEWAY";; // Update with the actual localhost URL
 																			// and port
-	private static final String OTP_REQUEST_PATH = "/auth/request-otp/user";
+	private static final String OTP_REQUEST_PATH = "/auth/email/send";
 
-	private static final String OTP_VERIFY_PATH = "/auth/verify-otp/user";
+	private static final String OTP_VERIFY_PATH = "/auth/otp/verifyotp";
 
 	// Constructor injection to initialize the WebClient.Builder
 	public ClientEmailService(WebClient.Builder webClientBuilder) {
@@ -29,23 +29,41 @@ public class ClientEmailService {
 
 	@PostMapping("/request-otp")
 	public Mono<String> requestOTP(@RequestBody RequestOtpDTO request) {
-		System.out.println("Request to API Gateway with body: " + request);
+	    System.out.println("=== [requestOTP] ===");
+	    System.out.println("[STEP 1] Received OTP request with body: " + request);
 
-		// Directly use localhost URL to avoid load balancer resolving
-		return createWebClient().post().uri("lb://" + API_GATEWAY_SERVICE_NAME + OTP_REQUEST_PATH) // Directly specify
-																									// localhost
-				.body(Mono.just(request), RequestOtpDTO.class).retrieve().onStatus(HttpStatusCode::isError,
-						clientResponse -> clientResponse.bodyToMono(String.class).flatMap(errorBody -> {
-							System.out.println("Error occurred: " + clientResponse.statusCode() + " - " + errorBody);
-							return Mono.error(new RuntimeException(
-									"OTP request failed: " + clientResponse.statusCode() + " - " + errorBody));
-						}))
-				.bodyToMono(String.class).doOnTerminate(() -> System.out.println("WebClient request completed"))
-				.onErrorResume(e -> {
-					System.out.println("Error during WebClient call: " + e.getMessage());
-					return Mono.just("OTP request failed: " + e.getMessage());
-				});
+	    String fullUri = "lb://" + API_GATEWAY_SERVICE_NAME + OTP_REQUEST_PATH;
+	    System.out.println("[STEP 2] Target URI: " + fullUri);
+
+	    return createWebClient()
+	            .post()
+	            .uri(fullUri)
+	            .body(Mono.just(request), RequestOtpDTO.class)
+	            .retrieve()
+	            .onStatus(HttpStatusCode::isError, clientResponse -> {
+	                System.out.println("[STEP 3] Error Status Detected: " + clientResponse.statusCode());
+	                return clientResponse.bodyToMono(String.class).flatMap(errorBody -> {
+	                    System.out.println("[STEP 4] Error Response Body: " + errorBody);
+	                    return Mono.error(new RuntimeException(
+	                            "OTP request failed: " + clientResponse.statusCode() + " - " + errorBody));
+	                });
+	            })
+	            .bodyToMono(String.class)
+	            .doOnNext(responseBody -> {
+	                System.out.println("[STEP 5] Successful Response Body: " + responseBody);
+	            })
+	            .doOnError(error -> {
+	                System.out.println("[STEP 6] Exception during WebClient call: " + error.getMessage());
+	            })
+	            .doOnTerminate(() -> {
+	                System.out.println("[STEP 7] WebClient request completed (success or fail)");
+	            })
+	            .onErrorResume(e -> {
+	                System.out.println("[STEP 8] Returning fallback error: " + e.getMessage());
+	                return Mono.just("OTP request failed: " + e.getMessage());
+	            });
 	}
+
 
 	@PostMapping("/verify-otp")
 	public Mono<String> verifyOTP(@RequestBody VerifyOtpDTO request) {
