@@ -11,5 +11,7 @@ public class PlaceCategoryDTO {
 	private Long placeId;
 	private String placeName;
     private String placeHistory;
-    private String placeCategory;
+    private Long categoryId;
+    private String categoryName;
+
 }

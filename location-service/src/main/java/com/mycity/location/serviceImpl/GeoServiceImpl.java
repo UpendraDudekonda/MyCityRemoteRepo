@@ -1,5 +1,8 @@
 package com.mycity.location.serviceImpl;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
 
@@ -9,14 +12,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycity.location.entity.Location;
 import com.mycity.location.repository.GeoRepositroy;
 import com.mycity.location.service.GeoServiceInterface;
 import com.mycity.shared.locationdto.GeoRequestDTO;
+import com.mycity.shared.locationdto.LocationDTO;
 import com.mycity.shared.tripplannerdto.CoordinateDTO;
 
 import reactor.core.publisher.Mono;
@@ -30,6 +37,7 @@ public class GeoServiceImpl implements GeoServiceInterface {
     private String nominatimApiUrl;
 
     private final WebClient webClient;
+    
     private final GeoRepositroy geoRepository;
 
     // Constructor injection for WebClient and GeoRepository
@@ -129,4 +137,55 @@ public class GeoServiceImpl implements GeoServiceInterface {
         return Mono.zip(sourceMono, destinationMono)
                 .map(tuple -> Map.of("source", tuple.getT1(), "destination", tuple.getT2()));
     }
+    
+    @Override
+    public Mono<ResponseEntity<? extends Object>> getCoordinatesByPlaceName(String placeName) {
+        // Add additional location context to improve accuracy
+        String query = placeName + ", Andhra Pradesh, India";
+
+        // WebClient request to Nominatim API
+        return WebClient.builder()
+                .baseUrl("https://nominatim.openstreetmap.org")
+                .build()
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/search")
+                        .queryParam("q", query)
+                        .queryParam("format", "json")
+                        .queryParam("limit", "1")
+                        .build())
+                .header("User-Agent", "MyCityApp/1.0 (rayudu8977@gmail.com)") // Required by Nominatim
+                .retrieve()
+                .bodyToMono(String.class)
+                .flatMap(response -> {
+                    try {
+                        ObjectMapper mapper = new ObjectMapper();
+                        JsonNode root = mapper.readTree(response);
+
+                        if (!root.isArray() || root.isEmpty()) {
+                            return Mono.just(ResponseEntity.notFound().build());
+                        }
+
+                        JsonNode locationNode = root.get(0);
+                        double lat = locationNode.path("lat").asDouble();
+                        double lon = locationNode.path("lon").asDouble();
+
+                        CoordinateDTO coord = new CoordinateDTO(lat, lon);
+                        return Mono.just(ResponseEntity.ok(Map.of("location", coord)));
+
+                    } catch (Exception e) {
+                        logger.error("Error parsing response from Nominatim API", e);
+                        return Mono.just(ResponseEntity.internalServerError().build());
+                    }
+                })
+                .onErrorResume(e -> {
+                    logger.error("Exception while calling Nominatim API", e);
+                    return Mono.just(ResponseEntity.status(500).build());
+                });
+    }
+
+	
+   
+
+
 }

@@ -1,6 +1,6 @@
 package com.mycity.shared.eventsdto;
 
-import java.time.LocalDate;
+
 import java.time.LocalTime;
 
 import lombok.Data;
@@ -8,8 +8,8 @@ import lombok.Data;
 @Data
 	public class EventHighlightsDTO {
 	  
-	    private LocalDate Date;
-	    private LocalTime Time;
+	    private String date;
+	    private LocalTime time;
 	    private String activityName;
 	
 }

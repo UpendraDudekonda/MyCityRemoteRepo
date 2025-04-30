@@ -16,5 +16,6 @@ public class EventSubImagesDTO {
     private String eventName;
   
     private Long eventId;
+    private List<String> imageNames;
 }
 
