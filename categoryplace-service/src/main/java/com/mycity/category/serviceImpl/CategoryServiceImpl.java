@@ -1,6 +1,7 @@
 package com.mycity.category.serviceImpl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -111,6 +112,18 @@ public class CategoryServiceImpl implements CategoryService {
 	            return descriptions.get(0); 
 	        });
 	    }
+
+	    public String getDescriptionByCategoryName(String categoryName) {
+	        List<Category> categories = categoryRepo.findAllByName(categoryName);
+
+	        if (!categories.isEmpty()) {
+	            return categories.get(0).getDescription(); // Return description of the first match
+	        } else {
+	            throw new IllegalArgumentException("Category with name '" + categoryName + "' not found.");
+	        }
+	    }
+
+
 
 
 

@@ -59,6 +59,13 @@ public class CategoryController {
         return ResponseEntity.ok(saved);
     }
     
+    @GetMapping("/desc/{categoryName}")
+    public ResponseEntity<String> getCategoryDescriptionByName(@PathVariable String categoryName) {
+        String description = categoryService.getDescriptionByCategoryName(categoryName);
+        return ResponseEntity.ok(description);
+    }
+
+
     
 
 }
