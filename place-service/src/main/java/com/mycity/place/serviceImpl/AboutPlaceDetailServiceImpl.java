@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import com.mycity.place.entity.Place;
 import com.mycity.place.repository.PlaceRepository;
 import com.mycity.place.service.PlaceDetailService;
-import com.mycity.shared.locationdto.LocationDTO;
 import com.mycity.shared.placedto.AboutPlaceResponseDTO;
 import com.mycity.shared.reviewdto.ReviewDTO;
 
@@ -62,8 +61,8 @@ public class AboutPlaceDetailServiceImpl implements PlaceDetailService {
         about.setOpeningTime(place.getTimeZone().getOpeningTime());
         about.setCloingTime(place.getTimeZone().getClosingTime()); // Fixing: You set opening time twice
         about.setRating(place.getRating());
-        about.setLocalCuisines(place.getLocalCuisines());
-        about.setNearByHotels(place.getNearByHotels());
+//        about.setLocalCuisines(place.getLocalCuisines());
+//        about.setNearByHotels(place.getNearByHotels());
         about.setLatitude(place.getCoordinate().getLatitude());
         about.setLongitude(place.getCoordinate().getLongitude());
 

@@ -18,9 +18,10 @@ public class WebClientMediaService {
     private WebClient.Builder webClientBuilder;
 
     // Define constants for image service URL and paths
-    private static final String IMAGE_SERVICE = "MEDIA-SERVICE";
+    private static final String MEDIA_SERVICE = "MEDIA-SERVICE";
     private static final String IMAGE_UPLOAD_PATH = "/media/upload";
     private static final String IMAGE_FETCH_PATH = "/media/images/{placeId}";
+    
 
     // Method to upload an image for a place
     public void uploadImageForPlace(MultipartFile image, long placeId, String placeName, String Category, String imageName) {
@@ -45,7 +46,7 @@ public class WebClientMediaService {
             // Use Load Balancer routing to send the request to the IMAGE-SERVICE for image upload
             webClientBuilder.build()
                     .post()
-                    .uri("lb://" + IMAGE_SERVICE + IMAGE_UPLOAD_PATH) // Load balanced URI to upload the image
+                    .uri("lb://" + MEDIA_SERVICE + IMAGE_UPLOAD_PATH) // Load balanced URI to upload the image
                     .contentType(MediaType.MULTIPART_FORM_DATA) // Set the content type as multipart/form-data
                     .bodyValue(bodyBuilder.build()) // Attach the body to the request
                     .retrieve() // Execute the request
@@ -62,10 +63,22 @@ public class WebClientMediaService {
         // Use Load Balancer routing to send a request to the IMAGE-SERVICE for fetching image URLs by placeId
         return webClientBuilder.build()
                 .get()
-                .uri("lb://" + IMAGE_SERVICE + IMAGE_FETCH_PATH, placeId) // Load balanced URI to fetch image URLs
+                .uri("lb://" + MEDIA_SERVICE + IMAGE_FETCH_PATH, placeId) // Load balanced URI to fetch image URLs
                 .retrieve() // Execute the request
                 .bodyToFlux(String.class) // Expect the response to be a list of image URLs (strings)
                 .collectList() // Collect the URLs into a list
                 .toFuture(); // Return the result as a CompletableFuture
     }
+    
+    
+    public List<String> getPhotoUrlsByPlaceId(long placeId) {
+        try {
+            return getImageUrlsForPlace(placeId).get(); // Waits for the result
+        } catch (Exception e) {
+            e.printStackTrace();
+            return List.of(); // Return empty list on error
+        }
+    }
+
+	
 }

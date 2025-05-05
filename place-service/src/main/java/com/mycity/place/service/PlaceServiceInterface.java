@@ -8,6 +8,7 @@ import com.mycity.place.entity.Place;
 import com.mycity.shared.placedto.PlaceCategoryDTO;
 import com.mycity.shared.placedto.PlaceDTO;
 import com.mycity.shared.placedto.PlaceResponseDTO;
+import com.mycity.shared.placedto.PlaceWithImagesDTO;
 
 import reactor.core.publisher.Mono;
 
@@ -32,5 +33,7 @@ public interface PlaceServiceInterface {
 
 
 	Long getPlaceIdByName(String placeName);
+
+	List<PlaceWithImagesDTO> getPlacesByCategoryWithImages(String categoryName);
 
 }

@@ -2,6 +2,8 @@ package com.mycity.category.service;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
+
 import com.mycity.shared.categorydto.CategoryDTO;
 import com.mycity.shared.categorydto.CategoryImageDTO;
 
@@ -20,5 +22,7 @@ public interface CategoryService {
 	boolean categoryExists(String name);
 
 	Mono<String> fetchCategoryDescription(String categoryName);
+
+	String getDescriptionByCategoryName(String categoryName);
 
 }
