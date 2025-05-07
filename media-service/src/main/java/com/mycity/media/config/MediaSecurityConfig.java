@@ -19,21 +19,11 @@ public class MediaSecurityConfig {
 	    http
 	        .csrf(csrf -> csrf.disable())
 	        .authorizeHttpRequests(auth -> auth
-	            .requestMatchers("/media/upload/image",
-	            		"/media/images",
-	            		"/media/upload",
-	            		"/media/cover-image",
-	            		"/media/fetch{id}",
-	            		"/media/images/{placeId}",
-	            		"/media/bycategory/image",
-	            		"/media/upload/images", 
-	            		"/media/delete/images/**", 
-	            		"/media/update/images/**",
-	            		"/media/upload/places",
-	            		"/media/upload/cuisines" )
+	            .requestMatchers("/media/upload/image","/media/images","/media/upload","/media/cover-image","/media/fetch{id}","/media/images/{placeId}","/media/images/delete/{placeId}",
+	            		         "/media/review/upload","/media/review/delete/{reviewId}",
+	            		         "/media/gallery/upload","media/gallery/getimages/{districtName}","/media/gallery/deleteimage/{imageId}")
 	            .permitAll()
 	            .anyRequest().authenticated()
-	           
 	        );
 	    return http.build();
 	}

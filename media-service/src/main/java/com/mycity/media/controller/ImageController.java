@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,19 +40,6 @@ public class ImageController {
 
 	    return ResponseEntity.ok("Image uploaded successfully");
 	}
-	@PostMapping(value ="/upload/cuisines" , consumes = MediaType.MULTIPART_FORM_DATA)
-	public ResponseEntity<String> uploadImageForCuisines(
-	        @RequestPart("image") MultipartFile file,
-	        @RequestParam Long placeId,
-	        @RequestParam Long cuisineId,
-	        @RequestParam String cuisineName,
-	        @RequestParam String placeName,
-	        @RequestParam String category) {
-
-	    imageService.uploadImageForCuisines(file, placeId, cuisineId, placeName, category, cuisineName);
-
-	    return ResponseEntity.ok("Image uploaded successfully for cuisineId: " + cuisineId);
-	}
 
 	@GetMapping("/fetch/{id}")
 	public ResponseEntity<ImageDTO> getImage(@PathVariable Long id) {
@@ -59,7 +47,7 @@ public class ImageController {
 	    return ResponseEntity.ok(imageDTO);
 	}     
 	
-	@GetMapping("/bycategory/image")
+	@GetMapping("/cover-image")
 	public ResponseEntity<String> getCoverImageForCategory(@RequestParam String category) {
 	    String imageUrl = imageService.getFirstImageUrlByCategory(category);
 	    return ResponseEntity.ok(imageUrl);
@@ -70,6 +58,12 @@ public class ImageController {
 	    List<AboutPlaceImageDTO> images = imageService.getAboutPlaceImages(placeId);
 	    return ResponseEntity.ok(images);
 	}
-
+	
+	@DeleteMapping("/images/delete/{placeId}")
+	public ResponseEntity<String> deleteImage(@PathVariable Long placeId)
+	{
+		String result=imageService.deleteImage(placeId);
+		return ResponseEntity.ok(result);
+	}
 	
 }

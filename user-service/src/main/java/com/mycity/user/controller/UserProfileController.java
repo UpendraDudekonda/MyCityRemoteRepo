@@ -34,7 +34,7 @@ public class UserProfileController {
         return ResponseEntity.ok(user);
     }
     
-    @GetMapping("/getuserId/{userName}") //to get userId using username while adding review to the place 
+    @GetMapping("/getuserId/{userName}") //to get userId using userName while adding review to the place 
     public ResponseEntity<Long> getUSerIdByName(@PathVariable String userName)
     {
     	System.out.println("UserProfileController.getUSerIdByName()");

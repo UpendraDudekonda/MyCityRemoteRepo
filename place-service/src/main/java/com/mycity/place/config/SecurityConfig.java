@@ -1,6 +1,6 @@
 package com.mycity.place.config;
 
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,16 +13,13 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.List;
-
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
-
+public class SecurityConfig 
+{
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> {}) // Enable CORS
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
@@ -30,40 +27,38 @@ public class SecurityConfig {
                     "/place/discoveries/add",
                     "/place/discoveries/getall",
                     "/place/discoveries/getplace/{placeName}",
+                    "/place/gallery/upload",
                     "/place/getplaceid/{placeName}",
                     "/place/getplace/{placeId}",
-                    "/place/placeby/categories",
+                    "/place/allplaces",
                     "/place/add-place",
-                    "/place/about/{placeId}",
-                    "/place/placebycategory/{categoryName}"
+                    "/place/delete/{placeId}",
+                    "/place/newplace/add",
+                    "/place/get/{placeId}",
+                    "/place/update/{placeId}",
+                    "place/places/categories"
+                    
                 ).permitAll()
                 .anyRequest().authenticated()
             );
-
         return http.build();
     }
-
+ 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
+ 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource()
+    {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("*")); // safer than addAllowedOrigin("*")
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true); // optional depending on frontend needs
-
+        config.addAllowedOrigin("*");
+        config.addAllowedMethod("*");
+        config.addAllowedHeader("*");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
     }
-
-    @Bean
-    @LoadBalanced
-    public WebClient.Builder webClientBuilder() {
-        return WebClient.builder();
-    }
-}
+}   
+ 

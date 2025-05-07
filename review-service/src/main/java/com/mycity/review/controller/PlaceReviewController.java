@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.mycity.review.service.ReviewServiceInterface;
 import com.mycity.shared.reviewdto.ReviewDTO;
@@ -24,9 +27,10 @@ public class PlaceReviewController {
 	@Autowired
 	private ReviewServiceInterface service;
 
-	@PostMapping("/addreview")
-	public ResponseEntity<String> addReview(@RequestBody ReviewDTO dto) {
-		ResponseEntity<String> response = service.addPlaceReview(dto);
+	@PostMapping(value="/addreview",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<String> addReview(@RequestPart ReviewDTO dto,
+			@RequestPart("images") List<MultipartFile> images) {
+		ResponseEntity<String> response = service.addPlaceReview(dto,images);
 		return response; // Use the status code returned by the service
 	}
 
