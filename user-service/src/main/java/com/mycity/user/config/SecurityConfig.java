@@ -17,7 +17,6 @@ import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.reactive.config.CorsRegistry;
 import org.springframework.web.reactive.function.client.WebClient;
 
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -43,10 +42,8 @@ public class SecurityConfig {
                     "/user/review/get/{placeId}",
                     "/user/review/delete/{reviewId}",
                     "/user/rating/add",
-                    "/user/gallery/upload",
-                    "/user/gallery/getimages/{districtName}",
-                    "/user/gallery/deleteimage/{imageId}"
-                    
+                    "/users/details/**",
+                    "/users/reset-password"
                     
                 ).permitAll()
                 .anyRequest().authenticated()

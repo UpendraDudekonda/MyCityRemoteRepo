@@ -88,7 +88,7 @@ public class JwtService {
                 .secure(true) // Set to false if not using HTTPS in dev
                 .path("/")
                 .maxAge(jwtExpirationMs / 1000) // in seconds
-                .sameSite("Strict") // Prevent CSRF
+                .sameSite("None") // Prevent CSRF
                 .build();
     }
 
@@ -99,7 +99,7 @@ public class JwtService {
                 .secure(true)
                 .path("/")
                 .maxAge(0)
-                .sameSite("Strict")
+                .sameSite("None")
                 .build();
     }
 }

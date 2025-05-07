@@ -7,5 +7,7 @@ import com.mycity.user.entity.User;
 
 @Repository
 public interface UserAccountRepository extends JpaRepository<User, Long>{
+	
+	User findByEmail(String email);
 
 }

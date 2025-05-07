@@ -58,7 +58,7 @@ public class GatewaySecurityConfig {
 
         config.addAllowedMethod("*");
 
-        config.setAllowCredentials(false);
+        config.setAllowCredentials(true);
  
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
