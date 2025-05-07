@@ -5,11 +5,10 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.mycity.place.entity.Place;
 import com.mycity.shared.placedto.PlaceCategoryDTO;
-
-import feign.Param;
 
 public interface PlaceRepository extends JpaRepository<Place, Long> {
 
@@ -17,8 +16,16 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
 	List<PlaceCategoryDTO> findPlaceIdsAndCategories();
 
 	@Query("SELECT p.placeId FROM Place p WHERE p.placeName = :placeName")
-	Optional<Long> findPlaceIdByPlaceName(@Param("placeName") String placeName);
+	Long findPlaceIdByPlaceName(@Param("placeName") String placeName);
 
-	Optional<Long> findPlaceIdByPlaceNameIgnoreCase(String placeName);
+	Long findPlaceIdByPlaceNameIgnoreCase(String placeName);
+
+
+	Optional<Place> findByPlaceName(String placeName);
+
+	@Query("SELECT p FROM Place p WHERE LOWER(p.categoryName) = LOWER(:categoryName)")
+	List<Place> findByCategoryName(@Param("categoryName") String categoryName);
+
+
 
 }

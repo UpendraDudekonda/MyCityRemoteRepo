@@ -15,9 +15,11 @@ public interface ImageServiceRepository extends JpaRepository<Images, Long>{
 
 	Optional<Images> findFirstByCategoryIgnoreCaseOrderByImageIdAsc(String category);
 
+	
 	List<Images> findImagesByPlaceId(Long placeId);
 	
     @Query("SELECT i.imageId FROM Images i WHERE i.placeId = :placeId")
     List<Long> findImageIdsByPlaceId(Long placeId);
+
 
 }

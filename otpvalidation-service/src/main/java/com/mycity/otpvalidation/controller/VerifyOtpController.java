@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class VerifyOtpController {
 
-    private final OtpService otpService;
+    private final OtpService otpService; 
 
        @PostMapping("/auth/verifyotp")
         public ResponseEntity<OTPResponse> verifyOtp(@RequestBody VerifyOtpDTO verificationRequest) {

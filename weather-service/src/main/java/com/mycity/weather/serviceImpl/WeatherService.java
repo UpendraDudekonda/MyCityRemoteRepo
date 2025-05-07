@@ -1,15 +1,14 @@
 package com.mycity.weather.serviceImpl;
 
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.mycity.shared.tripplannerdto.CoordinateDTO;
 import com.mycity.shared.weatherdto.WeatherDTO;
-import com.mycity.weather.service.WeatherServiceInterface;
-
-import org.springframework.beans.factory.annotation.Value; 
+import com.mycity.weather.service.WeatherServiceInterface; 
 
 
 @Service
@@ -39,6 +38,5 @@ public class WeatherService implements WeatherServiceInterface{
 
 	    return new WeatherDTO(location, condition, description, temp);
 	}
-
 
 }

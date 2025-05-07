@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TimezoneDTO 
 {	
-    private String name;
+    private Long TimezoneId;
     private LocalTime OpeningTime;
     private LocalTime ClosingTime;
     

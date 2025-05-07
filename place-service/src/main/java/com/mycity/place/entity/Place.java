@@ -1,6 +1,7 @@
 package com.mycity.place.entity;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -9,6 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,38 +23,40 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class Place {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long placeId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long placeId;
 
-    @NonNull
-    private String placeName;
+	@NonNull
+	private String placeName;
 
-    @NonNull
-    @Column(columnDefinition = "TEXT")
-    private String aboutPlace;
+	@NonNull
+	@Column(columnDefinition = "TEXT")
+	private String aboutPlace;
 
-    @NonNull
-    @Column(columnDefinition = "TEXT")
-    private String placeHistory;
+	@NonNull
+	@Column(columnDefinition = "TEXT")
+	private String placeHistory;
 
-    @NonNull
-    private Long categoryId;  
+	@NonNull
+	private Long categoryId;
 
-    private String categoryName; 
-    
-    @OneToOne(mappedBy = "place", cascade = CascadeType.ALL)
-    private TimeZone timeZone;  
+	private String categoryName;
 
-    @Column(nullable = true)
-    private Double rating;
+	@OneToOne(mappedBy = "place", cascade = CascadeType.ALL)
+	private TimeZone timeZone;
 
-    private String placeDistrict;
+	@Column(nullable = true)
+	private Double rating;
 
-    @Embedded
-    private Coordinate coordinate;  
-    
-    @Column(nullable = false)
-    private LocalDate postedOn;
+	private String placeDistrict;
 
+	@Embedded
+	private Coordinate coordinate;
+
+	@Column(nullable = false)
+	private LocalDate postedOn;
+
+	@OneToMany(mappedBy = "place", cascade = CascadeType.ALL)
+	private List<LocalCuisine> localCuisines;
 }

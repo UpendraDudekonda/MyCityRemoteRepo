@@ -4,17 +4,19 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.mycity.shared.mediadto.EventMainImageDTO;
+
 import com.mycity.shared.mediadto.EventSubImagesDTO;
 import com.mycity.shared.mediadto.ImageDTO;
 
 public interface EventImageService {
 
-	void uploadImage(MultipartFile file, Long eventId, String eventName);
+	
 
-	EventMainImageDTO fetchImage(Long eventId);
+	void uploadImages(List<MultipartFile> files, List <String> names, Long eventId, String eventName);
 
-	void uploadImages(List<MultipartFile> files, Long eventId, String eventName);
+//	EventSubImagesDTO fetchImages(Long eventId);
 
-	EventSubImagesDTO fetchImages(Long eventId);
+	void deleteAssociatedImages(Long eventId);
+
+	String updateEventImages(Long eventId, String eventName, List<MultipartFile> files, List<String> names);
 }

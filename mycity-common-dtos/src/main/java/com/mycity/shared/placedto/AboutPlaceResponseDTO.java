@@ -3,9 +3,9 @@ package com.mycity.shared.placedto;
 import java.time.LocalTime;
 import java.util.List;
 
-import com.mycity.shared.timezonedto.TimezoneDTO;
+import com.mycity.shared.mediadto.AboutPlaceCuisineImageDTO;
+import com.mycity.shared.mediadto.AboutPlaceImageDTO;
 import com.mycity.shared.reviewdto.ReviewDTO; // Assuming you have ReviewDT
-import com.mycity.shared.locationdto.LocationDTO; // Assuming you have LocationDTO
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,8 +26,12 @@ public class AboutPlaceResponseDTO {
     private String history;
     private LocalTime openingTime;
     private LocalTime cloingTime;
+    private double latitude;
+    private double longitude;
     private double rating;
-    private List<String> placeRelatedImages;
+    private List<AboutPlaceImageDTO> placeRelatedImages;
     private List<ReviewDTO> reviews;
-    private LocationDTO location;
+    private List<AboutPlaceCuisineImageDTO> localCuisines;
+    private List<NearbyPlaceDTO> nearByPlaces;
+    private List<AboutPlaceEventDTO> events;
 }

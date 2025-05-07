@@ -55,11 +55,17 @@ public class CategoryController {
     // Save (or update) category directly
     @PostMapping("/save")
     public ResponseEntity<CategoryDTO> saveCategory(@RequestBody CategoryDTO categoryDTO) {
-    	System.out.println("----Category DTO---- ::"+categoryDTO);
         CategoryDTO saved = categoryService.saveCategory(categoryDTO);
         return ResponseEntity.ok(saved);
     }
     
+    @GetMapping("/desc/{categoryName}")
+    public ResponseEntity<String> getCategoryDescriptionByName(@PathVariable String categoryName) {
+        String description = categoryService.getDescriptionByCategoryName(categoryName);
+        return ResponseEntity.ok(description);
+    }
+
+
     
 
 }

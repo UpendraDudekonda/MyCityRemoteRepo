@@ -1,6 +1,7 @@
 package com.mycity.category.serviceImpl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,10 +14,9 @@ import com.mycity.shared.categorydto.CategoryImageDTO;
 
 import reactor.core.publisher.Mono;
 
-
 @Service
-public class CategoryServiceImpl implements CategoryService
-{	
+public class CategoryServiceImpl implements CategoryService {
+	
 	 	@Autowired
 	    private WebClientPlaceService placeService;  
 
@@ -84,9 +84,9 @@ public class CategoryServiceImpl implements CategoryService
 	        category.setPlaceId(categoryDTO.getPlaceId());
 	        category.setPlaceName(categoryDTO.getPlaceName());
 
-//	        if (categoryDTO.getCategoryId() != null) {
-//	            category.setCategoryId(categoryDTO.getCategoryId());
-//	        }
+	        if (categoryDTO.getCategoryId() != null) {
+	            category.setCategoryId(categoryDTO.getCategoryId());
+	        }
 
 	        Category saved = categoryRepo.save(category);
 	        return mapToDTO(saved);
@@ -112,4 +112,19 @@ public class CategoryServiceImpl implements CategoryService
 	            return descriptions.get(0); 
 	        });
 	    }
+
+	    public String getDescriptionByCategoryName(String categoryName) {
+	        List<Category> categories = categoryRepo.findAllByName(categoryName);
+
+	        if (!categories.isEmpty()) {
+	            return categories.get(0).getDescription(); // Return description of the first match
+	        } else {
+	            throw new IllegalArgumentException("Category with name '" + categoryName + "' not found.");
+	        }
+	    }
+
+
+
+
+
 }

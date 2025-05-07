@@ -17,11 +17,12 @@ public class WebClientCategoryService {
     @Autowired
     private WebClient.Builder webClientBuilder;
 
-    private static final String CATEGORY_SERVICE = "CATEGORYPLACE-SERVICE";  
+    private static final String CATEGORY_SERVICE = "CATEGORY-SERVICE";  
     private static final String CATEGORY_EXISTS_PATH = "/category/exists?name={categoryName}";
     private static final String CATEGORY_CREATE_PATH = "/category/create";
     private static final String CATEGORY_BY_NAME_PATH = "/category/categorybyname/{categoryName}";
     private static final String CATEGORY_SAVE_PATH = "/category/save"; 
+    private static final String CATEGORY_DESC_PATH = "/category/desc/{categoryName}"; 
    
     public boolean checkCategoryExists(String categoryName) {
         try {
@@ -117,5 +118,20 @@ public class WebClientCategoryService {
             return null;
         }
     }
+
+    public String getCategoryDescription(String categoryName) {
+        try {
+            return webClientBuilder.build()
+                .get()
+                .uri("lb://" + CATEGORY_SERVICE + CATEGORY_DESC_PATH, categoryName)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block(); // Blocking to simplify integration here 
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
 }

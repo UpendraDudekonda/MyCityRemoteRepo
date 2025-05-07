@@ -33,6 +33,12 @@
 		<spring-cloud.version>2024.0.1</spring-cloud.version>
 	</properties>
 	<dependencies>
+	
+	<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -64,7 +70,7 @@
 			<artifactId>mycity-common-dtos</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-			
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
@@ -82,25 +88,45 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			    <groupId>com.mycity.shared</groupId>
-			    <artifactId>mycity-common-dtos</artifactId>
-			    <version>0.0.1-SNAPSHOT</version>
-			</dependency>
-		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<scope>provided</scope>
 		</dependency>
+					<!-- Spring Boot Test (includes JUnit 5, Mockito, etc.) -->
+				<dependency>
+			    <groupId>org.springframework.boot</groupId>
+			    <artifactId>spring-boot-starter-test</artifactId>
+			    <scope>test</scope>
+			    <exclusions>
+			        <!-- Exclude vintage engine to avoid JUnit 4 conflicts -->
+			        <exclusion>
+			            <groupId>org.junit.vintage</groupId>
+			            <artifactId>junit-vintage-engine</artifactId>
+			        </exclusion>
+			    </exclusions>
+			</dependency>
+
+			<!-- Reactor Test for StepVerifier (reactive stream testing) -->
+			<dependency>
+			    <groupId>io.projectreactor</groupId>
+			    <artifactId>reactor-test</artifactId>
+			    <scope>test</scope>
+			</dependency>
+
+		<!-- Mockito Core (optional - for deep mocking control) -->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
+		    <groupId>org.mockito</groupId>
+		    <artifactId>mockito-core</artifactId>
+		    <scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>io.projectreactor</groupId>
-			<artifactId>reactor-test</artifactId>
-			<scope>test</scope>
-		</dependency>
+
+		<!-- Mockito JUnit Jupiter (enables @ExtendWith(MockitoExtension.class)) -->
+			<dependency>
+			    <groupId>org.mockito</groupId>
+			    <artifactId>mockito-junit-jupiter</artifactId>
+			    <scope>test</scope>
+			</dependency>
+
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
