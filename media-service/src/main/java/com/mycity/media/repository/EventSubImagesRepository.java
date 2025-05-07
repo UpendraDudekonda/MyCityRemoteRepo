@@ -14,4 +14,8 @@ public interface EventSubImagesRepository extends JpaRepository<EventSubImages, 
 
 
 
+	List<EventSubImages> findImageUrlsByEventId(Long eventId);
+
+
+
 }

@@ -104,6 +104,14 @@ public void deleteAssociatedImages(Long eventId) {
     System.out.println("Deleted all gallery images from DB for eventId: " + eventId);
 }
 
+
+@Override
+public List getEventImages(Long eventId) {
+	List<EventSubImages> images = eventSubImagesRepository.findImageUrlsByEventId(eventId);
+	return images;
+	
+}
+
 	
 //	public EventSubImagesDTO fetchImages(Long eventId) {
 //		EventSubImages image = eventSubImagesRepository.findById(eventId)

@@ -49,5 +49,7 @@ public class Event {
 	@CollectionTable(name = "event_schedule", joinColumns = @JoinColumn(name = "event_id"))
 	private List<EventHighlights> schedule;
 
+	
+
 
 }

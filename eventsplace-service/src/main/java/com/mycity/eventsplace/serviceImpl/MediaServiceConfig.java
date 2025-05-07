@@ -1,14 +1,17 @@
 package com.mycity.eventsplace.serviceImpl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClient.RequestBodySpec;
 import org.springframework.stereotype.Component; 
 import com.mycity.shared.mediadto.EventSubImagesDTO;
 
@@ -91,10 +94,9 @@ catch (Exception e) {
        
 
         WebClient webClient = webClientBuilder.build();
-        String mediaResponse = webClient
-                .post()
-                .uri(MEDIA_BASE_URL + "/media/delete/images/{eventId}" ,eventId)
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        String mediaResponse = ((RequestBodySpec) webClient
+                .delete()
+                .uri(MEDIA_BASE_URL + "/media/delete/images/{eventId}" ,eventId))
                 .body(BodyInserters.fromFormData("eventName", eventName))
                 .retrieve()
                 .bodyToMono(String.class)
@@ -106,5 +108,26 @@ catch (Exception e) {
     }
     }
 
+    
+    public List<String> getImageUrlsForEvent(Long eventId) {
+        List<String> images = new ArrayList<>();
 
+        try {
+            WebClient webClient = webClientBuilder.build();
+
+            images = webClient
+            		 .get()
+            		    .uri(MEDIA_BASE_URL +"/media/fetch/images/{eventId}", eventId)
+            		    .retrieve()
+            		    .bodyToMono(new ParameterizedTypeReference<List<String>>() {})
+            		    .block();
+        } catch (Exception e) {
+            System.err.println("Failed to fetch event images by name: " + e.getMessage());
+        }
+
+        return images;
+    }
+
+
+	
 }
