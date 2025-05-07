@@ -1,7 +1,10 @@
 package com.mycity.place.serviceImpl;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,273 +12,417 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.mycity.place.entity.Coordinate;
+import com.mycity.place.entity.LocalCuisine;
 import com.mycity.place.entity.Place;
 import com.mycity.place.entity.TimeZone;
 import com.mycity.place.repository.PlaceRepository;
 import com.mycity.place.service.PlaceServiceInterface;
 import com.mycity.shared.categorydto.CategoryDTO;
+import com.mycity.shared.placedto.LocalCuisineDTO;
 import com.mycity.shared.placedto.PlaceCategoryDTO;
 import com.mycity.shared.placedto.PlaceDTO;
 import com.mycity.shared.placedto.PlaceResponseDTO;
 import com.mycity.shared.placedto.PlaceWithImagesDTO;
 import com.mycity.shared.timezonedto.TimezoneDTO;
+import com.mycity.shared.tripplannerdto.CoordinateDTO;
 
 import jakarta.transaction.Transactional;
 
 @Service
 public class PlaceServiceImpl implements PlaceServiceInterface {
 
-    @Autowired
-    private PlaceRepository placeRepo;
+	@Autowired
+	private PlaceRepository placeRepo;
 
-    @Autowired
-    private WebClientMediaService mediaService;
+	@Autowired
+	private WebClientMediaService mediaService;
 
-    @Autowired
-    private WebClientCategoryService categoryService;
+	@Autowired
+	private WebClientCategoryService categoryService;
 
-    @Override
-    @Transactional
-    public String addPlace(PlaceDTO dto, List<MultipartFile> images) {
-        // Validate incoming DTO
-        validatePlaceDTO(dto);
+	@Autowired
+	private WebClientLocationService clientLocationService;
 
-        // Build Coordinate entity
-        Coordinate coordinate = new Coordinate();
-        coordinate.setLatitude(dto.getCoordinate().getLatitude());
-        coordinate.setLongitude(dto.getCoordinate().getLongitude());
+	@Override
+	@Transactional
+	public String addPlace(PlaceDTO dto, List<MultipartFile> images) {
+		// Validate incoming DTO
+		validatePlaceDTO(dto);
 
-        // Build Place entity
-        Place place = new Place();
-        place.setPlaceName(dto.getPlaceName().trim());
-        place.setPlaceHistory(dto.getPlaceHistory());
-        place.setAboutPlace(dto.getAboutPlace());
-        place.setPlaceDistrict(dto.getPlaceDistrict());
-        place.setRating(dto.getRating());
-        place.setCoordinate(coordinate);
-        place.setCategoryName(dto.getCategoryName());
+		// Build Coordinate entity
+		Coordinate coordinate = new Coordinate();
+		coordinate.setLatitude(dto.getCoordinate().getLatitude());
+		coordinate.setLongitude(dto.getCoordinate().getLongitude());
 
-        // Set PostedOn date
-        if (dto.getPostedOn() != null) {
-            place.setPostedOn(dto.getPostedOn());
-        } else {
-            place.setPostedOn(LocalDate.now());  // fallback to current date if not provided
-        }
+		// Build Place entity
+		Place place = new Place();
+		place.setPlaceName(dto.getPlaceName().trim());
+		place.setPlaceHistory(dto.getPlaceHistory());
+		place.setAboutPlace(dto.getAboutPlace());
+		place.setPlaceDistrict(dto.getPlaceDistrict());
+		place.setRating(dto.getRating());
+		place.setCoordinate(coordinate);
+		place.setCategoryName(dto.getCategoryName());
 
-        // Save Place first to get the generated placeId
-        Place savedPlace = placeRepo.save(place);
-        placeRepo.flush();  // Force insert to get generated ID immediately
+		// Set PostedOn date
+		if (dto.getPostedOn() != null) {
+			place.setPostedOn(dto.getPostedOn());
+		} else {
+			place.setPostedOn(LocalDate.now()); // fallback to current date if not provided
+		}
 
-        // Build CategoryDTO using saved Place info
-        CategoryDTO categoryDTO = new CategoryDTO();
-        categoryDTO.setName(savedPlace.getCategoryName());
-        categoryDTO.setPlaceName(savedPlace.getPlaceName());
-        categoryDTO.setPlaceId(savedPlace.getPlaceId());
-        categoryDTO.setDescription(dto.getPlaceCategoryDescription());
+		// Save Place first to get the generated placeId
+		Place savedPlace = placeRepo.save(place);
+		placeRepo.flush(); // Force insert to get generated ID immediately
 
-        // Create/save Category
-        CategoryDTO createdCategory = categoryService.saveCategory(categoryDTO);
+		// Build CategoryDTO using saved Place info
+		CategoryDTO categoryDTO = new CategoryDTO();
+		categoryDTO.setName(savedPlace.getCategoryName());
+		categoryDTO.setPlaceName(savedPlace.getPlaceName());
+		categoryDTO.setPlaceId(savedPlace.getPlaceId());
+		categoryDTO.setDescription(dto.getPlaceCategoryDescription());
 
-        // Update Place with Category ID and Category Name
-        savedPlace.setCategoryId(createdCategory.getCategoryId());
-        savedPlace.setCategoryName(createdCategory.getName());
+		// Create/save Category
+		CategoryDTO createdCategory = categoryService.saveCategory(categoryDTO);
 
-        // Save updated Place (with categoryId)
-        placeRepo.save(savedPlace);
+		// Update Place with Category ID and Category Name
+		savedPlace.setCategoryId(createdCategory.getCategoryId());
+		savedPlace.setCategoryName(createdCategory.getName());
 
-        // Handle Timezone if provided
-        TimezoneDTO timezoneDTO = dto.getTimeZone();
-        if (timezoneDTO != null) {
-            TimeZone timezone = new TimeZone();
-            timezone.setOpeningTime(timezoneDTO.getOpeningTime());
-            timezone.setClosingTime(timezoneDTO.getClosingTime());
-            timezone.setPlace(savedPlace);  // Bidirectional
+		// Save updated Place (with categoryId)
+		placeRepo.save(savedPlace);
 
-            savedPlace.setTimeZone(timezone);
+		// Handle Timezone if provided
+		TimezoneDTO timezoneDTO = dto.getTimeZone();
+		if (timezoneDTO != null) {
+			TimeZone timezone = new TimeZone();
+			timezone.setOpeningTime(timezoneDTO.getOpeningTime());
+			timezone.setClosingTime(timezoneDTO.getClosingTime());
+			timezone.setPlace(savedPlace); // Bidirectional
 
-            placeRepo.save(savedPlace);
-        }
+			savedPlace.setTimeZone(timezone);
 
-        // Handle Image Uploads if images are provided
-        if (images != null && !images.isEmpty()) {
-            for (MultipartFile image : images) {
-                mediaService.uploadImageForPlace(
-                    image,
-                    savedPlace.getPlaceId(),
-                    savedPlace.getPlaceName(),
-                    savedPlace.getCategoryName(),
-                    dto.getImageName()
-                );
-            }
-        }
+			placeRepo.save(savedPlace);
+		}
 
-        return "Place with name '" + savedPlace.getPlaceName() + "' saved successfully, and image uploads initiated.";
-    }
+		// Handle Image Uploads if images are provided
+		if (images != null && !images.isEmpty()) {
+			for (MultipartFile image : images) {
+				mediaService.uploadImageForPlace(image, savedPlace.getPlaceId(), savedPlace.getPlaceName(),
+						savedPlace.getCategoryName(), dto.getImageName());
+			}
+		}
 
+		return "Place with name '" + savedPlace.getPlaceName() + "' saved successfully, and image uploads initiated.";
+	}
 
+	@Override
+	@Transactional
+	public PlaceResponseDTO getPlace(Long placeId) {
+		Place place = placeRepo.findById(placeId).orElseThrow(() -> new IllegalArgumentException("Invalid Place Id.."));
 
+		return convertToDTO(place);
+	}
 
-    @Override
-    @Transactional
-    public PlaceResponseDTO getPlace(Long placeId) {
-        Place place = placeRepo.findById(placeId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Place Id.."));
+	@Override
+	@Transactional
+	public String updatePlace(Long placeId, PlaceDTO dto) {
+		validatePlaceDTO(dto);
 
-        return convertToDTO(place);
-    }
+		Place place = placeRepo.findById(placeId).orElseThrow(() -> new IllegalArgumentException("Invalid Place Id.."));
 
-    @Override
-    @Transactional
-    public String updatePlace(Long placeId, PlaceDTO dto) {
-        validatePlaceDTO(dto);
+		// Update Place Fields
+		place.setPlaceName(dto.getPlaceName().trim());
+		place.setAboutPlace(dto.getAboutPlace());
+		place.setPlaceHistory(dto.getPlaceHistory());
+		place.setPlaceDistrict(dto.getPlaceDistrict());
+		place.setRating(dto.getRating());
 
-        Place place = placeRepo.findById(placeId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Place Id.."));
+		// Update Category
+		CategoryDTO category = getCategory(dto);
+		place.setCategoryId(category.getCategoryId());
+		place.setCategoryName(category.getName());
 
-        // Update Place Fields
-        place.setPlaceName(dto.getPlaceName().trim());
-        place.setAboutPlace(dto.getAboutPlace());
-        place.setPlaceHistory(dto.getPlaceHistory());
-        place.setPlaceDistrict(dto.getPlaceDistrict());
-        place.setRating(dto.getRating());
+		// Update Coordinates
+		if (dto.getCoordinate() != null) {
+			Coordinate coordinate = place.getCoordinate();
+			if (coordinate == null) {
+				coordinate = new Coordinate();
+			}
+			coordinate.setLatitude(dto.getCoordinate().getLatitude());
+			coordinate.setLongitude(dto.getCoordinate().getLongitude());
+			place.setCoordinate(coordinate);
+		}
 
-        // Update Category
-        CategoryDTO category = getCategory(dto);
-        place.setCategoryId(category.getCategoryId());
-        place.setCategoryName(category.getName());
+		// Update TimeZone
+		if (dto.getTimeZone() != null) {
+			TimeZone timezone = place.getTimeZone();
+			if (timezone == null) {
+				timezone = new TimeZone();
+				timezone.setPlace(place);
+			}
+			timezone.setOpeningTime(dto.getTimeZone().getOpeningTime());
+			timezone.setClosingTime(dto.getTimeZone().getClosingTime());
+			place.setTimeZone(timezone);
+		}
 
-        // Update Coordinates
-        if (dto.getCoordinate() != null) {
-            Coordinate coordinate = place.getCoordinate();
-            if (coordinate == null) {
-                coordinate = new Coordinate();
-            }
-            coordinate.setLatitude(dto.getCoordinate().getLatitude());
-            coordinate.setLongitude(dto.getCoordinate().getLongitude());
-            place.setCoordinate(coordinate);
-        }
+		// Save Updated Place
+		placeRepo.save(place);
 
-        // Update TimeZone
-        if (dto.getTimeZone() != null) {
-            TimeZone timezone = place.getTimeZone();
-            if (timezone == null) {
-                timezone = new TimeZone();
-                timezone.setPlace(place);
-            }
-            timezone.setOpeningTime(dto.getTimeZone().getOpeningTime());
-            timezone.setClosingTime(dto.getTimeZone().getClosingTime());
-            place.setTimeZone(timezone);
-        }
+		return "Place with ID " + placeId + " updated successfully.";
+	}
 
-        // Save Updated Place
-        placeRepo.save(place);
+	@Override
+	@Transactional
+	public String deletePlace(Long placeId) {
+		placeRepo.deleteById(placeId);
+		return "Place With Id ::" + placeId + " Deleted Successfully.";
+	}
 
-        return "Place with ID " + placeId + " updated successfully.";
-    }
+	@Override
+	public List<PlaceResponseDTO> getAllPlaces() {
+		List<Place> places = placeRepo.findAll();
+		return places.stream().map(this::convertToDTO).collect(Collectors.toList());
+	}
 
-    @Override
-    @Transactional
-    public String deletePlace(Long placeId) {
-        placeRepo.deleteById(placeId);
-        return "Place With Id ::" + placeId + " Deleted Successfully.";
-    }
+	@Override
+	public List<PlaceCategoryDTO> getAllDistinctCategories() {
+		return placeRepo.findPlaceIdsAndCategories();
+	}
 
-    @Override
-    public List<PlaceResponseDTO> getAllPlaces() {
-        List<Place> places = placeRepo.findAll();
-        return places.stream().map(this::convertToDTO).collect(Collectors.toList());
-    }
+	@Override
+	public Long getPlaceIdByName(String placeName) {
+		return placeRepo.findPlaceIdByPlaceName(placeName);
+	}
 
-    @Override
-    public List<PlaceCategoryDTO> getAllDistinctCategories() {
-        return placeRepo.findPlaceIdsAndCategories();
-    }
+	private CategoryDTO getCategory(PlaceDTO dto) {
+		CategoryDTO category = categoryService.getCategoryByName(dto.getCategoryName());
+		if (category == null) {
+			category = categoryService.createCategory(dto.getCategoryName(), dto.getPlaceCategoryDescription());
+		}
+		return category;
+	}
 
-    @Override
-    public Long getPlaceIdByName(String placeName) {
-        return placeRepo.findPlaceIdByPlaceName(placeName);
-    }
+	private PlaceResponseDTO convertToDTO(Place place) {
+		PlaceResponseDTO dto = new PlaceResponseDTO();
+		dto.setPlaceId(place.getPlaceId());
+		dto.setPlaceName(place.getPlaceName());
+		dto.setAboutPlace(place.getAboutPlace());
+		dto.setPlaceHistory(place.getPlaceHistory());
+		dto.setCategoryId(place.getCategoryId());
+		dto.setCategoryName(place.getCategoryName());
+		dto.setPlaceDistrict(place.getPlaceDistrict());
+		dto.setRating(place.getRating());
 
-    private CategoryDTO getCategory(PlaceDTO dto) {
-        CategoryDTO category = categoryService.getCategoryByName(dto.getCategoryName());
-        if (category == null) {
-            category = categoryService.createCategory(dto.getCategoryName(), dto.getPlaceCategoryDescription());
-        }
-        return category;
-    }
+		if (place.getCoordinate() != null) {
+			dto.setLatitude(place.getCoordinate().getLatitude());
+			dto.setLongitude(place.getCoordinate().getLongitude());
+		}
 
-    private PlaceResponseDTO convertToDTO(Place place) {
-        PlaceResponseDTO dto = new PlaceResponseDTO();
-        dto.setPlaceId(place.getPlaceId());
-        dto.setPlaceName(place.getPlaceName());
-        dto.setAboutPlace(place.getAboutPlace());
-        dto.setPlaceHistory(place.getPlaceHistory());
-        dto.setCategoryId(place.getCategoryId());
-        dto.setCategoryName(place.getCategoryName());
-        dto.setPlaceDistrict(place.getPlaceDistrict());
-        dto.setRating(place.getRating());
+		if (place.getTimeZone() != null) {
+			dto.setOpeningTime(place.getTimeZone().getOpeningTime());
+			dto.setClosingTime(place.getTimeZone().getClosingTime());
+		}
 
-        if (place.getCoordinate() != null) {
-            dto.setLatitude(place.getCoordinate().getLatitude());
-            dto.setLongitude(place.getCoordinate().getLongitude());
-        }
+		return dto;
+	}
 
-        if (place.getTimeZone() != null) {
-            dto.setOpeningTime(place.getTimeZone().getOpeningTime());
-            dto.setClosingTime(place.getTimeZone().getClosingTime());
-        }
+	private void validatePlaceDTO(PlaceDTO dto) {
+		if (dto == null) {
+			throw new IllegalArgumentException("Place data must not be null");
+		}
+		if (isNullOrEmpty(dto.getPlaceName())) {
+			throw new IllegalArgumentException("Enter Place Name");
+		}
+		if (isNullOrEmpty(dto.getAboutPlace())) {
+			throw new IllegalArgumentException("Mention About the Place");
+		}
+		if (isNullOrEmpty(dto.getPlaceHistory())) {
+			throw new IllegalArgumentException("Mention About the Place History");
+		}
+		if (isNullOrEmpty(dto.getPlaceDistrict())) {
+			throw new IllegalArgumentException("Mention the District of the Place");
+		}
+		if (dto.getCoordinate() == null) {
+			throw new IllegalArgumentException("Mention the Place Coordinates");
+		}
+		if (dto.getTimeZone() == null) {
+			throw new IllegalArgumentException("Mention the Place TimeZone details");
+		}
+		if (dto.getRating() == null) {
+			throw new IllegalArgumentException("Mention the Rating");
+		}
+	}
 
-        return dto;
-    }
+	private boolean isNullOrEmpty(String str) {
+		return str == null || str.trim().isEmpty();
+	}
 
-    private void validatePlaceDTO(PlaceDTO dto) {
-        if (dto == null) {
-            throw new IllegalArgumentException("Place data must not be null");
-        }
-        if (isNullOrEmpty(dto.getPlaceName())) {
-            throw new IllegalArgumentException("Enter Place Name");
-        }
-        if (isNullOrEmpty(dto.getAboutPlace())) {
-            throw new IllegalArgumentException("Mention About the Place");
-        }
-        if (isNullOrEmpty(dto.getPlaceHistory())) {
-            throw new IllegalArgumentException("Mention About the Place History");
-        }
-        if (isNullOrEmpty(dto.getPlaceDistrict())) {
-            throw new IllegalArgumentException("Mention the District of the Place");
-        }
-        if (dto.getCoordinate() == null) {
-            throw new IllegalArgumentException("Mention the Place Coordinates");
-        }
-        if (dto.getTimeZone() == null) {
-            throw new IllegalArgumentException("Mention the Place TimeZone details");
-        }
-        if (dto.getRating() == null) {
-            throw new IllegalArgumentException("Mention the Rating");
-        }
-    }
+	@Override
+	public Place savePlace(Place place) {
+		return placeRepo.save(place);
+	}
 
-    private boolean isNullOrEmpty(String str) {
-        return str == null || str.trim().isEmpty();
-    }
-
-
-    @Override
-    public Place savePlace(Place place) {
-        return placeRepo.save(place);
-    }
-
-    @Override
-    public Place getPlaceById(Long id) {
-        return placeRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Place Id.."));
-    }
+	@Override
+	public Place getPlaceById(Long id) {
+		return placeRepo.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid Place Id.."));
+	}
 
 	@Override
 	public String addPlace(PlaceDTO dto) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+
+	@Override
+	@Transactional
+	public String addPlace(PlaceDTO placeDto, Map<String, MultipartFile> placeImages,
+			Map<String, MultipartFile> cuisineImages, Map<String, MultipartFile> hotelImages) {
+
+		if (placeDto == null)
+			throw new IllegalArgumentException("PlaceDTO cannot be null");
+
+		if (placeDto.getPlaceName() == null || placeDto.getPlaceName().isBlank())
+			throw new IllegalArgumentException("Place name is required");
+
+		if (placeDto.getAboutPlace() == null || placeDto.getAboutPlace().isBlank())
+			throw new IllegalArgumentException("About place is required");
+
+		if (placeDto.getPlaceHistory() == null || placeDto.getPlaceHistory().isBlank())
+			throw new IllegalArgumentException("Place history is required");
+
+		if (placeDto.getCategoryName() == null || placeDto.getCategoryName().isBlank())
+			throw new IllegalArgumentException("Category name is required");
+
+		if (placeDto.getPlaceDistrict() == null || placeDto.getPlaceDistrict().isBlank())
+			throw new IllegalArgumentException("District is required");
+
+		// 🌍 Fetch coordinates
+		CoordinateDTO coordinateDTO;
+		try {
+			coordinateDTO = clientLocationService.fetchCoordinatesByPlaceName(placeDto.getPlaceName()).get();
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to fetch coordinates", e);
+		}
+
+		if (coordinateDTO == null || coordinateDTO.getLatitude() == 0.0 || coordinateDTO.getLongitude() == 0.0)
+			throw new IllegalArgumentException("Invalid coordinates fetched");
+
+		// 🏞️ Create Place
+		Place place = new Place();
+		place.setPlaceName(placeDto.getPlaceName());
+		place.setAboutPlace(placeDto.getAboutPlace());
+		place.setPlaceHistory(placeDto.getPlaceHistory());
+		place.setPlaceDistrict(placeDto.getPlaceDistrict());
+		place.setRating(placeDto.getRating());
+		place.setCategoryName(placeDto.getCategoryName());
+		place.setPostedOn(placeDto.getPostedOn() != null ? placeDto.getPostedOn() : LocalDate.now());
+
+		// 🌐 Set Coordinate
+		Coordinate coordinate = new Coordinate();
+		coordinate.setLatitude(coordinateDTO.getLatitude());
+		coordinate.setLongitude(coordinateDTO.getLongitude());
+		place.setCoordinate(coordinate);
+
+		// 🕒 Set TimeZone (Bidirectional)
+		if (placeDto.getTimeZone() != null) {
+			TimeZone timezone = new TimeZone();
+			timezone.setOpeningTime(placeDto.getTimeZone().getOpeningTime());
+			timezone.setClosingTime(placeDto.getTimeZone().getClosingTime());
+			timezone.setPlace(place);
+			place.setTimeZone(timezone);
+		}
+
+		// 🍜 Local Cuisines (Bidirectional)
+		List<LocalCuisine> cuisineList = new ArrayList<>();
+		if (placeDto.getLocalCuisines() != null) {
+			for (LocalCuisineDTO cuisineDTO : placeDto.getLocalCuisines()) {
+				LocalCuisine cuisine = new LocalCuisine();
+				cuisine.setCuisineName(cuisineDTO.getCuisineName());
+				cuisine.setPlace(place);
+				cuisineList.add(cuisine);
+			}
+		}
+		place.setLocalCuisines(cuisineList);
+
+
+		// Save Place and flush to get generated ID
+		Place savedPlace = placeRepo.save(place);
+		placeRepo.flush();
+		
+		
+		// 📷 Upload Cuisine Images
+		if (placeDto.getLocalCuisines() != null && cuisineImages != null) {
+		    Map<String, LocalCuisineDTO> cuisineMap = placeDto.getLocalCuisines().stream()
+		        .collect(Collectors.toMap(LocalCuisineDTO::getCuisineName, Function.identity()));
+
+		    for (LocalCuisine cuisine : savedPlace.getLocalCuisines()) {
+		        LocalCuisineDTO cuisineDTO = cuisineMap.get(cuisine.getCuisineName());
+
+		        if (cuisineDTO != null && cuisineImages.containsKey(cuisineDTO.getCuisineName())) {
+		            MultipartFile cuisineImage = cuisineImages.get(cuisineDTO.getCuisineName());
+
+		            if (cuisineImage != null && !cuisineImage.isEmpty()) {
+		                try {
+		                    mediaService.uploadCuisineImage(
+		                        cuisineImage,
+		                        cuisineDTO.getCuisineName(),
+		                        savedPlace.getPlaceId(),
+		                        savedPlace.getPlaceName(),
+		                        savedPlace.getCategoryName()
+		               
+		                    );
+		                } catch (Exception e) {
+		                    System.out.println("❌ Error uploading image for cuisine: " + cuisineDTO.getCuisineName());
+		                    e.printStackTrace();
+		                }
+		            }
+		        }
+		    }
+		}
+
+
+		// Save the updated place
+		placeRepo.saveAndFlush(savedPlace);
+		System.out.println("✅ Images saved for cuisines and hotels");
+
+
+
+		// 🗂️ Save Category
+		CategoryDTO categoryDTO = new CategoryDTO();
+		categoryDTO.setName(savedPlace.getCategoryName());
+		categoryDTO.setPlaceName(savedPlace.getPlaceName());
+		categoryDTO.setPlaceId(savedPlace.getPlaceId());
+		categoryDTO.setDescription(placeDto.getPlaceCategoryDescription());
+		CategoryDTO createdCategory = categoryService.saveCategory(categoryDTO);
+
+		// Update category info
+		savedPlace.setCategoryId(createdCategory.getCategoryId());
+		savedPlace.setCategoryName(createdCategory.getName());
+		placeRepo.save(savedPlace);
+
+		// 📸 Upload Place Images
+		if (placeImages != null) {
+			for (Map.Entry<String, MultipartFile> entry : placeImages.entrySet()) {
+				MultipartFile image = entry.getValue();
+				if (image != null && !image.isEmpty()) {
+					mediaService.uploadImageForPlace(image, savedPlace.getPlaceId(), savedPlace.getPlaceName(),
+							savedPlace.getCategoryName(), entry.getKey());
+				}
+			}
+		}
+
+		return "Place '" + savedPlace.getPlaceName() + "' added successfully with images and  cuisines";
+	}
+
+	@Override
+	public String addPlace(PlaceDTO placeDto, List<MultipartFile> placeImages,
+			Map<String, MultipartFile> cuisineImages) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 
 
@@ -305,4 +452,5 @@ public class PlaceServiceImpl implements PlaceServiceInterface {
 	        );
 	    }).collect(Collectors.toList());
 	}
+
 }
