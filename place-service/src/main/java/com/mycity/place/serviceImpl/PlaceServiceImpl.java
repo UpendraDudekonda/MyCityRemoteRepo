@@ -22,6 +22,7 @@ import com.mycity.shared.placedto.LocalCuisineDTO;
 import com.mycity.shared.placedto.PlaceCategoryDTO;
 import com.mycity.shared.placedto.PlaceDTO;
 import com.mycity.shared.placedto.PlaceResponseDTO;
+import com.mycity.shared.placedto.PlaceWithImagesDTO;
 import com.mycity.shared.timezonedto.TimezoneDTO;
 import com.mycity.shared.tripplannerdto.CoordinateDTO;
 
@@ -273,6 +274,7 @@ public class PlaceServiceImpl implements PlaceServiceInterface {
 		return null;
 	}
 
+
 	@Override
 	@Transactional
 	public String addPlace(PlaceDTO placeDto, Map<String, MultipartFile> placeImages,
@@ -419,6 +421,36 @@ public class PlaceServiceImpl implements PlaceServiceInterface {
 			Map<String, MultipartFile> cuisineImages) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+
+
+
+	@Override
+	public List<PlaceWithImagesDTO> getPlacesByCategoryWithImages(String categoryName) {
+	    List<Place> places = placeRepo.findByCategoryName(categoryName);
+	    String categoryDescription = categoryService.getCategoryDescription(categoryName);
+
+	    return places.stream().map(place -> {
+	        List<String> photoUrls = mediaService.getPhotoUrlsByPlaceId(place.getPlaceId());
+
+	        return new PlaceWithImagesDTO(
+	            place.getPlaceId(),
+	            place.getPlaceName(),
+	            place.getAboutPlace(),
+	            place.getPlaceHistory(),
+	            place.getTimeZone() != null ? place.getTimeZone().getOpeningTime() : null,
+	            place.getTimeZone() != null ? place.getTimeZone().getClosingTime() : null,
+	            place.getRating(),
+	            place.getPlaceDistrict(),
+	            place.getCoordinate() != null ? place.getCoordinate().getLatitude() : null,
+	            place.getCoordinate() != null ? place.getCoordinate().getLongitude() : null,
+	            photoUrls, //from media service
+	            categoryDescription,//from category Description
+	            place.getPostedOn(),
+	            place.getCategoryName()
+	        );
+	    }).collect(Collectors.toList());
 	}
 
 }

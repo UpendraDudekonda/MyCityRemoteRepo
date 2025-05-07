@@ -33,6 +33,7 @@ public class UserAuthenticationService implements UserAuthenticationInterface {
 
     @Override
     public String registerUser(UserRegRequest user) {
+    	
         validateUserInput(user);
 
         if (userAuthRepository.existsByEmail(user.getEmail())) {
@@ -84,9 +85,11 @@ public class UserAuthenticationService implements UserAuthenticationInterface {
         if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
             throw new IllegalArgumentException("Password is required");
         }
-        if (user.getMobilenumber() == null || !user.getMobilenumber().matches("^\\d{10}$")) {
+        if (user.getMobilenumber() == null || !user.getMobilenumber().matches("^\\d{10,15}$")) {
+        	
+        	System.err.println(user.getMobilenumber()+"   mobile number from request...");
             throw new IllegalArgumentException("Mobile number must be 10 digits");
-        }
+       }
     }
     //Not Using Code
     @Override

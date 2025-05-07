@@ -25,6 +25,7 @@ import com.mycity.place.service.PlaceServiceInterface;
 import com.mycity.shared.placedto.PlaceCategoryDTO;
 import com.mycity.shared.placedto.PlaceDTO;
 import com.mycity.shared.placedto.PlaceResponseDTO;
+import com.mycity.shared.placedto.PlaceWithImagesDTO;
 
 @RestController
 @RequestMapping("/place")
@@ -139,6 +140,13 @@ public class PlaceController {
 	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	    }
 	}
-
-
+	
+	@GetMapping("/placebycategory/{categoryName}")
+	public ResponseEntity<List<PlaceWithImagesDTO>> getPlacesByCategory(@PathVariable String categoryName) {
+	    List<PlaceWithImagesDTO> places = placeService.getPlacesByCategoryWithImages(categoryName);
+	    return ResponseEntity.ok(places);
+	}
+	
+	
 }
+

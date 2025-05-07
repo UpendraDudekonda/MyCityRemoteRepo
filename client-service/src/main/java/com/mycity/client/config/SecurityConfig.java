@@ -1,19 +1,15 @@
-package com.mycity.place.config;
+package com.mycity.client.config;
 
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.reactive.function.client.WebClient;
-
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -22,20 +18,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> {}) // Enable CORS
+            .cors() // ✅ Enable CORS
+            .and()
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                    "/place/getall",
-                    "/place/discoveries/add",
-                    "/place/discoveries/getall",
-                    "/place/discoveries/getplace/{placeName}",
-                    "/place/getplaceid/{placeName}",
-                    "/place/getplace/{placeId}",
-                    "/place/placeby/categories",
-                    "/place/add-place",
-                    "/place/about/{placeId}",
-                    "/place/placebycategory/{categoryName}"
+                    "/client/email/request-otp", // ✅ You missed leading slash!
+                    "/**", // ✅ Optional: for testing allow everything
+                    "/swagger-ui/**", "/v3/api-docs/**" // if using Swagger
                 ).permitAll()
                 .anyRequest().authenticated()
             );
@@ -44,26 +34,15 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("*")); // safer than addAllowedOrigin("*")
+        config.setAllowedOrigins(List.of("http://localhost:3000")); // ✅ Replace with real ngrok origin
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true); // optional depending on frontend needs
+        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
-    }
-
-    @Bean
-    @LoadBalanced
-    public WebClient.Builder webClientBuilder() {
-        return WebClient.builder();
     }
 }
