@@ -15,6 +15,7 @@ import com.mycity.place.service.PlaceDiscoveriesInterface;
 import com.mycity.place.service.PlaceServiceInterface;
 import com.mycity.shared.placedto.PlaceDTO;
 import com.mycity.shared.placedto.PlaceDiscoveriesDTO;
+import com.mycity.shared.placedto.PlaceResponseDTO;
 
 @Service
 public class PlaceDiscoveriesServiceimpl implements PlaceDiscoveriesInterface {
@@ -63,7 +64,7 @@ public class PlaceDiscoveriesServiceimpl implements PlaceDiscoveriesInterface {
 	}
 
 	@Override
-	public PlaceDTO getPlaceDetailsByName(String placeName) {
+	public PlaceResponseDTO getPlaceDetailsByName(String placeName) {
 		// TODO Auto-generated method stub
 		return null;
 	}

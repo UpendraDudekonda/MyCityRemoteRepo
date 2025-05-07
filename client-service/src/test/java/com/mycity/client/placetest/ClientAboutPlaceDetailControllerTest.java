@@ -1,6 +1,7 @@
 package com.mycity.client.placetest;
 
-import com.mycity.client.place.ClientAboutPlaceDetailController;
+import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -11,10 +12,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import com.mycity.client.place.ClientAboutPlaceDetailController;
+
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-
-import java.util.Map;
 
 @SpringBootTest
 public class ClientAboutPlaceDetailControllerTest {
