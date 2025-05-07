@@ -40,7 +40,6 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
             System.out.println("Public path - skipping token validation: " + path);
             return chain.filter(exchange);
         }
-
  
         if(path.startsWith("/event/internal/fetch")) {
         	System.out.println("Public path - skipping token validation");

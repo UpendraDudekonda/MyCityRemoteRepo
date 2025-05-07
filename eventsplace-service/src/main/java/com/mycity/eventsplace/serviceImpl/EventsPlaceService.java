@@ -18,7 +18,7 @@ import com.mycity.eventsplace.entity.Event;
 import com.mycity.eventsplace.entity.EventHighlights;
 import com.mycity.eventsplace.repository.EventsRepository;
 import com.mycity.eventsplace.service.EventsPlaceServiceInterface;
-import com.mycity.shared.eventsdto.EventCardDto;
+
 import com.mycity.shared.eventsdto.EventsDTO;
 
 import com.mycity.shared.mediadto.EventSubImagesDTO;
@@ -38,6 +38,7 @@ public class EventsPlaceService implements EventsPlaceServiceInterface {
   private final EventsRepository eventRepo;
 
  
+  
   private final  MediaServiceConfig mediaService;
     
 

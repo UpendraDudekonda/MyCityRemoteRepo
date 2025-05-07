@@ -12,6 +12,8 @@ public interface EventsRepository extends JpaRepository<Event, Long> {
 		return null;
 	}
 
+	
+	
 	boolean existsByEventName(String eventName);
 
 }

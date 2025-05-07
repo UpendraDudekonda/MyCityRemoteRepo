@@ -67,6 +67,7 @@ public class EventImageController {
 	        return ResponseEntity.ok("Images for event " + eventName + " deleted.");
 	    }
 
+	 
 	 @GetMapping("/fetch/images/{eventId}")
 	 public ResponseEntity<?> getEventImages(@PathVariable Long eventId) {
 	     List<EventSubImages> images = imageService.getEventImages(eventId);

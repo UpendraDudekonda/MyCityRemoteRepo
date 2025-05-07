@@ -190,6 +190,7 @@ public class AdminEventController {
                     .bodyToMono(String.class)
                     .block();
 
+            
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {

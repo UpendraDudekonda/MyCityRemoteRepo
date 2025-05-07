@@ -10,6 +10,7 @@ import com.mycity.media.entity.EventSubImages;
 public interface EventImageService {
 
 	
+	
 
 	void uploadImages(List<MultipartFile> files, List <String> names, Long eventId, String eventName);
 

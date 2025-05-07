@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.core.ParameterizedTypeReference;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

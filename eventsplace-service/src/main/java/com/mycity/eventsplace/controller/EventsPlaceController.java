@@ -84,5 +84,7 @@ public class EventsPlaceController {
  	    }
 
  	    return ResponseEntity.ok(response);
+ 	    
+ 	    
     }
 }

@@ -22,6 +22,7 @@ public interface EventsPlaceServiceInterface {
 		String deleteEvent(Long eventId);
  
 	
+		
 		 Map<String,Object> createEventCartSection();
 
 		 

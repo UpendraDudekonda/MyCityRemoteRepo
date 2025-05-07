@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class EventsDTO {
      	
+	
     private String eventName;
     private LocalTime duration;
     private String description;
