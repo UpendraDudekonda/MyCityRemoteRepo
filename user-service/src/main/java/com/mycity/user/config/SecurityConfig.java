@@ -13,6 +13,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.reactive.function.client.WebClient;
 
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -37,7 +38,11 @@ public class SecurityConfig {
                     "/user/review/update/{reviewId}",
                     "/user/review/get/{placeId}",
                     "/user/review/delete/{reviewId}",
-                    "/user/rating/add"
+                    "/user/rating/add",
+                    "/user/gallery/upload",
+                    "/user/gallery/getimages/{districtName}",
+                    "/user/gallery/deleteimage/{imageId}"
+                    
                     
                 ).permitAll()
                 .anyRequest().authenticated()

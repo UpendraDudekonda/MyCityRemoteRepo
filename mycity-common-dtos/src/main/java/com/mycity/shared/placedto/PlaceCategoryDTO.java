@@ -8,6 +8,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PlaceCategoryDTO {
-    private Long placeId;
-    private String placeCategory;
+	private Long placeId;
+	private String placeName;
+    private String placeHistory;
+    private Long categoryId;
+    private String categoryName;
+
 }

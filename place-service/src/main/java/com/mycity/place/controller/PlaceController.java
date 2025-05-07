@@ -1,7 +1,6 @@
 package com.mycity.place.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,41 +18,47 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.mycity.place.entity.Place;
+import com.mycity.place.exception.GlobalExceptionHandler;
 import com.mycity.place.service.PlaceServiceInterface;
 import com.mycity.shared.placedto.PlaceCategoryDTO;
 import com.mycity.shared.placedto.PlaceDTO;
 import com.mycity.shared.placedto.PlaceResponseDTO;
+import com.mycity.shared.placedto.UserGalleryDTO;
 
 @RestController
 @RequestMapping("/place")
 public class PlaceController {
 
+    private final GlobalExceptionHandler globalExceptionHandler;
+
 	@Autowired
 	private PlaceServiceInterface placeService;
 
+    PlaceController(GlobalExceptionHandler globalExceptionHandler) {
+        this.globalExceptionHandler = globalExceptionHandler;
+    }
+
 	@PostMapping(value = "/add-place", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> addPlaceDetails(@ModelAttribute PlaceDTO placeDto,
+	public ResponseEntity<String> addPlaceDetails(@RequestPart PlaceDTO placeDto,
 			@RequestPart("images") List<MultipartFile> images) {
 		System.out.println("PlaceController.addPlaceDetails()");
-
+		System.out.println(placeDto.getCategoryName());
+		System.out.println("Place DETAILS -->"+placeDto);
+ 
 		try {
-
+ 
 			// Use the service to add the place details and save the images
 			String msg = placeService.addPlace(placeDto, images);
 			return new ResponseEntity<>(msg, HttpStatus.CREATED);
-
-		} catch (Exception e) {
+ 
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 			return new ResponseEntity<>("Error adding place with images", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
-	// Create a place using PlaceDTO
-	@PostMapping("/newplace/add")
-	public ResponseEntity<String> addPlaceDetails(@RequestBody PlaceDTO dto) {
-		String msg = placeService.addPlace(dto);
-		return new ResponseEntity<>(msg, HttpStatus.CREATED);
-	}
 
 	// Get place by ID (Place entity)
 	@GetMapping("/get/{placeId}")
@@ -93,10 +98,23 @@ public class PlaceController {
 		return place != null ? ResponseEntity.ok(place) : ResponseEntity.notFound().build();
 	}
 
-	@GetMapping("/places/categories")
+	@GetMapping("/placeby/categories")
 	public ResponseEntity<List<PlaceCategoryDTO>> getAllDistinctCategories() {
 		List<PlaceCategoryDTO> categories = placeService.getAllDistinctCategories();
 		return ResponseEntity.ok(categories);
 	}
+	
+	@GetMapping("/getplaceid/{placeName}")
+	public ResponseEntity<Long> getPlaceIdByName(@PathVariable String placeName) 
+	{
+		System.out.println("PlaceController.getPlaceIdByName()");
+	    Long placeId = placeService.getPlaceIdByName(placeName);
+	    if (placeId != null) {
+	        return new ResponseEntity<>(placeId, HttpStatus.OK);
+	    } else {
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	    }
+	}
+
 
 }

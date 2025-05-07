@@ -28,7 +28,13 @@ public class SecurityConfig {
 	                	"/admin/getallplaces",
 	                	"/admin/discoveries/addPlace",
 	                	"/admin/discoveries/getallPlaces",
-	                	"/admin/discoveries/getPlace/{placeName}"
+	                	"/admin/discoveries/getPlace/{placeName}",
+	                	"/admin/addPlace",
+	                	"/admin/add-place",
+	                	"/admin/getplace/{placeId}",
+	                	"/admin/updateplace/{placeId}",
+	                	"/admin/deleteplace/{placeId}",
+	                	"/admin/getall/category"
 	                ).permitAll()
 	                .anyRequest().authenticated()
 	            );

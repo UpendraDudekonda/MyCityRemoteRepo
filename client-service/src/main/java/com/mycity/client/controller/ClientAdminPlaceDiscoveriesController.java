@@ -1,23 +1,31 @@
 package com.mycity.client.controller;
 
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.mycity.client.config.CookieTokenExtractor;
-import com.mycity.shared.placedto.PlaceDTO;
 import com.mycity.shared.placedto.PlaceDiscoveriesDTO;
+import com.mycity.shared.placedto.PlaceResponseDTO;
+import com.mycity.shared.placedto.UserGalleryDTO;
 
 import reactor.core.publisher.Mono;
 
@@ -68,7 +76,7 @@ public class ClientAdminPlaceDiscoveriesController
     }
 	
 	@GetMapping("/getplace/{placeName}")
-	public Mono<ResponseEntity<PlaceDTO>> getPlaceByName(@RequestHeader(value=HttpHeaders.COOKIE,required = false) String cookie,@PathVariable String placeName)
+	public Mono<ResponseEntity<PlaceResponseDTO>> getPlaceByName(@RequestHeader(value=HttpHeaders.COOKIE,required = false) String cookie,@PathVariable String placeName)
 	{
 		System.out.println("ClientAdminPlaceDiscoveriesController.getPlaceByName()");
 		//Extract Token From Token Extractor
@@ -78,7 +86,8 @@ public class ClientAdminPlaceDiscoveriesController
 				.uri("lb://"+API_GATEWAY_SERVICE_NAME+PATH_TO_GET_PLACE_DETAILS,placeName)
 				.header(HttpHeaders.AUTHORIZATION,"Bearer "+token)
 				.retrieve()
-				.toEntity(PlaceDTO.class)
+				.toEntity(PlaceResponseDTO.class)
 				.map(response -> ResponseEntity.status(response.getStatusCode()).body(response.getBody()));
 	}
+
 }

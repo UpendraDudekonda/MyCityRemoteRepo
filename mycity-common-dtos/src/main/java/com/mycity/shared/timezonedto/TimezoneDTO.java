@@ -14,5 +14,7 @@ public class TimezoneDTO
     private String name;
     private LocalTime OpeningTime;
     private LocalTime ClosingTime;
+    
+    
 }
 

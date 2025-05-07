@@ -10,13 +10,19 @@ import java.util.concurrent.ExecutionException;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.mycity.place.entity.Place;
 import com.mycity.place.repository.PlaceRepository;
 import com.mycity.place.service.PlaceDetailService;
 import com.mycity.shared.locationdto.LocationDTO;
 import com.mycity.shared.placedto.AboutPlaceResponseDTO;
+import com.mycity.shared.placedto.UserGalleryDTO;
 import com.mycity.shared.reviewdto.ReviewDTO;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 
 @Service
 public class PlaceDetailServiceImpl implements PlaceDetailService {
@@ -31,7 +37,13 @@ public class PlaceDetailServiceImpl implements PlaceDetailService {
     
     @Autowired
     private WebClientReviewService reviewService;
-    
+	
+	@Autowired
+	private HttpServletRequest servletRequest;
+	
+	@Autowired
+	public WebClient.Builder webClientBuilder;
+	
     @Autowired
     private WebClientLocationService locationService;
 

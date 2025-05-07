@@ -2,26 +2,34 @@ package com.mycity.place.serviceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.mycity.place.entity.Place;
 import com.mycity.place.entity.PlaceDiscoveries;
 import com.mycity.place.exception.TooManyPlacesException;
 import com.mycity.place.repository.PlaceDiscoveryRepository;
-import com.mycity.place.repository.PlaceRepository;
 import com.mycity.place.service.PlaceDiscoveriesInterface;
 import com.mycity.place.service.PlaceServiceInterface;
-import com.mycity.shared.placedto.PlaceDTO;
 import com.mycity.shared.placedto.PlaceDiscoveriesDTO;
+import com.mycity.shared.placedto.PlaceResponseDTO;
+import com.mycity.shared.placedto.UserGalleryDTO;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
+import reactor.core.publisher.Mono;
 
 @Service
 public class PlaceDiscoveriesServiceimpl implements PlaceDiscoveriesInterface
 {
 	@Autowired
 	private PlaceDiscoveryRepository discoveryRepo;
-
+	
 	@Autowired
 	private PlaceServiceInterface service;
 
@@ -67,13 +75,37 @@ public class PlaceDiscoveriesServiceimpl implements PlaceDiscoveriesInterface
 	}
 
 	@Override
-	public PlaceDTO getPlaceDetailsByName(String placeName) 
+	public PlaceResponseDTO getPlaceDetailsByName(String placeName) 
 	{
 	   //using placeService to get place Id from place_db using place name
 	   Long pId=service.getPlaceIdByName(placeName);
 	   //using placeId to get Complete info about Place
-	   PlaceDTO place=service.getPlace(pId);
-	   return place;
+	   Place place=service.getPlaceById(pId);
+	   
+	   PlaceResponseDTO dto=new PlaceResponseDTO();
+	   dto.setPlaceName(place.getPlaceName());
+	   dto.setAboutPlace(place.getAboutPlace());
+	   dto.setPlaceCategory(place.getCategoryName());
+	   dto.setRating(place.getRating());
+	   dto.setPlaceDistrict(place.getPlaceDistrict());
+	   dto.setPlaceHistory(place.getPlaceHistory());
+	   
+	   if (place.getCoordinate() != null) 
+	   {
+	            dto.setLatitude(place.getCoordinate().getLatitude());
+	            dto.setLongitude(place.getCoordinate().getLongitude());
+	   }
+	   
+       if (place.getTimeZone() != null)
+       {
+           dto.setOpeningTime(place.getTimeZone().getOpeningTime());
+           dto.setClosingTime(place.getTimeZone().getClosingTime());
+       }
+	   
+	   return dto;
 	}
+
+
+
     
 }

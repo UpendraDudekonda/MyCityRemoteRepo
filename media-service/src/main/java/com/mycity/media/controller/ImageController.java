@@ -3,8 +3,9 @@ package com.mycity.media.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,6 +58,13 @@ public class ImageController {
 	public ResponseEntity<List<String>> getAboutPlaceImages(@PathVariable Long placeId) {
 	     List<String> imageUrl = imageService.getAboutPlaceImages(placeId);
 	    return ResponseEntity.ok(imageUrl);
+	}
+	
+	@DeleteMapping("/images/delete/{placeId}")
+	public ResponseEntity<String> deleteImage(@PathVariable Long placeId)
+	{
+		String result=imageService.deleteImage(placeId);
+		return ResponseEntity.ok(result);
 	}
 	
 }

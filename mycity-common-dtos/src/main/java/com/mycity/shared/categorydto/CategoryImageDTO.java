@@ -8,8 +8,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryImageDTO { 
-    private String categoryName;
+	
+	private String categoryName;
     private String imageUrl;
-
-   
+    private String placeId;
+    private String placeName;
+    private String placeDescription;
 }

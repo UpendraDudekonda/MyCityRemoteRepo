@@ -9,8 +9,6 @@ public class AdminPlaceResponseDTO
 {
     private String placeName;
     private LocalDate currentDate;
-    private String ImageUrl;
-    private LocalDate postedOn;
-    
-    
+    private String ImageUrl; 
+    private String Location;
 }

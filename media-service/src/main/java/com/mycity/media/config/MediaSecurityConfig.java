@@ -19,7 +19,9 @@ public class MediaSecurityConfig {
 	    http
 	        .csrf(csrf -> csrf.disable())
 	        .authorizeHttpRequests(auth -> auth
-	            .requestMatchers("/media/upload/image","/media/images","/media/upload","/media/cover-image","/media/fetch{id}","/media/images/{placeId}")
+	            .requestMatchers("/media/upload/image","/media/images","/media/upload","/media/cover-image","/media/fetch{id}","/media/images/{placeId}","/media/images/delete/{placeId}",
+	            		         "/media/review/upload","/media/review/delete/{reviewId}",
+	            		         "/media/gallery/upload","media/gallery/getimages/{districtName}","/media/gallery/deleteimage/{imageId}")
 	            .permitAll()
 	            .anyRequest().authenticated()
 	        );

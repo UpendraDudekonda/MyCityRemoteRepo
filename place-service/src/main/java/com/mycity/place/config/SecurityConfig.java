@@ -1,6 +1,6 @@
 package com.mycity.place.config;
 
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,8 +27,16 @@ public class SecurityConfig
                     "/place/discoveries/add",
                     "/place/discoveries/getall",
                     "/place/discoveries/getplace/{placeName}",
-                    "/place/getid/{placeName}",
-                    "/place/getplace/{placeId}"
+                    "/place/gallery/upload",
+                    "/place/getplaceid/{placeName}",
+                    "/place/getplace/{placeId}",
+                    "/place/allplaces",
+                    "/place/add-place",
+                    "/place/delete/{placeId}",
+                    "/place/newplace/add",
+                    "/place/get/{placeId}",
+                    "/place/update/{placeId}",
+                    "place/places/categories"
                     
                 ).permitAll()
                 .anyRequest().authenticated()
@@ -52,10 +60,5 @@ public class SecurityConfig
         source.registerCorsConfiguration("/**", config);
         return source;
     }
-    
-    @Bean
-    @LoadBalanced
-    public WebClient.Builder webClientBuilder() {
-        return WebClient.builder();
-    }
-}
+}   
+ 

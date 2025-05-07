@@ -1,6 +1,7 @@
 package com.mycity.media.serviceImpl;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,4 +69,41 @@ public class ImageServiceImpl implements ImageService {
                      .map(Images::getImageUrl)
                      .collect(Collectors.toList());
     }
+
+    @Override
+    public String deleteImage(Long placeId)
+    {
+        // Get all image IDs associated with the given placeId
+        List<Long> imageIds = imageServiceRepository.findImageIdsByPlaceId(placeId);
+        
+        // Check if there are any images associated with the placeId
+        if (imageIds.isEmpty()) {
+            throw new IllegalArgumentException("No images found for PlaceId: " + placeId);
+        }
+
+        // using flag to check if any image was deleted
+        boolean isDeleted = false;
+ 
+        //deleting each image
+        for (Long imageId : imageIds) {
+            Optional<Images> opt = imageServiceRepository.findById(imageId);
+
+            // Check if the image exists or not  before deleting
+            if (opt.isPresent()) {
+                imageServiceRepository.deleteById(imageId);
+                isDeleted = true;
+            } else {
+
+               throw new IllegalArgumentException("Images With Id "+imageId+" not found");
+            }
+        }
+
+        // Return a success message if any image was deleted
+        if (isDeleted) {
+            return "Images with PlaceId " + placeId + " have been deleted.";
+        } else {
+            throw new IllegalArgumentException("No images found to delete for PlaceId: " + placeId);
+        }
+    }
+
 }

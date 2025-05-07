@@ -1,6 +1,6 @@
 package com.mycity.shared.placedto;
 
-import java.util.List;
+import java.time.LocalDate;
 
 import com.mycity.shared.timezonedto.TimezoneDTO;
 import com.mycity.shared.tripplannerdto.CoordinateDTO;
@@ -28,14 +28,18 @@ public class PlaceDTO {
 
     private Double rating;
 
-   
-    private String placeCategory;
 
     private String placeDistrict;
 
     private CoordinateDTO coordinate;
     
     private String imageName;
+    
+    private String placeCategoryDescription;
 
+	public LocalDate PostedOn;
+		
+	
+    private String categoryName; // ✅ Needed
     
 }

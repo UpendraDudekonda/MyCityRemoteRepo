@@ -8,10 +8,10 @@ import com.mycity.place.entity.Place;
 import com.mycity.shared.placedto.PlaceCategoryDTO;
 import com.mycity.shared.placedto.PlaceDTO;
 import com.mycity.shared.placedto.PlaceResponseDTO;
+import com.mycity.shared.placedto.UserGalleryDTO;
 
-public interface PlaceServiceInterface {
-	String addPlace(PlaceDTO dto);
-
+public interface PlaceServiceInterface 
+{
 	PlaceResponseDTO getPlace(Long placeId);
 
 	String updatePlace(Long placeId, PlaceDTO dto);
@@ -27,5 +27,7 @@ public interface PlaceServiceInterface {
 	List<PlaceCategoryDTO> getAllDistinctCategories();
 
 	String addPlace(PlaceDTO placeDto, List<MultipartFile> images);
+	
+	Long getPlaceIdByName(String placeName);
 
 }

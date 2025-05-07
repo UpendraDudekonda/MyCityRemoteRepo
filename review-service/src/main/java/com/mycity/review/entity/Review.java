@@ -36,9 +36,6 @@ public class Review {
     private LocalDate postedOn;
     
     private String userName;
-    
-    private String imageUrl;
-
 
 }
 
