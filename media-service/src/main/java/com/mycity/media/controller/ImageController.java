@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.mycity.media.service.ImageService;
+import com.mycity.shared.mediadto.AboutPlaceImageDTO;
 import com.mycity.shared.mediadto.ImageDTO;
 
 import jakarta.ws.rs.core.MediaType;
@@ -26,17 +27,30 @@ public class ImageController {
 	private ImageService imageService;
 	
 	
-	@PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA)
-	public ResponseEntity<String> uploadImage(
+	@PostMapping(value = "/upload/places", consumes = MediaType.MULTIPART_FORM_DATA)
+	public ResponseEntity<String> uploadImageForPlaces(
 	        @RequestPart("image") MultipartFile file,
 	        @RequestParam Long placeId,
 	        @RequestParam String placeName,
 	        @RequestParam String category,
 	        @RequestParam String imageName) {
 		
-		imageService.uploadImage(file,placeId,placeName,category,imageName);
+		imageService.uploadImageForPlaces(file,placeId,placeName,category,imageName);
 
 	    return ResponseEntity.ok("Image uploaded successfully");
+	}
+	@PostMapping(value ="/upload/cuisines" , consumes = MediaType.MULTIPART_FORM_DATA)
+	public ResponseEntity<String> uploadImageForCuisines(
+	        @RequestPart("image") MultipartFile file,
+	        @RequestParam Long placeId,
+	        @RequestParam Long cuisineId,
+	        @RequestParam String cuisineName,
+	        @RequestParam String placeName,
+	        @RequestParam String category) {
+
+	    imageService.uploadImageForCuisines(file, placeId, cuisineId, placeName, category, cuisineName);
+
+	    return ResponseEntity.ok("Image uploaded successfully for cuisineId: " + cuisineId);
 	}
 
 	@GetMapping("/fetch/{id}")
@@ -52,9 +66,10 @@ public class ImageController {
 	}
 	
 	@GetMapping("/images/{placeId}")
-	public ResponseEntity<List<String>> getAboutPlaceImages(@PathVariable Long placeId) {
-	     List<String> imageUrl = imageService.getAboutPlaceImages(placeId);
-	    return ResponseEntity.ok(imageUrl);
+	public ResponseEntity<List<AboutPlaceImageDTO>> getAboutPlaceImages(@PathVariable Long placeId) {
+	    List<AboutPlaceImageDTO> images = imageService.getAboutPlaceImages(placeId);
+	    return ResponseEntity.ok(images);
 	}
+
 	
 }

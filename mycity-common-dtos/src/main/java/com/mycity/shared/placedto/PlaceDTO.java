@@ -1,6 +1,8 @@
 package com.mycity.shared.placedto;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.mycity.shared.timezonedto.TimezoneDTO;
 import com.mycity.shared.tripplannerdto.CoordinateDTO;
@@ -14,32 +16,31 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PlaceDTO {
 
-    private long placeId;
+	private long placeId;
 
-   
-    private String placeName;
+	private String placeName;
 
-  
-    private String aboutPlace;
+	private String aboutPlace;
 
-    private String placeHistory;
+	private String placeHistory;
 
-    private TimezoneDTO timeZone;
+	private TimezoneDTO timeZone;
 
-    private Double rating;
+	private Double rating;
+
+	private String placeDistrict;
+
+	private CoordinateDTO coordinate;
+
+	private String imageName;
+
+	private String placeCategoryDescription;
+
+	public LocalDate postedOn;
+
+	private String categoryName; // ✅ Needed
+
+	private List<LocalCuisineDTO> localCuisines = new ArrayList<>();
 
 
-    private String placeDistrict;
-
-    private CoordinateDTO coordinate;
-    
-    private String imageName;
-    
-    private String placeCategoryDescription;
-
-	public LocalDate PostedOn;
-		
-	
-    private String categoryName; // ✅ Needed
-    
 }
