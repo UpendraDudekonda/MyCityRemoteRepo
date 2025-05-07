@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class EventsPlaceException {
 
     // Handle invalid inputs like missing or duplicate event names
     @ExceptionHandler(IllegalArgumentException.class)

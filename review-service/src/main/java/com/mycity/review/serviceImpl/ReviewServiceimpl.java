@@ -164,4 +164,30 @@ public class ReviewServiceimpl implements ReviewServiceInterface {
             throw new IllegalArgumentException("Invalid Review Id");
         }
     }
+
+
+    @Override
+    public List<ReviewDTO> fetchReviews(Long placeId) {
+        // Fetch reviews from the repository based on placeId
+        List<Review> reviews = reviewRepo.findByPlaceId(placeId);
+
+        // Convert the list of Review entities to ReviewDTO objects
+        List<ReviewDTO> reviewDTOs = new ArrayList<>();
+
+        for (Review review : reviews) {
+            ReviewDTO reviewDTO = new ReviewDTO();
+           
+            reviewDTO.setPlaceName(review.getPlaceName());
+            reviewDTO.setReviewDescription(review.getReviewDescription());
+            reviewDTO.setImageUrl(review.getImageUrl());
+            reviewDTO.setUserName(review.getUserName());
+            reviewDTO.setPostedOn(review.getPostedOn());
+
+            // Optional: You can add more logic here for fetching extra fields, like user images, etc.
+            reviewDTOs.add(reviewDTO);
+        }
+
+        return reviewDTOs;
+    }
+
 }

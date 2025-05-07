@@ -21,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.mycity.media.entity.EventSubImages;
 import com.mycity.media.service.EventImageService;
 
-
 import jakarta.ws.rs.core.MediaType;
 
 @RestController
@@ -80,10 +79,5 @@ public class EventImageController {
 	 }
 
 
-//	
-//	@GetMapping("/fetch/{id}")
-//	public ResponseEntity<EventSubImagesDTO> getImages(@PathVariable Long id) {
-//	    EventSubImagesDTO imageDTO = imageService.fetchImages(id);
-//	    return ResponseEntity.ok(imageDTO);
-//	}
+
 }

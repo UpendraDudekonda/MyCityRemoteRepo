@@ -2,19 +2,23 @@ package com.mycity.client.event;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
 import java.util.Map;
 
 import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.core.ParameterizedTypeReference;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -26,8 +30,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.mycity.client.config.CookieTokenExtractor;
+
 import com.mycity.client.config.MultipartInputStreamFileResource;
+
+import com.mycity.client.config.CookieTokenExtractor;
+
 import com.mycity.shared.eventsdto.EventsDTO;
 
 import lombok.RequiredArgsConstructor;
@@ -43,11 +50,13 @@ public class ClientEventController {
 
     private static final String API_GATEWAY_SERVICE_NAME = "API-GATEWAY";
     private static final String ADMIN_EVENT_PATH = "/admin/event/add";
+
     private static final String UPDATE_PATH = "/admin/event/update/";
     private static final String DELETE_PATH = "/admin/event/delete/";
     private static final String EVENTS_FETCH_DETAILS="/event/internal/fetch/";
     private static final String EVENTS_FETCH_CARTS="/event/internal/fetch";
     
+
 
     @PostMapping(value = "/event/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<ResponseEntity<String>> addEvent(
@@ -117,6 +126,7 @@ public class ClientEventController {
             return Mono.just(ResponseEntity.status(500).body("Exception occurred: " + e.getMessage()));
         }
     }
+
     
     
     @PutMapping(value = "/event/update/{eventId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -234,6 +244,7 @@ public class ClientEventController {
                 .onErrorResume(e -> Mono.just(ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR)
                         .body(Map.of("error", "Failed to fetch event carts: " + e.getMessage()))));
     }
+
 
 
 

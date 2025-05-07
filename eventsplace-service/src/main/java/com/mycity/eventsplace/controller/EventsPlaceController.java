@@ -20,7 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.mycity.eventsplace.service.EventsPlaceServiceInterface;
 import com.mycity.shared.eventsdto.EventsDTO;
 
-import jakarta.annotation.PostConstruct;
+
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -42,18 +42,7 @@ public class EventsPlaceController {
         return ResponseEntity.ok(response);
     }
 
-    
-//    // Read - Get all events for main page
-//    @GetMapping("/main-page")
-//    public ResponseEntity<List<EventCardDto>> getEventsForMainPage() {
-//        return ResponseEntity.ok(eventsPlaceService.getMainPageEvents());
-//    }
-//
-//    // Read - Get event details by ID
-//    @GetMapping("/{eventId}/details")
-//    public ResponseEntity<EventHighlightsDTO> getEventDetails(@PathVariable String eventId) {
-//        return ResponseEntity.ok(eventsPlaceService.getEventDetails(eventId));
-//    }
+
 
     // Update - Update an event
     @PutMapping(value = "/internal/update/{eventId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -75,10 +64,6 @@ public class EventsPlaceController {
     }
     
     
-//    @PostConstruct
-//    public void init() {
-//        System.out.println("✅ EventInternalController loaded");
-//    }
 
     @GetMapping("/internal/fetch/{eventId}")
     public ResponseEntity<Map<String, Object>> fetchEventDetails(@PathVariable Long eventId){

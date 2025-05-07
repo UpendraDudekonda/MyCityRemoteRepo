@@ -6,6 +6,6 @@ public interface EmailService {
 
 	void generateAndSendOTP(String email);
 
-//	boolean verifyOTP(String email, String otp);
+	boolean verifyOTP(String email, String otp);
 
 }

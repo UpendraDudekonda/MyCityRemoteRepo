@@ -16,14 +16,21 @@ public class OtpServiceImpl  implements OtpService{
 
 	    
 	    public boolean verifyOtp(String email, String otp) {
-	        String storedOtp = redisTemplate.opsForValue().get("otp:" + email); // Ensure the key format matches
-	        Long ttl = redisTemplate.getExpire("otp:" + email); // Check TTL
-
+	        String redisKey = "otp:" + email;
+	        String storedOtp = redisTemplate.opsForValue().get(redisKey);
+	        Long ttl = redisTemplate.getExpire(redisKey);
+	        
+	        System.err.println("OTP verification for email: " + email);
+	        System.err.println("Redis key used: " + redisKey);
+	        System.err.println("Stored OTP: " + storedOtp);
+	        System.err.println("TTL of OTP: " + ttl);
+	        
 	        if (storedOtp == null) {
 	            throw new ExpiredOtpException("OTP expired or not found.");
 	        }
 
-	        if (ttl <= 0) { // If TTL is 0 or less, it means OTP has expired
+	        if (ttl == null || ttl <= 0) {
+	            redisTemplate.delete(redisKey);
 	            throw new ExpiredOtpException("OTP expired.");
 	        }
 
@@ -31,7 +38,8 @@ public class OtpServiceImpl  implements OtpService{
 	            throw new InvalidOtpException("OTP does not match.");
 	        }
 
-	        redisTemplate.delete("otp:" + email); // Remove OTP after successful verification
+	        redisTemplate.delete(redisKey); // Remove OTP after successful verification
+	        
 	        return true;
 	    }
 
