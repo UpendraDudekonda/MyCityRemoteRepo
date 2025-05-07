@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.InvalidUrlException;
 
@@ -21,12 +21,16 @@ import com.mycity.shared.reviewdto.ReviewSummaryDTO;
 
 import reactor.core.publisher.Mono;
 
+
 @Service
 public class ReviewServiceimpl implements ReviewServiceInterface {
 
     @Autowired
     private ReviewRepository reviewRepo;
 
+    @Autowired
+    private WebClientMediaService mediaService;
+    
     @Autowired
     private WebClient.Builder webClientBuilder;
 
@@ -37,14 +41,12 @@ public class ReviewServiceimpl implements ReviewServiceInterface {
     private static final String PATH_TO_FIND_USERID = "/user/getuserId/{userName}";
 
     @Override
-    public ResponseEntity<String> addPlaceReview(ReviewDTO dto) {
-        if (dto.getImageUrl() == null || dto.getImageUrl().trim().isEmpty())
-            throw new InvalidUrlException("Url Cannot be Empty");
-        if (dto.getReviewDescription() == null || dto.getReviewDescription().trim().isEmpty())
-            throw new IllegalArgumentException("Please Provide Description of Review.");
-
+    public ResponseEntity<String> addPlaceReview(ReviewDTO dto,List<MultipartFile> images) 
+    {
+        //valiadte the ReviewDto
+    	validateReviewDTO(dto);
+    	
         Review review = new Review();
-        review.setImageUrl(dto.getImageUrl());
         review.setPlaceName(dto.getPlaceName());
         review.setReviewDescription(dto.getReviewDescription());
         review.setUserName(dto.getUserName());
@@ -92,9 +94,24 @@ public class ReviewServiceimpl implements ReviewServiceInterface {
 
             review.setUserId(result2);
 
-            Long id = reviewRepo.save(review).getReviewId();
+            Review savedReview = reviewRepo.save(review);
+            
+            // Handle Image Uploads if images are provided
+            if (images != null && !images.isEmpty()) {
+                for (MultipartFile image : images) {
+                    mediaService.uploadImageForReview(
+                        image,
+                        savedReview.getReviewId(),
+                        savedReview.getPlaceId(),
+                        savedReview.getPlaceName(),
+                        savedReview.getUserId(),
+                        savedReview.getPlaceName()
+                    );
+                }
+            } 
+            
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body("Review with Id " + id + " saved.");
+                    .body("Review saved.");
 
         } catch (RuntimeException e) {
             // Catch RuntimeException (from user not found or place not found)
@@ -122,9 +139,6 @@ public class ReviewServiceimpl implements ReviewServiceInterface {
         if (opt.isPresent()) {
             Review review = opt.get();
 
-            if (dto.getImageUrl() != null && !dto.getImageUrl().trim().isEmpty())
-                review.setImageUrl(dto.getImageUrl());
-
             if (dto.getReviewDescription() != null && !dto.getReviewDescription().trim().isEmpty())
                 review.setReviewDescription(dto.getReviewDescription());
 
@@ -143,7 +157,6 @@ public class ReviewServiceimpl implements ReviewServiceInterface {
         for (Review r : reviews) {
             ReviewSummaryDTO dto = new ReviewSummaryDTO();
             dto.setReviewDescription(r.getReviewDescription());
-            dto.setImageUrl(r.getImageUrl());
             dto.setPlaceName(r.getPlaceName());
             dto.setUserName(r.getUserName());
             dto.setPostedOn(r.getPostedOn());
@@ -157,10 +170,15 @@ public class ReviewServiceimpl implements ReviewServiceInterface {
     @Override
     public String deleteReview(Long reviewId) {
         Optional<Review> opt = reviewRepo.findById(reviewId);
-        if (opt.isPresent()) {
+        
+        if (opt.isPresent()) 
+        {
             reviewRepo.deleteById(reviewId);
-            return "Review Deleted";
-        } else {
+            String result=mediaService.deleteImagesForReviews(reviewId);
+            return "Review & "+result;
+        } 
+        else 
+        {
             throw new IllegalArgumentException("Invalid Review Id");
         }
     }
@@ -179,7 +197,6 @@ public class ReviewServiceimpl implements ReviewServiceInterface {
            
             reviewDTO.setPlaceName(review.getPlaceName());
             reviewDTO.setReviewDescription(review.getReviewDescription());
-            reviewDTO.setImageUrl(review.getImageUrl());
             reviewDTO.setUserName(review.getUserName());
             reviewDTO.setPostedOn(review.getPostedOn());
 
@@ -189,5 +206,18 @@ public class ReviewServiceimpl implements ReviewServiceInterface {
 
         return reviewDTOs;
     }
+
+
+	@Override
+	public void validateReviewDTO(ReviewDTO dto)
+	{
+	  if(dto.getUserName()==null || dto.getUserName().trim().isEmpty())
+		  throw new IllegalArgumentException("UserName Cannot be Blank");
+	  if(dto.getPlaceName()==null || dto.getPlaceName().trim().isEmpty())
+		  throw new IllegalArgumentException("PlaceName Cannot be Blank");
+	  if(dto.getReviewDescription()==null || dto.getReviewDescription().trim().isEmpty())
+		  throw new IllegalArgumentException("Review Description Cannot be Empty");
+		
+	}
 
 }

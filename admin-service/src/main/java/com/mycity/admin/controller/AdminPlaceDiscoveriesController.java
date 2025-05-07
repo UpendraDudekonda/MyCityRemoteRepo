@@ -15,9 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import com.mycity.shared.placedto.PlaceDTO;
 import com.mycity.shared.placedto.PlaceDiscoveriesDTO;
+import com.mycity.shared.placedto.PlaceResponseDTO;
 
 import reactor.core.publisher.Mono;
 
@@ -79,28 +78,18 @@ public class AdminPlaceDiscoveriesController
    }
    
    @GetMapping("/getPlace/{placeName}")
-   public ResponseEntity<PlaceDTO> getAllPlaces(@PathVariable String placeName)
+   public ResponseEntity<PlaceResponseDTO> getPlaceDetails(@PathVariable String placeName)
    {
-	   System.out.println("AdminPlaceDiscoveriesController.getAllPlaces()");
-	   // Use webClientBuilder to route from admin --> place-service
-	   PlaceDTO place = webClientBuilder.build()
-			    .get()
-			    .uri("lb://" + PLACE_SERVICE_NAME + PATH_TO_GET_SELECTED_PLACE_DETAILS,placeName)
-			    .retrieve()
-			    .onStatus(HttpStatusCode::isError, clientResponse ->
-			        clientResponse.bodyToMono(String.class)
-			            .flatMap(errorBody -> Mono.error(new RuntimeException(
-			                "Failed to get Place Details: " + clientResponse.statusCode() + " - " + errorBody)))
-			    )
-			    .bodyToMono(PlaceDTO.class)
-			    .onErrorResume(e -> {
-			        // Log error and return null instead of throwing
-			        System.err.println("Error fetching place Details: " + e.getMessage());
-			        return Mono.just(new PlaceDTO()); 
-			    })
-			    .block();
-
-	   return new ResponseEntity<PlaceDTO>(place,HttpStatus.FOUND);
-   }
+		System.out.println("AdminPlaceDiscoveriesController.getPlaceDetails()");
+		//using Web Client to make API calls
+	     PlaceResponseDTO place= webClientBuilder
+	    		.build()
+	            .get()
+	            .uri("lb://"+PLACE_SERVICE_NAME+PATH_TO_GET_SELECTED_PLACE_DETAILS,placeName)
+	            .retrieve()
+	            .bodyToMono(PlaceResponseDTO.class)
+	            .block();
+	     return new ResponseEntity<PlaceResponseDTO>(place,HttpStatus.OK);
+	}
  
 }
