@@ -1,6 +1,7 @@
 package com.mycity.place.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,5 +19,8 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
 	Long findPlaceIdByPlaceName(@Param("placeName") String placeName);
 
 	Long findPlaceIdByPlaceNameIgnoreCase(String placeName);
+
+	Optional<Place> findByPlaceName(String placeName);
+
 
 }
