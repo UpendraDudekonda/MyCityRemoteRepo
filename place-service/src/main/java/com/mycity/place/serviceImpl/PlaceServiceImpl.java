@@ -424,8 +424,6 @@ public class PlaceServiceImpl implements PlaceServiceInterface {
 	}
 
 
-
-
 	@Override
 	public List<PlaceWithImagesDTO> getPlacesByCategoryWithImages(String categoryName) {
 	    List<Place> places = placeRepo.findByCategoryName(categoryName);

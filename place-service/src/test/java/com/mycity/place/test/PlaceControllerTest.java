@@ -101,7 +101,7 @@ public class PlaceControllerTest {
         placeDTO.setCoordinate(coordinate);
 
         TimezoneDTO timezone = new TimezoneDTO();
-        timezone.setName("NewYork");
+//        timezone.setName("NewYork");
         timezone.setOpeningTime(LocalTime.parse("09:00"));
         timezone.setClosingTime(LocalTime.parse("17:00"));
         placeDTO.setTimeZone(timezone);

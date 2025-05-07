@@ -3,7 +3,6 @@ package com.mycity.media.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.mycity.media.service.ImageService;
+import com.mycity.shared.mediadto.AboutPlaceImageDTO;
 import com.mycity.shared.mediadto.ImageDTO;
 
-import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
 
 @RestController
@@ -29,15 +28,15 @@ public class ImageController {
 	private ImageService imageService;
 	
 	
-	@PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA)
-	public ResponseEntity<String> uploadImage(
+	@PostMapping(value = "/upload/places", consumes = MediaType.MULTIPART_FORM_DATA)
+	public ResponseEntity<String> uploadImageForPlaces(
 	        @RequestPart("image") MultipartFile file,
 	        @RequestParam Long placeId,
 	        @RequestParam String placeName,
 	        @RequestParam String category,
 	        @RequestParam String imageName) {
 		
-		imageService.uploadImage(file,placeId,placeName,category,imageName);
+		imageService.uploadImageForPlaces(file,placeId,placeName,category,imageName);
 
 	    return ResponseEntity.ok("Image uploaded successfully");
 	}
@@ -55,9 +54,9 @@ public class ImageController {
 	}
 	
 	@GetMapping("/images/{placeId}")
-	public ResponseEntity<List<String>> getAboutPlaceImages(@PathVariable Long placeId) {
-	     List<String> imageUrl = imageService.getAboutPlaceImages(placeId);
-	    return ResponseEntity.ok(imageUrl);
+	public ResponseEntity<List<AboutPlaceImageDTO>> getAboutPlaceImages(@PathVariable Long placeId) {
+	    List<AboutPlaceImageDTO> images = imageService.getAboutPlaceImages(placeId);
+	    return ResponseEntity.ok(images);
 	}
 	
 	@DeleteMapping("/images/delete/{placeId}")
