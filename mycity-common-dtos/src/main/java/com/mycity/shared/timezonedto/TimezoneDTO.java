@@ -14,5 +14,7 @@ public class TimezoneDTO
     private Long TimezoneId;
     private LocalTime OpeningTime;
     private LocalTime ClosingTime;
+    
+    
 }
 

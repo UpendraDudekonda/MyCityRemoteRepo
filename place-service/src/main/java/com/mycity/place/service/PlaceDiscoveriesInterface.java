@@ -1,14 +1,15 @@
 package com.mycity.place.service;
 
 import java.util.List;
-
-import com.mycity.shared.placedto.PlaceDTO;
+import org.springframework.web.multipart.MultipartFile;
 import com.mycity.shared.placedto.PlaceDiscoveriesDTO;
+import com.mycity.shared.placedto.PlaceResponseDTO;
+import com.mycity.shared.placedto.UserGalleryDTO;
 
 public interface PlaceDiscoveriesInterface 
 {
   String addPlaceToDiscoveries(PlaceDiscoveriesDTO dto);
   List<PlaceDiscoveriesDTO> getAllTopDisoveries();
-  PlaceDTO getPlaceDetailsByName(String placeName);
+  PlaceResponseDTO getPlaceDetailsByName(String placeName);
   
 }

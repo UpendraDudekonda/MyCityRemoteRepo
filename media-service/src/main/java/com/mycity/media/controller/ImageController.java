@@ -3,7 +3,9 @@ package com.mycity.media.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.mycity.media.service.ImageService;
-import com.mycity.shared.mediadto.AboutPlaceImageDTO;
 import com.mycity.shared.mediadto.ImageDTO;
 
+import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
 
 @RestController
@@ -27,30 +29,17 @@ public class ImageController {
 	private ImageService imageService;
 	
 	
-	@PostMapping(value = "/upload/places", consumes = MediaType.MULTIPART_FORM_DATA)
-	public ResponseEntity<String> uploadImageForPlaces(
+	@PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA)
+	public ResponseEntity<String> uploadImage(
 	        @RequestPart("image") MultipartFile file,
 	        @RequestParam Long placeId,
 	        @RequestParam String placeName,
 	        @RequestParam String category,
 	        @RequestParam String imageName) {
 		
-		imageService.uploadImageForPlaces(file,placeId,placeName,category,imageName);
+		imageService.uploadImage(file,placeId,placeName,category,imageName);
 
 	    return ResponseEntity.ok("Image uploaded successfully");
-	}
-	@PostMapping(value ="/upload/cuisines" , consumes = MediaType.MULTIPART_FORM_DATA)
-	public ResponseEntity<String> uploadImageForCuisines(
-	        @RequestPart("image") MultipartFile file,
-	        @RequestParam Long placeId,
-	        @RequestParam Long cuisineId,
-	        @RequestParam String cuisineName,
-	        @RequestParam String placeName,
-	        @RequestParam String category) {
-
-	    imageService.uploadImageForCuisines(file, placeId, cuisineId, placeName, category, cuisineName);
-
-	    return ResponseEntity.ok("Image uploaded successfully for cuisineId: " + cuisineId);
 	}
 
 	@GetMapping("/fetch/{id}")
@@ -59,17 +48,23 @@ public class ImageController {
 	    return ResponseEntity.ok(imageDTO);
 	}     
 	
-	@GetMapping("/bycategory/image")
+	@GetMapping("/cover-image")
 	public ResponseEntity<String> getCoverImageForCategory(@RequestParam String category) {
 	    String imageUrl = imageService.getFirstImageUrlByCategory(category);
 	    return ResponseEntity.ok(imageUrl);
 	}
 	
 	@GetMapping("/images/{placeId}")
-	public ResponseEntity<List<AboutPlaceImageDTO>> getAboutPlaceImages(@PathVariable Long placeId) {
-	    List<AboutPlaceImageDTO> images = imageService.getAboutPlaceImages(placeId);
-	    return ResponseEntity.ok(images);
+	public ResponseEntity<List<String>> getAboutPlaceImages(@PathVariable Long placeId) {
+	     List<String> imageUrl = imageService.getAboutPlaceImages(placeId);
+	    return ResponseEntity.ok(imageUrl);
 	}
-
+	
+	@DeleteMapping("/images/delete/{placeId}")
+	public ResponseEntity<String> deleteImage(@PathVariable Long placeId)
+	{
+		String result=imageService.deleteImage(placeId);
+		return ResponseEntity.ok(result);
+	}
 	
 }
