@@ -11,5 +11,6 @@ import lombok.Data;
 	    private String date;
 	    private LocalTime time;
 	    private String activityName;
+	    
 	
 }
