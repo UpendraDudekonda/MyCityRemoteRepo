@@ -69,4 +69,20 @@ public class WebClientMediaService
     	
     	return result;
     }
+    
+    public String getImageUrlByPlaceId(Long placeId) {
+        try {
+            return webClientBuilder
+                    .build()
+                    .get()
+                    .uri("lb://" + IMAGE_SERVICE + "/media/review/image/place/{placeId}", placeId)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block(); // Blocking for simplicity
+        } catch (Exception e) {
+            System.err.println("Failed to fetch image for placeId " + placeId + ": " + e.getMessage());
+            return null;
+        }
+    }
+
 }

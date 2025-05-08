@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 import com.mycity.shared.placedto.PlaceDiscoveriesDTO;
+import com.mycity.shared.placedto.PlaceDiscoveriesResponeDTO;
 import com.mycity.shared.placedto.PlaceResponseDTO;
 
 import reactor.core.publisher.Mono;
@@ -27,7 +28,7 @@ public class AdminPlaceDiscoveriesController
 	@Autowired
 	private WebClient.Builder webClientBuilder;
 	
-	private static final String PLACE_SERVICE_NAME="place-service";
+	private static final String PLACE_SERVICE_NAME="PLACE-SERVICE";
 	private static final String PATH_TO_ADD_PLACE_TO_DISCOVERIES="/place/discoveries/add";
 	private static final String PATH_TO_GET_ALL_DISCOVERIES="/place/discoveries/getall";
 	private static final String PATH_TO_GET_SELECTED_PLACE_DETAILS="/place/discoveries/getplace/{placeName}";
@@ -52,31 +53,29 @@ public class AdminPlaceDiscoveriesController
 			    .block(); // <- Get the result synchronously
 	   return new ResponseEntity<String>(result,HttpStatus.OK);
    }
-   
    @GetMapping("/getallPlaces")
-   public ResponseEntity<List<PlaceDiscoveriesDTO>> getAllPlaces()
-   {
-	   System.out.println("AdminPlaceDiscoveriesController.getAllPlaces()");
-	   // Use webClientBuilder to route from admin --> place-service
-	   List<PlaceDiscoveriesDTO> places = webClientBuilder.build()
-			    .get()
-			    .uri("lb://" + PLACE_SERVICE_NAME +PATH_TO_GET_ALL_DISCOVERIES )
-			    .retrieve()
-			    .onStatus(HttpStatusCode::isError, clientResponse ->
-			        clientResponse.bodyToMono(String.class)
-			            .flatMap(errorBody -> Mono.error(new RuntimeException(
-			                "Failed to get List of Places: " + clientResponse.statusCode() + " - " + errorBody)))
-			    )
-			    .bodyToMono(new ParameterizedTypeReference<List<PlaceDiscoveriesDTO>>() {})
-			    .onErrorResume(e -> {
-		            // Log error and return an empty list instead of error
-		            System.err.println("Error fetching discoveries: " + e.getMessage());
-		            return Mono.just(Collections.emptyList());
-		        })
-		        .block();
-	   return new ResponseEntity<List<PlaceDiscoveriesDTO>>(places,HttpStatus.FOUND);
+   public Mono<ResponseEntity<List<PlaceDiscoveriesResponeDTO>>> getAllPlaces() {
+       System.out.println("AdminPlaceDiscoveriesController.getAllPlaces()");
+
+       return webClientBuilder.build()
+           .get()
+           .uri("lb://" + PLACE_SERVICE_NAME + PATH_TO_GET_ALL_DISCOVERIES)
+           .retrieve()
+           .onStatus(HttpStatusCode::isError, clientResponse ->
+               clientResponse.bodyToMono(String.class)
+                   .flatMap(errorBody -> Mono.error(new RuntimeException(
+                       "Failed to get List of Places: " + clientResponse.statusCode() + " - " + errorBody)))
+           )
+           .bodyToMono(new ParameterizedTypeReference<List<PlaceDiscoveriesResponeDTO>>() {}) // match response type
+           .onErrorResume(e -> {
+               System.err.println("Error fetching discoveries: " + e.getMessage());
+               e.printStackTrace(); // log full error
+               return Mono.just(Collections.emptyList()); // return empty list on error
+           })
+           .map(places -> new ResponseEntity<>(places, HttpStatus.OK)); // map the result into ResponseEntity
    }
-   
+
+
    @GetMapping("/getPlace/{placeName}")
    public ResponseEntity<PlaceResponseDTO> getPlaceDetails(@PathVariable String placeName)
    {

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mycity.place.service.PlaceDiscoveriesInterface;
 import com.mycity.shared.placedto.PlaceDiscoveriesDTO;
+import com.mycity.shared.placedto.PlaceDiscoveriesResponeDTO;
 import com.mycity.shared.placedto.PlaceResponseDTO;
 
 @RestController
@@ -31,10 +32,10 @@ public class PlaceDiscoveriesController {
 	}
 
 	@GetMapping("/getall")
-	public ResponseEntity<List<PlaceDiscoveriesDTO>> getAllPlacesFromDisoveries() {
+	public ResponseEntity<List<PlaceDiscoveriesResponeDTO>> getAllPlacesFromDisoveries() {
 		// use service
-		List<PlaceDiscoveriesDTO> discoveries = service.getAllTopDisoveries();
-		return new ResponseEntity<List<PlaceDiscoveriesDTO>>(discoveries, HttpStatus.OK);
+		List<PlaceDiscoveriesResponeDTO> discoveries = service.getAllTopDisoveries();
+		return new ResponseEntity<List<PlaceDiscoveriesResponeDTO>>(discoveries, HttpStatus.OK);
 	}
 
 	@GetMapping("/getplace/{placeName}")

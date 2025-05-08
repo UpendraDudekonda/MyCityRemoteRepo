@@ -40,10 +40,10 @@ public class Event {
     
 
  
-	@ElementCollection
-	@CollectionTable(name = "event_place" ,joinColumns=@JoinColumn(name="event_id"))
-
-	private List<String> eventPlaces;
+//	@ElementCollection
+//	@CollectionTable(name = "event_place" ,joinColumns=@JoinColumn(name="event_id"))
+//
+//	private List<String> eventPlaces;
 	
 	
 	@ElementCollection

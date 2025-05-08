@@ -37,11 +37,7 @@ public class SecurityConfig
                     "/place/get/{placeId}",
                     "/place/update/{placeId}",
                     "place/places/categories",
-                    
-                    
-                    
-                    "/place/placebycategory/{categoryName}",
-                    "/place/placeby/categories"
+                    "place/about/{placeId}"
                     
                 ).permitAll()
                 .anyRequest().authenticated()

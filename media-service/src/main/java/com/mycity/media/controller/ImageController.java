@@ -68,6 +68,12 @@ public class ImageController {
 	    return ResponseEntity.ok(images);
 	}
 	
+	@GetMapping("/image-byplacename/{placeName}")
+	public ResponseEntity<List<AboutPlaceImageDTO>> getAboutPlaceImages(@PathVariable String placeName) {
+	    List<AboutPlaceImageDTO> images = imageService.getAboutPlaceImages(placeName);
+	    return ResponseEntity.ok(images);
+	}
+	
 	@DeleteMapping("/images/delete/{placeId}")
 	public ResponseEntity<String> deleteImage(@PathVariable Long placeId)
 	{
