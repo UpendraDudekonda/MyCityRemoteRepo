@@ -22,7 +22,7 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/auth/forgot-password")
 @RequiredArgsConstructor
-public class ForgotPasswordAuthController {
+public class AuthForgotPasswordAuthController {
 	
 	private final WebClient.Builder webClientBuilder;
 
@@ -76,8 +76,7 @@ public class ForgotPasswordAuthController {
                 });
     }
 
-    // The /reset endpoint is removed as authentication-service doesn't handle the reset logic anymore
-	 
+    
     @PostMapping("/reset")
     public Mono<ResponseEntity<String>> resetPassword(@RequestBody ResetPasswordRequest request) {
         WebClient userServiceClient = webClientBuilder.baseUrl("lb://" + USER_SERVICE_NAME).build();
@@ -92,13 +91,13 @@ public class ForgotPasswordAuthController {
                 .onStatus(HttpStatusCode::is5xxServerError, response ->
                         response.bodyToMono(String.class).flatMap(errorBody ->
                             Mono.error(new RuntimeException("Error from user service (5xx): " + errorBody))))
-                .toBodilessEntity()
-                .map(response -> ResponseEntity.ok("Password reset successful."))
-                .onErrorResume(e -> {
-                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                            .body("Password reset failed: " + e.getMessage()));
-                });
+                .bodyToMono(String.class)  // <--- This line returns the actual body content
+                .map(body -> ResponseEntity.ok(body))
+                .onErrorResume(e ->
+                    Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body("Password reset failed: " + e.getMessage())));
     }
+
 
 	    
 
