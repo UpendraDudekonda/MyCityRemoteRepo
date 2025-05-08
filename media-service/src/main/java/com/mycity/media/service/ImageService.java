@@ -6,13 +6,15 @@ import org.springframework.web.multipart.MultipartFile;
 import com.mycity.shared.mediadto.AboutPlaceImageDTO;
 import com.mycity.shared.mediadto.ImageDTO;
 
+import reactor.core.publisher.Mono;
+
 public interface ImageService {
 
 	void uploadImageForPlaces(MultipartFile file, Long placeId, String placeName, String category, String imageName);
 
 	ImageDTO fetchImage(Long imageId);
 
-	String getFirstImageUrlByCategory(String category);
+	Mono<String> getFirstImageUrlByCategory(String category);
 
 	List<AboutPlaceImageDTO> getAboutPlaceImages(Long placeId);
 
