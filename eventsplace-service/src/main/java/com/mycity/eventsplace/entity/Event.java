@@ -45,9 +45,12 @@ public class Event {
 
 	private List<String> eventPlaces;
 	
+	
 	@ElementCollection
 	@CollectionTable(name = "event_schedule", joinColumns = @JoinColumn(name = "event_id"))
 	private List<EventHighlights> schedule;
+
+	
 
 
 }

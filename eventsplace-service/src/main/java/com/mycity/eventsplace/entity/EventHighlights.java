@@ -18,4 +18,5 @@ public class EventHighlights {
     private LocalDate date;
     private LocalTime time;
     private String activityName;  // What is happening at this time
+    
 }

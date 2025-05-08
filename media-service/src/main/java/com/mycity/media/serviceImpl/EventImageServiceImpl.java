@@ -84,40 +84,19 @@ public String updateEventImages(Long eventId, String eventName, List<MultipartFi
 public void deleteAssociatedImages(Long eventId) {
     List<EventSubImages> images = eventSubImagesRepository.findAllByEventId(eventId);
 
-//    for (EventSubImages image : images) {
-//        String publicId = image.getPublicId();  // stored Cloudinary public ID
-//
-//        try {
-//            // 1. Delete from Cloudinary
-//        	cloudinaryHelper.deleteImage(publicId);
-//
-//            // 2. Optionally log the deletion
-//            System.out.println("Deleted from Cloudinary: " + publicId);
-//
-//        } catch (Exception e) {
-//            System.err.println("Failed to delete from Cloudinary: " + publicId);
-//        }
-//    }
-
     // 3. Delete from database
     eventSubImagesRepository.deleteAll(images);
     System.out.println("Deleted all gallery images from DB for eventId: " + eventId);
 }
 
-	
-//	public EventSubImagesDTO fetchImages(Long eventId) {
-//		EventSubImages image = eventSubImagesRepository.findById(eventId)
-//	        .orElseThrow(() -> new RuntimeException("Image not found with ID: " + eventId));
-//
-//	    return new EventSubImagesDTO(
-//	        image.getImageId(),
-//	       image.getImageUrls(),
-//	        image.getEventName(),
-//	        image.getEventId(),
-//	        image.getImageNames()
-//	    );
-//	}
 
+
+@Override
+public List getEventImages(Long eventId) {
+	List<EventSubImages> images = eventSubImagesRepository.findImageUrlsByEventId(eventId);
+	return images;
+	
+}
 
 
 	
