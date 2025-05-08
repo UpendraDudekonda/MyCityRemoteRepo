@@ -127,6 +127,25 @@ public class ImageServiceImpl implements ImageService {
 		return null;
 	}
 
+	@Override
+	public List<AboutPlaceImageDTO> getAboutPlaceImages(String placeName) {
+		  // Fetch all images associated with the placeId
+	    List<Images> images = imageServiceRepository.findImagesByPlaceName(placeName);
+
+	    // Map to DTOs
+	    List<AboutPlaceImageDTO> imageDTOs = new ArrayList<>();
+	    for (Images image : images) {
+	        if ("placeimagemain".equals(image.getImageName())) {
+	            AboutPlaceImageDTO dto = new AboutPlaceImageDTO();
+	            dto.setImageUrl(image.getImageUrl());   // Assuming Images has getImageUrl()
+	            dto.setImageName(image.getImageName()); // Assuming Images has getImageName()
+	            imageDTOs.add(dto);
+	        }
+	    }
+
+	    return imageDTOs;
+	}
+
 
 	@Override
 	public void uploadImageForPlaces(MultipartFile file, Long placeId, String placeName, String category,

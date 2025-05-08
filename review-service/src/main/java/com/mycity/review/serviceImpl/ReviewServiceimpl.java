@@ -160,8 +160,12 @@ public class ReviewServiceimpl implements ReviewServiceInterface {
             dto.setPlaceName(r.getPlaceName());
             dto.setUserName(r.getUserName());
             dto.setPostedOn(r.getPostedOn());
-            dto.setRating(null); // Optional: add logic for user-provided rating
-            dto.setUserImageUrl(null); // Optional: fetch from media-service using WebClient
+            dto.setRating(null);
+
+            // Fetch the image URL using reviewId from MEDIA-SERVICE
+            String imageUrl = mediaService.getImageUrlByPlaceId(r.getPlaceId());
+            dto.setUserImageUrl(imageUrl);
+
             dtos.add(dto);
         }
         return dtos;
