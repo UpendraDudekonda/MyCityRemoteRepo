@@ -25,21 +25,7 @@ public class ImageServiceImpl implements ImageService {
     @Autowired
     private ImageServiceRepository imageServiceRepository;
 
-    @Override
-	public void uploadImageForPlaces(MultipartFile file, Long placeId, String placeName, String category,
-			String imageName) {
-
-		String imageUrl = cloudinaryHelper.saveImage(file); // your Cloudinary logic
-
-		Images img = new Images();
-		img.setImageUrl(imageUrl);
-		img.setPlaceId(placeId);
-		img.setPlaceName(placeName);
-		img.setCategory(category);
-		img.setImageName(imageName);
-
-		imageServiceRepository.save(img);
-	}
+   
     
     @Override
 	public void uploadImageForCuisines(MultipartFile file, Long placeId, Long cuisineId, String placeName,
@@ -158,6 +144,14 @@ public class ImageServiceImpl implements ImageService {
 	    }
 
 	    return imageDTOs;
+	}
+
+
+	@Override
+	public void uploadImageForPlaces(MultipartFile file, Long placeId, String placeName, String category,
+			String imageName) {
+		// TODO Auto-generated method stub
+		
 	}
 
 
