@@ -25,9 +25,7 @@ public class SecurityConfig {
 	                .requestMatchers(
 	                    "/admin/auth/internal/login",
 	                	"/admin/profile",
-	                	"/admin/event/**",
-	                	"/admin/discoveries/**",
-	                	"/admin/discoveries/getallPlaces"
+	                	"/admin/event/**"
 	                ).permitAll()
 	                .anyRequest().authenticated()
 	            );
@@ -53,7 +51,7 @@ public class SecurityConfig {
     
     @Bean
     @LoadBalanced
-    public WebClient.Builder loadBalancedWebClientBuilder() {
+    public WebClient.Builder webClientBuilder() {
         return WebClient.builder();
     }
 }

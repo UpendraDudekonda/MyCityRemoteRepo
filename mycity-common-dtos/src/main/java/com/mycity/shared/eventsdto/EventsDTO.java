@@ -24,7 +24,7 @@ public class EventsDTO {
     private String city;
     private String date;
 
-    private List<String> eventPlaces;
+//    private List<String> eventPlaces;
     private List<EventHighlightsDTO> schedule;
 	
 }

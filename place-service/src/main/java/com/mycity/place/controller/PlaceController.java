@@ -108,11 +108,7 @@ public class PlaceController {
 		return new ResponseEntity<>(msg, HttpStatus.OK);
 	}
 
-//    @PostMapping("/save")
-//    public ResponseEntity<Place> createPlace(@RequestBody Place place) {
-//        Place savedPlace = placeService.savePlace(place);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(savedPlace);
-//    }
+
 
 	@GetMapping("/allplaces")
 	public ResponseEntity<List<PlaceResponseDTO>> getAllPlaces() {
