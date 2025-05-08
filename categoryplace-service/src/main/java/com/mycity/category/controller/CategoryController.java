@@ -28,6 +28,7 @@ public class CategoryController {
 
     @GetMapping("/unique/images")
     public Mono<ResponseEntity<List<CategoryImageDTO>>> getCategoriesWithImages() {
+    	
         return categoryService.fetchCategoriesWithImages()
             .map(ResponseEntity::ok);
     }

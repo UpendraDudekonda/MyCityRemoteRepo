@@ -19,6 +19,7 @@ import com.mycity.shared.mediadto.AboutPlaceImageDTO;
 import com.mycity.shared.mediadto.ImageDTO;
 
 import jakarta.ws.rs.core.MediaType;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/media")
@@ -47,11 +48,19 @@ public class ImageController {
 	    return ResponseEntity.ok(imageDTO);
 	}     
 	
-	@GetMapping("/cover-image")
-	public ResponseEntity<String> getCoverImageForCategory(@RequestParam String category) {
-	    String imageUrl = imageService.getFirstImageUrlByCategory(category);
-	    return ResponseEntity.ok(imageUrl);
+	@GetMapping("/bycategory/image")
+	public Mono<ResponseEntity<String>> getCoverImageForCategory(@RequestParam String category) {
+	    return imageService.getFirstImageUrlByCategory(category)
+	            .doOnNext(imageUrl -> {
+	                // Log the image URL before returning it to make sure it's correct
+	                System.out.println("Image URL in controller: " + imageUrl);
+	            })
+	            .map(imageUrl -> imageUrl != null
+	                    ? ResponseEntity.ok(imageUrl)
+	                    : ResponseEntity.notFound().build()); // Return 404 if image URL is null
 	}
+
+
 	
 	@GetMapping("/images/{placeId}")
 	public ResponseEntity<List<AboutPlaceImageDTO>> getAboutPlaceImages(@PathVariable Long placeId) {
