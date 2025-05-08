@@ -4,6 +4,8 @@ package com.mycity.admin.controller;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
@@ -26,6 +28,7 @@ import com.mycity.admin.config.MultipartInputStreamFileResource;
 import com.mycity.shared.eventsdto.EventsDTO;
 
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Mono;
 
 
 @RestController
@@ -33,14 +36,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AdminEventController {
 
-    private static final String EVENT_SERVICE_NAME = "EVENTSPLACE-SERVICE";
-    private static final String ADMIN_EVENT_PATH = "/event/internal/add";
+    private static final String EVENT_SERVICE_NAME = "eventsplace-service";
+    private static final String ADD_EVENT_PATH = "/event/internal/add";
     private static final String UPDATE_EVENT_PATH = "/event/internal/update/";
     private static final String DELETE_EVENT_PATH = "/event/internal/delete/";
+    
+    @Autowired
     private final WebClient.Builder webClientBuilder;
 
     @PostMapping(value = "/event/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> addEvent(
+    public Mono<ResponseEntity<String>> addEvent(
             @RequestHeader("Authorization") String authHeader,
             @ModelAttribute EventsDTO eventDTO,
             @RequestParam(name = "imageNames", required = false) List<String> imageNames,
@@ -64,11 +69,11 @@ public class AdminEventController {
 	            if (eventDTO.getCity() != null) body.add("city", eventDTO.getCity());
 	
 	            // If eventPlaces is a List<String>, add each event place as separate value
-	            if (eventDTO.getEventPlaces() != null) {
-	                for (String place : eventDTO.getEventPlaces()) {
-	                    body.add("eventPlaces", place);
-	                }
-	            }
+//	            if (eventDTO.getEventPlaces() != null) {
+//	                for (String place : eventDTO.getEventPlaces()) {
+//	                    body.add("eventPlaces", place);
+//	                }
+//	            }
 	
 	            // If schedule is List<ScheduleDTO>, add each schedule item individually
 	            if (eventDTO.getSchedule() != null) {
@@ -91,26 +96,25 @@ public class AdminEventController {
             }
 
             // Make the request to the event service
-            String response = webClientBuilder.build()
+            return webClientBuilder.build()
                     .post()
-                    .uri("http://localhost:8090/event/internal/add") // Ensure this is correct
-                    .header("Authorization", "Bearer " + finalToken)
+                    .uri("lb://" + EVENT_SERVICE_NAME + ADD_EVENT_PATH)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + finalToken)
                     .contentType(MediaType.MULTIPART_FORM_DATA)
                     .body(BodyInserters.fromMultipartData(body))
                     .retrieve()
                     .bodyToMono(String.class)
-                    .block();
-
-            return ResponseEntity.ok(response);
+                    .map(ResponseEntity::ok)
+                    .onErrorResume(e -> Mono.just(ResponseEntity.status(500).body("Failed to add event: " + e.getMessage())));
 
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Failed to route event creation: " + e.getMessage());
+            return Mono.just(ResponseEntity.status(500).body("Exception occurred: " + e.getMessage()));
         }
+    
     }
     
     @PutMapping(value = "/event/update/{eventId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> updateEvent(
+    public Mono<ResponseEntity<String>> updateEvent(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable Long eventId,
             @ModelAttribute EventsDTO eventDTO,
@@ -129,11 +133,11 @@ public class AdminEventController {
             if (eventDTO.getDescription() != null) body.add("description", eventDTO.getDescription());
             if (eventDTO.getCity() != null) body.add("city", eventDTO.getCity());
 
-            if (eventDTO.getEventPlaces() != null) {
-                for (String place : eventDTO.getEventPlaces()) {
-                    body.add("eventPlaces", place);
-                }
-            }
+//            if (eventDTO.getEventPlaces() != null) {
+//                for (String place : eventDTO.getEventPlaces()) {
+//                    body.add("eventPlaces", place);
+//                }
+//            }
 
             if (eventDTO.getSchedule() != null) {
                 for (int i = 0; i < eventDTO.getSchedule().size(); i++) {
@@ -156,47 +160,37 @@ public class AdminEventController {
                 }
             }
 
-            String response = webClientBuilder.build()
+            return webClientBuilder.build()
                     .put()
-                    .uri("http://localhost:8090/event/internal/update/" + eventId)
-                    .header("Authorization", "Bearer " + finalToken)
+                    .uri("lb://" + EVENT_SERVICE_NAME + UPDATE_EVENT_PATH + eventId)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + finalToken)
                     .contentType(MediaType.MULTIPART_FORM_DATA)
                     .body(BodyInserters.fromMultipartData(body))
                     .retrieve()
                     .bodyToMono(String.class)
-                    .block();
-
-            return ResponseEntity.ok(response);
+                    .map(ResponseEntity::ok)
+                    .onErrorResume(e -> Mono.just(ResponseEntity.status(500).body("Update failed: " + e.getMessage())));
 
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Failed to update event: " + e.getMessage());
+            return Mono.just(ResponseEntity.status(500).body("Exception: " + e.getMessage()));
         }
     }
 
     @DeleteMapping("/event/delete/{eventId}")
-    public ResponseEntity<?> deleteEvent(
+    public Mono<ResponseEntity<String>> deleteEvent(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable Long eventId
     ) {
         String finalToken = authHeader.startsWith("Bearer ") ? authHeader.substring(7) : null;
 
-        try {
-            String response = webClientBuilder.build()
-                    .delete()
-                    .uri("http://localhost:8090/event/internal/delete/"+ eventId)
-                    .header("Authorization", "Bearer " + finalToken)
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();
-
-            
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Failed to delete event: " + e.getMessage());
-        }
+        return webClientBuilder.build()
+                .delete()
+                .uri("lb://" + EVENT_SERVICE_NAME + DELETE_EVENT_PATH + eventId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + finalToken)
+                .retrieve()
+                .bodyToMono(String.class)
+                .map(ResponseEntity::ok)
+                .onErrorResume(e -> Mono.just(ResponseEntity.status(500).body("Delete failed: " + e.getMessage())));
     }
 
 }
