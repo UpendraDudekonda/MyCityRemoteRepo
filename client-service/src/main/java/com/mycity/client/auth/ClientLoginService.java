@@ -3,6 +3,7 @@ package com.mycity.client.auth;
 import java.util.List;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,6 +48,7 @@ public class ClientLoginService {
         return webClientBuilder.build()
             .post()
             .uri("lb://" + API_GATEWAY_SERVICE_NAME + path)
+            .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(request)
             .exchangeToMono(response -> {
                 Mono<String> bodyMono = response.bodyToMono(String.class);
