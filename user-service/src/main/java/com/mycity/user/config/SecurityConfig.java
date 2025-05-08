@@ -43,7 +43,11 @@ public class SecurityConfig {
                     "/user/review/delete/{reviewId}",
                     "/user/rating/add",
                     "/users/details/**",
-                    "/users/reset-password"
+                    "/users/reset-password",
+                    "/user/profile/upload-picture",
+                    "/user/profile-picture"
+                    
+                 
                     
                 ).permitAll()
                 .anyRequest().authenticated()

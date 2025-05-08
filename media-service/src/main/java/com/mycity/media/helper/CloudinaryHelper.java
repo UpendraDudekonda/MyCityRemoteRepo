@@ -55,7 +55,7 @@ public class CloudinaryHelper {
                 uploadOptions.put("folder", "Events");
 
                 Map<String, Object> uploadResult = cloudinary.uploader().upload(file.getBytes(), uploadOptions);
-                String url = (String) uploadResult.get("url");
+                String url = (String) uploadResult.get(" url");
 
                 if (url != null) {
                     imageUrls.add(url);
