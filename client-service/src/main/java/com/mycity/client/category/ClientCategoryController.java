@@ -14,14 +14,14 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 @RestController
-@RequestMapping("/client/bycategory")  
+@RequestMapping("/client")  
 public class ClientCategoryController {
 
     @Autowired
     private ClientCategoryService clientCategoryService;  
 
     
-    @GetMapping("/unique/images")
+    @GetMapping("/bycategory/unique/images")
     public Mono<ResponseEntity<List<CategoryImageDTO>>> getCategoriesWithImages() {
         return clientCategoryService.fetchCategoriesWithImages()  
             .map(ResponseEntity::ok);  

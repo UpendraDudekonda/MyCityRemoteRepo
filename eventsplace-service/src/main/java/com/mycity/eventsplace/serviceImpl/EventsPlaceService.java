@@ -200,36 +200,32 @@ public class EventsPlaceService implements EventsPlaceServiceInterface {
     }
 
 
-    @Override
-   	public Map<String, Object> createEventCartSection() {
-    	 List<Event> events = eventRepo.findAll(); 
-           Map<String, Object> cartSection = new HashMap<>();
-           cartSection.put("sectionId", "eventCart");
+   @Override
+   public Map<String, Object> createEventCartSection() {
+       List<Event> events = eventRepo.findAll(); 
+       Map<String, Object> cartSection = new HashMap<>();
+       cartSection.put("sectionId", "eventCart");
 
-         
-           List<Map<String, Object>> eventList = new ArrayList<>();
-           for (Event eventsList : events) {
+       List<Map<String, Object>> eventList = new ArrayList<>();
+       for (Event eventsList : events) {
            Map<String, Object> data = new HashMap<>();
+           data.put("eventId", eventsList.getEventId()); // ✅ Add this line
            data.put("eventName", eventsList.getEventName());
            data.put("date", eventsList.getDate());
-         // Directly a list of strings
            data.put("city", eventsList.getCity());
-          
-    // assuming Event has getPlace()
+
            try {
                List<String> images = mediaService.getImageUrlsForEvent(eventsList.getEventId());
                data.put("images", images);
            } catch (Exception ex) {
                System.out.println("Failed to fetch images for event " + eventsList.getEventId());
            }
-          
+
            eventList.add(data);
-    
        }
-           cartSection.put("data",eventList);
-   		return cartSection;
-           
-       }
+       cartSection.put("data", eventList);
+       return cartSection;
+   }
 
 
 
