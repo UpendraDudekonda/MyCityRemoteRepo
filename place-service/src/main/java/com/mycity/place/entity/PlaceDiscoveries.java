@@ -15,16 +15,15 @@ import lombok.RequiredArgsConstructor;
 @Data
 @NoArgsConstructor
 @RequiredArgsConstructor
-public class PlaceDiscoveries
-{
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Id
-  private Long placeId;
-  @NonNull
-  private String placeName;
-  @NonNull
-  private String placeCategory;
-  @NonNull
-  private String imageUrl;
-  
+public class PlaceDiscoveries {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long placeId;
+	@NonNull
+	private String placeName;
+	@NonNull
+	private String placeCategory;
+	@NonNull
+	private String imageUrl;
+
 }

@@ -21,5 +21,7 @@ public interface ImageServiceRepository extends JpaRepository<Images, Long>{
     @Query("SELECT i.imageId FROM Images i WHERE i.placeId = :placeId")
     List<Long> findImageIdsByPlaceId(Long placeId);
 
+	List<Images> findImagesByPlaceName(String placeName);
+
 
 }

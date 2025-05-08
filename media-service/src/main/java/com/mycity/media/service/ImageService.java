@@ -22,4 +22,6 @@ public interface ImageService {
 			String cuisineName);
 
 	String deleteImage(Long placeId);
+
+	List<AboutPlaceImageDTO> getAboutPlaceImages(String placeName);
 }

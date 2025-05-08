@@ -1,5 +1,6 @@
 package com.mycity.admin.config;
 
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,7 +25,9 @@ public class SecurityConfig {
 	                .requestMatchers(
 	                    "/admin/auth/internal/login",
 	                	"/admin/profile",
-	                	"/admin/event/**"
+	                	"/admin/event/**",
+	                	"/admin/discoveries/**",
+	                	"/admin/discoveries/getallPlaces"
 	                ).permitAll()
 	                .anyRequest().authenticated()
 	            );
@@ -49,7 +52,8 @@ public class SecurityConfig {
     }
     
     @Bean
-    public WebClient.Builder webClientBuilder() {
+    @LoadBalanced
+    public WebClient.Builder loadBalancedWebClientBuilder() {
         return WebClient.builder();
     }
 }

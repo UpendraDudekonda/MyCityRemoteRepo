@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.mycity.shared.eventsdto.EventsDTO;
+import com.mycity.shared.placedto.AboutPlaceEventDTO;
 
 
 public interface EventsPlaceServiceInterface {
@@ -27,4 +28,7 @@ public interface EventsPlaceServiceInterface {
 
 		 
 		Map<String, Object> createEventDetailsSection(Long eventId);
+
+
+		List<AboutPlaceEventDTO> fetchEvents(Long placeId);
 }
