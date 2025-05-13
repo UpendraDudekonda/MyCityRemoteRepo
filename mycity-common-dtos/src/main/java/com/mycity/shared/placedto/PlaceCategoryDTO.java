@@ -19,4 +19,11 @@ public class PlaceCategoryDTO {
         this.categoryId = categoryId;
     }
 
+	public PlaceCategoryDTO(String categoryName, long placeId, String placeName) {
+		// TODO Auto-generated constructor stub
+		this.categoryName=categoryName;
+		this.placeId=placeId;
+		this.placeName=placeName;
+	}
+
 }
