@@ -30,12 +30,14 @@ public class ImageController {
 	
 	@PostMapping(value = "/upload/places", consumes = MediaType.MULTIPART_FORM_DATA)
 	public ResponseEntity<String> uploadImageForPlaces(
+		
 	        @RequestPart("image") MultipartFile file,
 	        @RequestParam Long placeId,
 	        @RequestParam String placeName,
 	        @RequestParam String category,
 	        @RequestParam String imageName) {
 		
+		System.out.println("ImageController.uploadImageForPlaces()");
 		imageService.uploadImageForPlaces(file,placeId,placeName,category,imageName);
 
 	    return ResponseEntity.ok("Image uploaded successfully");
@@ -64,6 +66,5 @@ public class ImageController {
 	{
 		String result=imageService.deleteImage(placeId);
 		return ResponseEntity.ok(result);
-	}
-	
+	}	
 }

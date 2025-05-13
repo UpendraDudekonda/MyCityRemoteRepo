@@ -30,6 +30,7 @@ public class PlaceReviewController {
 	@PostMapping(value="/addreview",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<String> addReview(@RequestPart ReviewDTO dto,
 			@RequestPart("images") List<MultipartFile> images) {
+		System.out.println("PlaceReviewController.addReview()");
 		ResponseEntity<String> response = service.addPlaceReview(dto,images);
 		return response; // Use the status code returned by the service
 	}

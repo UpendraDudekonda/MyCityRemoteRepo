@@ -2,22 +2,33 @@ package com.mycity.client.place;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mycity.client.config.CookieTokenExtractor;
 import com.mycity.shared.placedto.PlaceDTO;
 
@@ -36,7 +47,7 @@ public class ClientPlaceController
 	
 	private static final String API_GATEWAY_SERVICE_NAME="API-GATEWAY";
 	
-	private static final String PLACE_REGISTRATION_PATH="/place/addplace";
+	private static final String PLACE_REGISTRATION_PATH="/admin/addPlace";
 	
     private static final String PLACE_ID_FINDING_PATH="/place/getid/{placeName}";
 	
@@ -49,24 +60,60 @@ public class ClientPlaceController
 	private static final String ALL_PLACES_FINDING_PATH="/place/getall";
 	
 		
-	@PostMapping("/add")
-	public Mono<String> addPlace(@RequestBody PlaceDTO dto,@RequestHeader(value = HttpHeaders.COOKIE)String cookie) 
-	{
-		System.out.println("ClientPlaceController.addPlace()");
-		//extracting token from cookie
-		String token=extractor.extractTokenFromCookie(cookie);
+	@PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Mono<String> addPlace(
+	        @ModelAttribute("placeDto") PlaceDTO placeDto,
+	        @RequestParam Map<String, MultipartFile> placeImages,
+	        @RequestParam Map<String, MultipartFile> cuisineImages,
+	        @RequestHeader(value = HttpHeaders.COOKIE) String cookie
+	) throws JsonProcessingException {
+
+	    System.out.println("ClientPlaceController.addPlace()");
+
+	    // 🔐 Extract token from cookie
+	    String token = extractor.extractTokenFromCookie(cookie);
+
+	    // 🧱 Build multipart request
+	    MultipartBodyBuilder builder = new MultipartBodyBuilder();
+
+	    // 🧾 Convert DTO to JSON
+	    ObjectMapper mapper = new ObjectMapper();
+	    mapper.registerModule(new JavaTimeModule()); 
+	    mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+	    String placeDtoJson = mapper.writeValueAsString(placeDto);
+
+	    builder.part("placeDto", placeDtoJson)
+	           .header("Content-Disposition", "form-data; name=placeDto")
+	           .contentType(MediaType.APPLICATION_JSON);
+
+	    // 🖼️ Add placeImages
+	    for (Map.Entry<String, MultipartFile> entry : placeImages.entrySet()) {
+	        builder.part(entry.getKey(), entry.getValue().getResource());
+	    }
+
+	    // 🍜 Add cuisineImages
+	    for (Map.Entry<String, MultipartFile> entry : cuisineImages.entrySet()) {
+	        builder.part(entry.getKey(), entry.getValue().getResource());
+	    }
+
+	    // 🌐 Send to API Gateway → Admin → Place-Service
 	    return webClientBuilder.build()
 	            .post()
-	            .uri("lb://" +API_GATEWAY_SERVICE_NAME + PLACE_REGISTRATION_PATH)
-	            .body(Mono.just(dto), PlaceDTO.class)
-	            .header(HttpHeaders.AUTHORIZATION,"Bearer "+token)
+	            .uri("lb://" + API_GATEWAY_SERVICE_NAME + PLACE_REGISTRATION_PATH)
+	            .contentType(MediaType.MULTIPART_FORM_DATA)
+	            .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+	            .body(BodyInserters.fromMultipartData(builder.build()))
 	            .retrieve()
 	            .onStatus(HttpStatusCode::isError, clientResponse ->
 	                    clientResponse.bodyToMono(String.class)
-	                            .flatMap(errorBody -> Mono.error(new RuntimeException("Failed to Add Place: " + clientResponse.statusCode() + " - " + errorBody))))
+	                            .flatMap(errorBody -> Mono.error(new RuntimeException("Failed to Add Place: "
+	                                    + clientResponse.statusCode() + " - " + errorBody))))
 	            .bodyToMono(String.class)
 	            .onErrorResume(e -> Mono.just("Failed to Add Place: " + e.getMessage()));
 	}
+
+
+
 	
 
 	@GetMapping("/getid/{placeName}")

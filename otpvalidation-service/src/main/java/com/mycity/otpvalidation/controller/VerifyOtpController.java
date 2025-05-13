@@ -20,24 +20,19 @@ public class VerifyOtpController {
 
     private final OtpService otpService; 
 
-       @PostMapping("/auth/verifyotp")
-        public ResponseEntity<OTPResponse> verifyOtp(@RequestBody VerifyOtpDTO verificationRequest) {
-            String email = verificationRequest.getEmail();
-            String otp = verificationRequest.getOtp();
+    @PostMapping("/auth/verifyotp")
+    public ResponseEntity<OTPResponse> verifyOtp(@RequestBody VerifyOtpDTO verificationRequest) {
+        String email = verificationRequest.getEmail();
+        String otp = verificationRequest.getOtp();
 
-            try {
-                boolean isValid = otpService.verifyOtp(email, otp);  // Verify OTP using OtpService
-                if (isValid) {
-                    return ResponseEntity.ok(new OTPResponse("OTP verified successfully", true));
-                } else {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .body(new OTPResponse("Invalid or expired OTP.", false));
-                }
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(new OTPResponse("Error verifying OTP: " + e.getMessage(), false));
-            }
-        
+        boolean isValid = otpService.verifyOtp(email, otp);
+        if (isValid) {
+            return ResponseEntity.ok(new OTPResponse("OTP verified successfully", true));
+        } else {
+            return ResponseEntity.badRequest()
+                    .body(new OTPResponse("Invalid or expired OTP.", false));
         }
+    }
+
 
 }

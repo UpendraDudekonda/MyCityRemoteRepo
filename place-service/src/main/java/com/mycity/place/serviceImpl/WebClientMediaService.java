@@ -144,7 +144,9 @@ public class WebClientMediaService
         }
 
     }
+    
     public String uploadCuisineImage(MultipartFile image, String cuisineName, long placeId, @NonNull String placeName, String placeCategory) {
+    	System.out.println("WebClientMediaService.uploadCuisineImage()");
         try {
             MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
             bodyBuilder.part("image", new ByteArrayResource(image.getBytes()) {
