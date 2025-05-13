@@ -2,14 +2,18 @@ package com.mycity.place.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.web.multipart.MultipartFile;
 
 import com.mycity.place.entity.Place;
 import com.mycity.shared.placedto.PlaceCategoryDTO;
 import com.mycity.shared.placedto.PlaceDTO;
+import com.mycity.shared.placedto.PlaceRelatedImagesDTO;
 import com.mycity.shared.placedto.PlaceResponseDTO;
 import com.mycity.shared.placedto.PlaceWithImagesDTO;
+
+import reactor.core.publisher.Flux;
 
 public interface PlaceServiceInterface {
 	String addPlace(PlaceDTO dto);
@@ -40,6 +44,8 @@ public interface PlaceServiceInterface {
 			Map<String, MultipartFile> hotelImages);
 
 	List<PlaceWithImagesDTO> getPlacesByCategoryWithImages(String categoryName);
+
+	Flux<PlaceResponseDTO> getPlacesByCategoryId(String categoryId);
 
 
 }

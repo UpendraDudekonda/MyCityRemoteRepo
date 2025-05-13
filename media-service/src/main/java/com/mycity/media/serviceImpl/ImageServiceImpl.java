@@ -3,6 +3,7 @@ package com.mycity.media.serviceImpl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -169,6 +170,16 @@ public class ImageServiceImpl implements ImageService {
 	    }
 
 	    return imageDTOs;
+	}
+
+	@Override
+	public Mono<List<String>> getImagesByPlaceId(Long placeId) {
+	    return Mono.fromCallable(() -> {
+	        List<Images> images = imageServiceRepository.findByPlaceId(placeId);
+	        return images.stream()
+	                     .map(Images::getImageUrl)
+	                     .collect(Collectors.toList());
+	    });
 	}
 
 

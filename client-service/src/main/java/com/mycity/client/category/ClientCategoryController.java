@@ -3,11 +3,13 @@ package com.mycity.client.category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.mycity.client.config.CookieTokenExtractor;
 import com.mycity.client.serviceImpl.ClientCategoryService;
 import com.mycity.shared.categorydto.CategoryImageDTO;
+import com.mycity.shared.categorydto.CategoryWithPlacesDTO;
 
 import reactor.core.publisher.Mono;
 
@@ -34,4 +36,13 @@ public class ClientCategoryController {
         return clientCategoryService.fetchCategoriesWithImages()  
             .map(ResponseEntity::ok);  
     }
+    
+    @GetMapping("/bycategory/{categoryName}/places")
+    public Mono<ResponseEntity<List<CategoryWithPlacesDTO>>> getSingleCategoryWithPlacesAndImages(@PathVariable String categoryName) {
+        return clientCategoryService.fetchCategoryWithPlacesAndImages(categoryName)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+    
 }
