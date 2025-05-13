@@ -23,8 +23,11 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/category")
 public class CategoryController {
 
-    @Autowired
-    private CategoryService categoryService;
+	private final CategoryService categoryService;
+
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
     @GetMapping("/unique/images")
     public Mono<ResponseEntity<List<CategoryImageDTO>>> getCategoriesWithImages() {
