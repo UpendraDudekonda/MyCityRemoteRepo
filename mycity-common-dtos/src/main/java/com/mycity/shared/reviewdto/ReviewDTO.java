@@ -13,12 +13,13 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ReviewDTO 
 {
-	   private Long reviewId;
-	   private Long userId;  // Automatically resolved using the userName; no need to include this in the request payload.
-	   private Long placeId; // Automatically resolved using the palceName; no need to include this in the request payload.
+//	   private Long reviewId;
+//	   private Long userId;  // Automatically resolved using the userName; no need to include this in the request payload.
+//	   private Long placeId; // Automatically resolved using the palceName; no need to include this in the request payload.
 	   private String placeName;
 	   private String userName;
 	   private String reviewDescription;
+	   private String imageUrl;
 	   private LocalDate postedOn;
 	       
 }

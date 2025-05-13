@@ -20,12 +20,12 @@ import com.mycity.shared.merchantdto.MerchantLoginRequest;
 import com.mycity.shared.responsedto.LoginResponse;
 import com.mycity.shared.userdto.UserLoginRequest;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/auth")
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class AuthLoginController {
 
     private final WebClient.Builder webClientBuilder;

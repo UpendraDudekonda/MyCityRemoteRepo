@@ -83,11 +83,11 @@ public class ClientEventController {
             if (eventDTO.getCity() != null) body.add("city", eventDTO.getCity());
 
             // If eventPlaces is a List<String>, add each event place as separate value
-            if (eventDTO.getEventPlaces() != null) {
-                for (String place : eventDTO.getEventPlaces()) {
-                    body.add("eventPlaces", place);
-                }
-            }
+//            if (eventDTO.getEventPlaces() != null) {
+//                for (String place : eventDTO.getEventPlaces()) {
+//                    body.add("eventPlaces", place);
+//                }
+//            }
 
             // If schedule is List<ScheduleDTO>, add each schedule item individually
             if (eventDTO.getSchedule() != null) {
@@ -149,12 +149,12 @@ public class ClientEventController {
             if (eventDTO.getDuration() != null) body.add("duration", eventDTO.getDuration().toString());
             if (eventDTO.getDescription() != null) body.add("description", eventDTO.getDescription());
             if (eventDTO.getCity() != null) body.add("city", eventDTO.getCity());
-
-            if (eventDTO.getEventPlaces() != null) {
-                for (String place : eventDTO.getEventPlaces()) {
-                    body.add("eventPlaces", place);
-                }
-            }
+//
+//            if (eventDTO.getEventPlaces() != null) {
+//                for (String place : eventDTO.getEventPlaces()) {
+//                    body.add("eventPlaces", place);
+//                }
+//            }
 
             if (eventDTO.getSchedule() != null) {
                 for (int i = 0; i < eventDTO.getSchedule().size(); i++) {

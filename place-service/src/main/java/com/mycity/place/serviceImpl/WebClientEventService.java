@@ -18,8 +18,8 @@ public class WebClientEventService {
     @Autowired
     private WebClient.Builder webClientBuilder;
 
-    private static final String EVENT_SERVICE = "EVENT-SERVICE"; // service name in registry/load balancer
-    private static final String EVENT_FETCH_PATH = "/events/place/{placeId}"; // endpoint to fetch events
+    private static final String EVENT_SERVICE = "eventsplace-service"; // lowercase, as in application.properties
+    private static final String EVENT_FETCH_PATH = "/event/place/{placeId}"; // endpoint to fetch events
 
     public CompletableFuture<List<AboutPlaceEventDTO>> fetchEvents(Long placeId) {
         return webClientBuilder.baseUrl("lb://" + EVENT_SERVICE)

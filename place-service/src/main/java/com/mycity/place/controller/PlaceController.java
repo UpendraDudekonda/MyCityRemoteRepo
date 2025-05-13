@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -40,23 +41,24 @@ public class PlaceController {
         this.globalExceptionHandler = globalExceptionHandler;
     }
 
-//	@PostMapping(value = "/add-place", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//	public ResponseEntity<String> addPlaceDetails(@ModelAttribute PlaceDTO placeDto,
-//			@RequestPart("images") List<MultipartFile> images) {
-//		System.out.println("PlaceController.addPlaceDetails()");
-//		System.out.println(placeDto.getCategoryName());
-// 
-//		try {
-// 
-//			// Use the service to add the place details and save the images
-//			String msg = placeService.addPlace(placeDto, images);
-//			return new ResponseEntity<>(msg, HttpStatus.CREATED);
-// 
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return new ResponseEntity<>("Error adding place with images", HttpStatus.INTERNAL_SERVER_ERROR);
-//		}
-//	}
+	@PostMapping(value = "/add-place", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> addPlaceDetails(@ModelAttribute PlaceDTO placeDto,
+			@RequestPart("images") List<MultipartFile> images) {
+		System.out.println("PlaceController.addPlaceDetails()");
+		System.out.println(placeDto.getCategoryName());
+ 
+		try {
+ 
+			// Use the service to add the place details and save the images
+			String msg = placeService.addPlace(placeDto, images);
+			return new ResponseEntity<>(msg, HttpStatus.CREATED);
+ 
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("Error adding place with images", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 
  // Endpoint to add Place details
     @PostMapping(value = "/add-place", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -78,6 +80,29 @@ public class PlaceController {
         }
     }
 
+// // Endpoint to add Place details
+//    @PostMapping(value = "/add-place", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<String> addPlaceDetails(
+//            @ModelAttribute PlaceDTO placeDto,  // Bind the form data to the PlaceDTO
+//            @RequestParam Map<String, MultipartFile>  placeImages,  // Images for the Place itself
+//            @RequestParam Map<String, MultipartFile>  cuisineImages,  // Images for Cuisines
+//            @RequestParam Map<String, MultipartFile> hotelImages  // Images for Hotels
+//    ) {
+//        System.out.println("PlaceController.addPlaceDetails()");
+//        System.out.println(placeDto.getCategoryName());
+//
+//        try {
+//            // Call service method to add the Place and save images for cuisines and hotels
+//            String msg = placeService.addPlace(placeDto, placeImages, cuisineImages, hotelImages);
+//            return new ResponseEntity<>(msg, HttpStatus.CREATED);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return new ResponseEntity<>("Error adding place with images", HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+
+
+	
 
 	// Create a place using PlaceDTO
 	@PostMapping("/newplace/add")
@@ -107,11 +132,7 @@ public class PlaceController {
 		return new ResponseEntity<>(msg, HttpStatus.OK);
 	}
 
-//    @PostMapping("/save")
-//    public ResponseEntity<Place> createPlace(@RequestBody Place place) {
-//        Place savedPlace = placeService.savePlace(place);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(savedPlace);
-//    }
+
 
 	@GetMapping("/allplaces")
 	public ResponseEntity<List<PlaceResponseDTO>> getAllPlaces() {

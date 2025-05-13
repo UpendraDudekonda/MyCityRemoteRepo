@@ -30,13 +30,18 @@ public class UserForgotpasswordService {
     }
 
     public void resetPassword(String email, String newPassword) {
+    	
+    	
         User user = userRepository.findByEmail(email);
         if (user == null) {
             throw new RuntimeException("User with email " + email + " not found.");
         }
 
         // Encode and update the password
-        user.setPassword(passwordEncoder.encode(newPassword));
+        String enpw = passwordEncoder.encode(newPassword);
+        
+        System.err.println("the new encoded password for resetting : "+enpw);
+        user.setPassword(enpw);
         userRepository.save(user);
     }
 

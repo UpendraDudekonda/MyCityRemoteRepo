@@ -52,6 +52,13 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+<<<<<<< HEAD
+=======
+<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+>>>>>>> branch 'versionB' of https://github.com/nikhilkatna/MyCityRemoteRepo.git
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
@@ -125,6 +132,10 @@
 			<artifactId>user-service</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+				<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
@@ -135,10 +146,7 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-			<dependency>
-    <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-starter-loadbalancer</artifactId>
-</dependency>
+	
 		</dependencies>
 		
 	</dependencyManagement>

@@ -27,11 +27,10 @@ public class PlaceReviewController {
 	@Autowired
 	private ReviewServiceInterface service;
 
-	@PostMapping(value="/addreview",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@PostMapping(value = "/addreview", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<String> addReview(@RequestPart ReviewDTO dto,
 			@RequestPart("images") List<MultipartFile> images) {
-		System.out.println("PlaceReviewController.addReview()");
-		ResponseEntity<String> response = service.addPlaceReview(dto,images);
+		ResponseEntity<String> response = service.addPlaceReview(dto, images);
 		return response; // Use the status code returned by the service
 	}
 
@@ -53,20 +52,21 @@ public class PlaceReviewController {
 		System.out.println("=========PlaceReviewController.deleteReview()============");
 		return new ResponseEntity<String>(service.deleteReview(reviewId), HttpStatus.OK);
 	}
-	
-	@GetMapping("/place-reviews/{placeId}")
-    public ResponseEntity<List<ReviewDTO>> getPlaceReviews(@PathVariable Long placeId) {
-        // Fetch the reviews directly (assuming fetchReviews is synchronous or already handles async properly)
-        List<ReviewDTO> reviews = service.fetchReviews(placeId);
 
-        // Check if reviews are found
-        if (reviews != null && !reviews.isEmpty()) {
-            // Return 200 OK with the reviews if found
-            return ResponseEntity.ok(reviews);
-        } else {
-            // Return 404 Not Found if no reviews are found
-            return ResponseEntity.status(404).body(null);
-        }
-    }
-	
+	@GetMapping("/place-reviews/{placeId}")
+	public ResponseEntity<List<ReviewDTO>> getPlaceReviews(@PathVariable Long placeId) {
+		// Fetch the reviews directly (assuming fetchReviews is synchronous or already
+		// handles async properly)
+		List<ReviewDTO> reviews = service.fetchReviews(placeId);
+
+		// Check if reviews are found
+		if (reviews != null && !reviews.isEmpty()) {
+			// Return 200 OK with the reviews if found
+			return ResponseEntity.ok(reviews);
+		} else {
+			// Return 404 Not Found if no reviews are found
+			return ResponseEntity.status(404).body(null);
+		}
+	}
+
 }

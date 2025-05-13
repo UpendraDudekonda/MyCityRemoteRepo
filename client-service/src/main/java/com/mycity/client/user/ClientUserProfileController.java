@@ -4,16 +4,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.mycity.client.config.CookieTokenExtractor;
@@ -21,11 +27,13 @@ import com.mycity.shared.userdto.UserDTO;
 import com.mycity.shared.userdto.UserLoginRequest;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/client")
 @RequiredArgsConstructor
+@Slf4j
 public class ClientUserProfileController
 {
     private final WebClient.Builder webClientBuilder;
@@ -39,6 +47,49 @@ public class ClientUserProfileController
     private static final String USER_UPDATING_PATH="/user/updateuser/{userId}";
     private static final String USER_DELETING_PATH="/user/deleteuser/{userId}";
     private static final String USER_PASSWORD_CHANGING_PATH="/user/updatepassword";
+    
+    private static final String USER_PROFILE_PICTURE = "/user/profile/upload-picture"; 
+    
+    private static final String USER_GET_PROFILE_PICTURE = "/user/profile-picture";
+    
+    
+    @PostMapping("/upload-picture")
+    public Mono<ResponseEntity<String>> uploadProfilePicture(
+    		 @RequestHeader(value = HttpHeaders.COOKIE, required = false) String cookie,
+            @RequestParam("image") MultipartFile imageFile) {
+    	
+    	// Extract token using the injected CookieTokenExtractor
+        String token = cookieTokenExtractor.extractTokenFromCookie(cookie);
+
+        MultipartBodyBuilder builder = new MultipartBodyBuilder();
+        builder.part("image", imageFile.getResource())
+               .filename(imageFile.getOriginalFilename())
+               .contentType(MediaType.valueOf(imageFile.getContentType()));
+
+        return webClientBuilder.build()
+                .post()
+                .uri("lb://" + API_GATEWAY_SERVICE_NAME + USER_PROFILE_PICTURE)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData(builder.build()))
+                .retrieve()
+                .toEntity(String.class);
+    }
+    
+    @GetMapping("/profile-picture")
+    public Mono<ResponseEntity<String>> getProfilePicture(@RequestHeader(HttpHeaders.COOKIE) String cookie) {
+    	
+    	// Extract token using the injected CookieTokenExtractor
+        String token = cookieTokenExtractor.extractTokenFromCookie(cookie);
+        
+        return webClientBuilder.build()
+                .get()
+                .uri("lb://"+API_GATEWAY_SERVICE_NAME + USER_GET_PROFILE_PICTURE)  // no userId in path
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .toEntity(String.class);
+    }
+
 
     
     @GetMapping("/profile/user")
@@ -146,5 +197,8 @@ public class ClientUserProfileController
 	            .bodyToMono(String.class)
 	            .onErrorResume(e -> Mono.just("Failed to UPDATE User Password: " + e.getMessage()));
 	}
+	
+	
+	
     
 }

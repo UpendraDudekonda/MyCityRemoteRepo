@@ -106,7 +106,7 @@ public class AboutPlaceDetailServiceImpl implements PlaceDetailService {
 			about.setLocalCuisines(localCuisineDTOs);
 
 			// ✅ Fetch nearby places and convert to DTOs
-			List<Place> nearbyPlaces = getNearbyPlaces(place.getPlaceName(), 20.0); // radius in KM
+			List<Place> nearbyPlaces = getNearbyPlaces(place.getPlaceName(), 200.0); // radius in KM
 
 			List<NearbyPlaceDTO> nearbyPlaceDTOs = new ArrayList<>();
 			for (Place p : nearbyPlaces) {

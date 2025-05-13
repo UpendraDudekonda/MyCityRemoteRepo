@@ -18,6 +18,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.mycity.client.config.CookieTokenExtractor;
 import com.mycity.shared.placedto.PlaceDTO;
 import com.mycity.shared.placedto.PlaceDiscoveriesDTO;
+import com.mycity.shared.placedto.PlaceDiscoveriesResponeDTO;
 
 import reactor.core.publisher.Mono;
 
@@ -33,7 +34,7 @@ public class ClientAdminPlaceDiscoveriesController
 	
 	private static final String API_GATEWAY_SERVICE_NAME="API-GATEWAY";
 	private static final String PATH_TO_ADD_PLACE_TO_DISCOVERY="/admin/discoveries/addPlace";
-	private static final String PATH_GET_LIST_OF_PLACES="/admin/discoveries/getallPlaces";
+	private static final String PATH_GET_LIST_OF_PLACES="/place/discoveries/getall";
 	private static final String PATH_TO_GET_PLACE_DETAILS="/admin/discoveries/getPlace/{placeName}";
 	
 	@PostMapping("/addplace")
@@ -53,7 +54,7 @@ public class ClientAdminPlaceDiscoveriesController
     }
 	
 	@GetMapping("/getall")
-    public Mono<ResponseEntity<List<PlaceDiscoveriesDTO>>> getAllPlaces(@RequestHeader(value=HttpHeaders.COOKIE,required = false) String cookie) 
+    public Mono<ResponseEntity<List<PlaceDiscoveriesResponeDTO>>> getAllPlaces(@RequestHeader(value=HttpHeaders.COOKIE,required = false) String cookie) 
  	{
  		System.out.println("ClientAdminPlaceDiscoverController.getAllPlaces()");
  	    //Extract Token From Cookie
@@ -63,7 +64,7 @@ public class ClientAdminPlaceDiscoveriesController
                 .uri("lb://" +API_GATEWAY_SERVICE_NAME +PATH_GET_LIST_OF_PLACES)
                 .header(HttpHeaders.AUTHORIZATION,"Bearer "+token)
                 .retrieve()
-                .toEntity(new ParameterizedTypeReference<List<PlaceDiscoveriesDTO>>() {})
+                .toEntity(new ParameterizedTypeReference<List<PlaceDiscoveriesResponeDTO>>() {})
                 .map(response -> ResponseEntity.status(response.getStatusCode()).body(response.getBody()));
     }
 	

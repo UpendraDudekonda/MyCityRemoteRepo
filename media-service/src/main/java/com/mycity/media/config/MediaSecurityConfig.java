@@ -19,9 +19,9 @@ public class MediaSecurityConfig {
 	    http
 	        .csrf(csrf -> csrf.disable())
 	        .authorizeHttpRequests(auth -> auth
-	            .requestMatchers("/media/upload/image","/media/upload/places","/media/images","/media/upload","/media/cover-image","/media/fetch{id}","/media/images/{placeId}","/media/images/delete/{placeId}",
+	            .requestMatchers("/media/upload/image","/media/images/**","/media/upload","/media/cover-image","/media/fetch{id}","/media/images/{placeId}","/media/images/delete/{placeId}",
 	            		         "/media/review/upload","/media/review/delete/{reviewId}",
-	            		         "/media/gallery/upload","media/gallery/getimages/{districtName}","/media/gallery/deleteimage/{imageId}","/media/upload/cuisines")
+	            		         "/media/gallery/upload","media/gallery/getimages/{districtName}","/media/gallery/deleteimage/{imageId}","/media/image-byplacename/{placeName}","/media/upload/places","/media/upload/cuisines","/media/upload/images", "/media/delete/images/**", "/media/update/images/**", "/media/fetch/images/**","/media/review/image/place/**")
 	            .permitAll()
 	            .anyRequest().authenticated()
 	        );
@@ -46,4 +46,5 @@ public class MediaSecurityConfig {
 	    public WebClient.Builder webClientBuilder() {
 	        return WebClient.builder();    
 	    }
+	    
 }
