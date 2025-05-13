@@ -75,6 +75,11 @@ public class ReviewImageServiceimpl implements ReviewImageService
 	    return deletedCount + " image(s) deleted for reviewId: " + reviewId;
 	}
 
+	@Override
+	public String getReviewForPlace(long placeId) {
+		return reviewRepo.findImageUrlByPlaceId(placeId);
+	}
+
 
 
 }
