@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CategoryImageDTO { 
 	
+	public CategoryImageDTO(String categoryname, String image) {
+		// TODO Auto-generated constructor stub
+	}
 	private String categoryName;
     private String imageUrl;
     private String placeId;

@@ -9,9 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CategoryDTO {
 
-	 	public CategoryDTO(String categoryName, String categoryDescription) {
-		// TODO Auto-generated constructor stub
-	}
+	 public CategoryDTO(String name, String description) {
+	        this.name = name;
+	        this.description = description;
+	    }
 
 		private Long categoryId;
 
