@@ -19,6 +19,7 @@ import com.mycity.eventsplace.repository.EventsRepository;
 import com.mycity.eventsplace.service.EventsPlaceServiceInterface;
 import com.mycity.shared.eventsdto.EventsDTO;
 import com.mycity.shared.mediadto.EventSubImagesDTO;
+import com.mycity.shared.placedto.AboutPlaceEventDTO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -251,6 +252,17 @@ public class EventsPlaceService implements EventsPlaceServiceInterface {
    		return cartSection;
            
        }
+
+
+
+
+
+
+	@Override
+	public List<AboutPlaceEventDTO> fetchEvents(Long placeId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 
 
