@@ -1,7 +1,9 @@
 package com.mycity.category.serviceImpl;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,7 +13,9 @@ import com.mycity.category.repository.CategoryRepository;
 import com.mycity.category.service.CategoryService;
 import com.mycity.shared.categorydto.CategoryDTO;
 import com.mycity.shared.categorydto.CategoryImageDTO;
+import com.mycity.shared.placedto.PlaceCategoryDTO;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -26,28 +30,50 @@ public class CategoryServiceImpl implements CategoryService {
 	    @Autowired
 	    private CategoryRepository categoryRepo;
 
+
 	    @Override
 	    public Mono<List<CategoryImageDTO>> fetchCategoriesWithImages() {
 	        return placeService.fetchPlaceCategories()
-	                .flatMap(place -> {
-	                    String categoryName = place.getCategoryName();
-	                    Long placeId = place.getPlaceId();
-	                    String fplaceId = String.valueOf(placeId);
-	                    String placeName = place.getPlaceName();
+	                .collectList()
+	                .flatMap(places -> {
+	                    Set<String> seenCategories = new HashSet<>();
+	                    List<PlaceCategoryDTO> uniquePlaces = new ArrayList<>();
 
-	                    Mono<String> imageUrlMono = mediaService.fetchCategoryImage(categoryName);
-	                    Mono<String> descriptionMono = fetchCategoryDescription(categoryName);
+	                    // Filter unique categories using a for-loop
+	                    for (PlaceCategoryDTO place : places) {
+	                        String normalized = place.getCategoryName().trim().toLowerCase();
+	                        if (!seenCategories.contains(normalized)) {
+	                            seenCategories.add(normalized);
+	                            uniquePlaces.add(place);
+	                        }
+	                    }
 
-	                    return Mono.zip(imageUrlMono, descriptionMono)
-	                            .map(tuple -> {
-	                                String imageUrl = tuple.getT1();
-	                                String description = tuple.getT2();
-	                                return new CategoryImageDTO(categoryName, imageUrl, fplaceId, placeName, description);
-	                            });
-	                })
-	                .distinct(CategoryImageDTO::getCategoryName)
-	                .collectList();
+	                    // Now map each unique place to CategoryImageDTO
+	                    List<Mono<CategoryImageDTO>> dtoMonos = new ArrayList<>();
+	                    for (PlaceCategoryDTO place : uniquePlaces) {
+	                        String categoryName = place.getCategoryName();
+	                        String placeId = String.valueOf(place.getPlaceId());
+	                        String placeName = place.getPlaceName();
+
+	                        Mono<String> imageUrlMono = mediaService.fetchCategoryImage(categoryName);
+	                        Mono<String> descriptionMono = fetchCategoryDescription(categoryName);
+
+	                        Mono<CategoryImageDTO> dtoMono = Mono.zip(imageUrlMono, descriptionMono)
+	                                .map(tuple -> new CategoryImageDTO(
+	                                        categoryName,
+	                                        tuple.getT1(),
+	                                        placeId,
+	                                        placeName,
+	                                        tuple.getT2()
+	                                ));
+	                        dtoMonos.add(dtoMono);
+	                    }
+
+	                    return Flux.concat(dtoMonos).collectList();
+	                });
 	    }
+
+
 
 	    @Override
 	    public boolean categoryExists(String categoryName) {

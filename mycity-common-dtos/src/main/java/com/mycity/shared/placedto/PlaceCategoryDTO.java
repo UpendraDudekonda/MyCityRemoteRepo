@@ -13,5 +13,10 @@ public class PlaceCategoryDTO {
     private String placeHistory;
     private Long categoryId;
     private String categoryName;
+    
+    public PlaceCategoryDTO(Long placeId, Long categoryId) {
+        this.placeId = placeId;
+        this.categoryId = categoryId;
+    }
 
 }
