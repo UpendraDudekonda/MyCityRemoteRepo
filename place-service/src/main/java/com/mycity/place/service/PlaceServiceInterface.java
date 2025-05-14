@@ -26,7 +26,7 @@ public interface PlaceServiceInterface {
 
 	Place savePlace(Place place);
 
-	Place getPlaceById(Long id);
+	PlaceDTO getPlaceById(Long id);
 
 	List<PlaceResponseDTO> getAllPlaces();
 

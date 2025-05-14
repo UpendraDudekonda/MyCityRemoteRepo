@@ -11,4 +11,6 @@ public class LocalCuisineDTO {
 
 	private String cuisineName;
 
+	
+
 }
