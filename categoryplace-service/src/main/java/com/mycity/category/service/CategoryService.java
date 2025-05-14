@@ -2,10 +2,9 @@ package com.mycity.category.service;
 
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
-
 import com.mycity.shared.categorydto.CategoryDTO;
 import com.mycity.shared.categorydto.CategoryImageDTO;
+import com.mycity.shared.categorydto.CategoryWithPlacesDTO;
 
 import reactor.core.publisher.Mono;
 
@@ -24,5 +23,8 @@ public interface CategoryService {
 	Mono<String> fetchCategoryDescription(String categoryName);
 
 	String getDescriptionByCategoryName(String categoryName);
+
+
+	  Mono<List<CategoryWithPlacesDTO>> getSingleCategoryWithPlacesAndImages(String categoryName);
 
 }

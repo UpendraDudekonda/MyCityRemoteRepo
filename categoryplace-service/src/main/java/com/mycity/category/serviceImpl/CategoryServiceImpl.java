@@ -2,7 +2,9 @@ package com.mycity.category.serviceImpl;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +15,9 @@ import com.mycity.category.repository.CategoryRepository;
 import com.mycity.category.service.CategoryService;
 import com.mycity.shared.categorydto.CategoryDTO;
 import com.mycity.shared.categorydto.CategoryImageDTO;
+import com.mycity.shared.categorydto.CategoryWithPlacesDTO;
 import com.mycity.shared.placedto.PlaceCategoryDTO;
+import com.mycity.shared.placedto.PlaceRelatedImagesDTO;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -148,9 +152,62 @@ public class CategoryServiceImpl implements CategoryService {
 	            throw new IllegalArgumentException("Category with name '" + categoryName + "' not found.");
 	        }
 	    }
+	    
+	    @Override
+	    public Mono<List<CategoryWithPlacesDTO>> getSingleCategoryWithPlacesAndImages(String categoryName) {
+	        return Mono.fromCallable(() -> categoryRepo.findAllByNameIgnoreCase(categoryName))
+	            .flatMapMany(Flux::fromIterable)
+	            .flatMap(category -> {
+	                String categoryId = String.valueOf(category.getCategoryId());
 
+	                return placeService.getPlacesByCategoryId(categoryId)
+	                    .flatMapMany(Flux::fromIterable)
+	                    .flatMap(place ->
+	                        mediaService.getImagesByPlaceId(place.getPlaceId())
+	                            .map(photoUrls -> {
+	                                PlaceRelatedImagesDTO dto = new PlaceRelatedImagesDTO();
+	                                dto.setPlaceId(String.valueOf(place.getPlaceId()));
+	                                dto.setPlaceName(place.getPlaceName());
+	                                dto.setAboutPlace(place.getAboutPlace());
+	                                dto.setPhotoUrls(photoUrls); // leave as-is
+	                                return dto;
+	                            })
+	                    )
+	                    .collectList()
+	                    .map(placeDtos -> {
+	                        CategoryWithPlacesDTO dto = new CategoryWithPlacesDTO();
+	                        dto.setCategoryName(category.getName());
+	                        dto.setPlaces(placeDtos);
+	                        return dto;
+	                    });
+	            })
+	            .collectList()
+	            .map(this::mergeCategoriesByName); // <-- merge duplicates here
+	    }
+	    private List<CategoryWithPlacesDTO> mergeCategoriesByName(List<CategoryWithPlacesDTO> list) {
+	        Map<String, CategoryWithPlacesDTO> map = new LinkedHashMap<>();
 
+	        for (CategoryWithPlacesDTO dto : list) {
+	            String name = dto.getCategoryName().toLowerCase();
 
+	            if (!map.containsKey(name)) {
+	                map.put(name, dto);
+	            } else {
+	                CategoryWithPlacesDTO existing = map.get(name);
+	                List<PlaceRelatedImagesDTO> mergedPlaces = new ArrayList<>(existing.getPlaces());
+
+	                for (PlaceRelatedImagesDTO place : dto.getPlaces()) {
+	                    boolean alreadyPresent = mergedPlaces.stream()
+	                        .anyMatch(p -> p.getPlaceId().equals(place.getPlaceId()));
+	                    if (!alreadyPresent) mergedPlaces.add(place);
+	                }
+
+	                existing.setPlaces(mergedPlaces);
+	            }
+	        }
+
+	        return new ArrayList<>(map.values());
+	    }
 
 
 }

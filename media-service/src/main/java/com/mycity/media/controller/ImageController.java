@@ -66,5 +66,25 @@ public class ImageController {
 	{
 		String result=imageService.deleteImage(placeId);
 		return ResponseEntity.ok(result);
+
+	}
+	
+	@GetMapping("/findby/place")
+	public Mono<ResponseEntity<List<String>>> getImagesByPlaceId(@RequestParam Long placeId) {
+	    return imageService.getImagesByPlaceId(placeId)
+	        .map(imageUrls -> {
+	            if (imageUrls.isEmpty()) {
+	                return ResponseEntity.noContent().<List<String>>build();
+	            } else {
+	                return ResponseEntity.ok(imageUrls);
+	            }
+	        })
+	        .defaultIfEmpty(ResponseEntity.noContent().<List<String>>build());
+	}
+
+
+
+
 	}	
+
 }
