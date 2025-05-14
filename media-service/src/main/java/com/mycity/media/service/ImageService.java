@@ -26,4 +26,7 @@ public interface ImageService {
 	String deleteImage(Long placeId);
 
 	List<AboutPlaceImageDTO> getAboutPlaceImages(String placeName);
+
+	Mono<List<String>> getImagesByPlaceId(Long placeId);
+
 }

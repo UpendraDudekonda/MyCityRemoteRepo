@@ -79,7 +79,7 @@ public class AboutPlaceDetailServiceImpl implements PlaceDetailService {
 
 		try {
 			// Fetching data from different services asynchronously
-			CompletableFuture<List<AboutPlaceImageDTO>> imagesFuture = mediaService.getImagesForPlace(placeId);
+			CompletableFuture<List<AboutPlaceImageDTO>> imagesFuture = mediaService.getImagesForPlace(placeId.toString());
 			CompletableFuture<List<ReviewDTO>> reviewsFuture = reviewService.fetchReviews(placeId);
 			CompletableFuture<List<AboutPlaceEventDTO>>  eventFuture= eventService.fetchEvents(placeId);
 			// Blocking to get the results

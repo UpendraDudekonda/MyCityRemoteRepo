@@ -12,6 +12,8 @@ import com.mycity.shared.errordto.ErrorResponse;
 import com.mycity.shared.userdto.UserRegRequest;
 import com.mycity.user.service.UserAuthenticationInterface;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/user")
 public class UserRegistrationController {

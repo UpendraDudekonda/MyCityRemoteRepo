@@ -31,12 +31,14 @@ public class ImageController {
 	
 	@PostMapping(value = "/upload/places", consumes = MediaType.MULTIPART_FORM_DATA)
 	public ResponseEntity<String> uploadImageForPlaces(
+		
 	        @RequestPart("image") MultipartFile file,
 	        @RequestParam Long placeId,
 	        @RequestParam String placeName,
 	        @RequestParam String category,
 	        @RequestParam String imageName) {
 		
+		System.out.println("ImageController.uploadImageForPlaces()");
 		imageService.uploadImageForPlaces(file,placeId,placeName,category,imageName);
 
 	    return ResponseEntity.ok("Image uploaded successfully");
@@ -59,18 +61,10 @@ public class ImageController {
 	                    ? ResponseEntity.ok(imageUrl)
 	                    : ResponseEntity.notFound().build()); // Return 404 if image URL is null
 	}
-
-
 	
 	@GetMapping("/images/{placeId}")
 	public ResponseEntity<List<AboutPlaceImageDTO>> getAboutPlaceImages(@PathVariable Long placeId) {
 	    List<AboutPlaceImageDTO> images = imageService.getAboutPlaceImages(placeId);
-	    return ResponseEntity.ok(images);
-	}
-	
-	@GetMapping("/image-byplacename/{placeName}")
-	public ResponseEntity<List<AboutPlaceImageDTO>> getAboutPlaceImages(@PathVariable String placeName) {
-	    List<AboutPlaceImageDTO> images = imageService.getAboutPlaceImages(placeName);
 	    return ResponseEntity.ok(images);
 	}
 	
@@ -79,6 +73,25 @@ public class ImageController {
 	{
 		String result=imageService.deleteImage(placeId);
 		return ResponseEntity.ok(result);
+
 	}
 	
-}
+	@GetMapping("/findby/place")
+	public Mono<ResponseEntity<List<String>>> getImagesByPlaceId(@RequestParam Long placeId) {
+	    return imageService.getImagesByPlaceId(placeId)
+	        .map(imageUrls -> {
+	            if (imageUrls.isEmpty()) {
+	                return ResponseEntity.noContent().<List<String>>build();
+	            } else {
+	                return ResponseEntity.ok(imageUrls);
+	            }
+	        })
+	        .defaultIfEmpty(ResponseEntity.noContent().<List<String>>build());
+	}
+
+
+
+
+	}	
+
+

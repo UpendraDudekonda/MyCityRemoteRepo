@@ -2,23 +2,19 @@ package com.mycity.place.serviceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import com.mycity.place.entity.PlaceDiscoveries;
 import com.mycity.place.exception.TooManyPlacesException;
 import com.mycity.place.repository.PlaceDiscoveryRepository;
-import com.mycity.place.repository.PlaceRepository;
 import com.mycity.place.service.PlaceDiscoveriesInterface;
 import com.mycity.place.service.PlaceServiceInterface;
 import com.mycity.shared.mediadto.AboutPlaceImageDTO;
-import com.mycity.shared.placedto.PlaceDTO;
 import com.mycity.shared.placedto.PlaceDiscoveriesDTO;
 import com.mycity.shared.placedto.PlaceDiscoveriesResponeDTO;
 import com.mycity.shared.placedto.PlaceResponseDTO;
