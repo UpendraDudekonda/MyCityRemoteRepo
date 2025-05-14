@@ -197,7 +197,7 @@ class PlaceServiceImplTest {
     void testGetPlaceById_success() {
         when(placeRepo.findById(1L)).thenReturn(Optional.of(samplePlace));
 
-        Place place = placeService.getPlaceById(1L);
+        PlaceDTO place = placeService.getPlaceById(1L);
         assertEquals("Sample Place", place.getPlaceName());
     }
 

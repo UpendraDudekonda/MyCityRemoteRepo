@@ -105,8 +105,8 @@ public class PlaceController {
 	}
 
 	@GetMapping("/placeby/{id}")
-	public ResponseEntity<Place> getPlaceById(@PathVariable Long id) {
-		Place place = placeService.getPlaceById(id);
+	public ResponseEntity<PlaceDTO> getPlaceById(@PathVariable Long id) {
+		PlaceDTO place = placeService.getPlaceById(id);
 		return place != null ? ResponseEntity.ok(place) : ResponseEntity.notFound().build();
 	}
 
