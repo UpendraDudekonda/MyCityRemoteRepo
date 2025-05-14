@@ -20,6 +20,8 @@ public class WebClientPlaceService {
     
     
     public Flux<PlaceCategoryDTO> fetchPlaceCategories() {
+    	
+    	System.err.println("category to place service for getting category");
         return webClientBuilder.baseUrl("lb://" + PLACE_SERVICE)  
             .build()
             .get()

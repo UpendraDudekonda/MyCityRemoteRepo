@@ -1,75 +1,141 @@
-//package com.mycity.user_service.testcontroller;
-//
-//import static org.hamcrest.CoreMatchers.is;
-//import static org.mockito.Mockito.*;
-//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-//
-//import org.junit.jupiter.api.Test;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-//import org.springframework.boot.test.mock.mockito.MockBean;
-//import org.springframework.http.MediaType;
-//import org.springframework.security.test.context.support.WithMockUser;
-//import org.springframework.test.web.servlet.MockMvc;
-//
-//import com.fasterxml.jackson.databind.ObjectMapper;
-//import com.mycity.shared.userdto.UserRegRequest;
-//import com.mycity.user.controller.UserRegistrationController;
-//import com.mycity.user.service.UserAuthenticationInterface;
-//// Assuming this is the correct path
-//
-//@WebMvcTest(UserRegistrationController.class) // Target the actual controller
-//class UserRegistrationControllerTest {
-//
-//    @Autowired
-//    private MockMvc mockMvc;
-//
-//    @MockBean
-//    private UserAuthenticationInterface userService;
-//
-//    @Autowired
-//    private ObjectMapper objectMapper;
-//
-//    @Test
-//    @WithMockUser
-//    void registerUser_Success() throws Exception {
-//        UserRegRequest request = new UserRegRequest();
-//        request.setFirstname("John");
-//        request.setLastname("Doe");
-//        request.setEmail("uppi@gmail.com");
-//        request.setPassword("password");
-//        request.setMobilenumber("1234567890");
-//        request.setOtpVerified(true);
-//
-//        when(userService.registerUser(any(UserRegRequest.class)))
-//               .thenReturn("User registered successfully");
-//
-//        mockMvc.perform(post("/user/auth/internal/register")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(request)))
-//                .andExpect(status().isOk())
-//                .andExpect(content().string("User registered successfully"));
-//    }
-//
-//    @Test
-//    @WithMockUser
-//    void registerUser_BadRequest() throws Exception {
-//        UserRegRequest request = new UserRegRequest();
-//        request.setFirstname("John");
-//        request.setLastname("Doe");
-//        request.setPassword("password");
-//        request.setMobilenumber("1234567890");
-//        request.setOtpVerified(true);
-//
-//        when(userService.registerUser(any(UserRegRequest.class)))
-//               .thenThrow(new IllegalArgumentException("Invalid user data"));
-//
-//        mockMvc.perform(post("/user/auth/internal/register")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(request)))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(jsonPath("$.message", is("Invalid user data")))
-//                .andExpect(jsonPath("$.status", is(400)));
-//    }
-//}
+package com.mycity.user_service.testcontroller;
+ 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+ 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+ 
+import com.mycity.shared.errordto.ErrorResponse;
+import com.mycity.shared.userdto.UserRegRequest;
+import com.mycity.user.controller.UserRegistrationController;
+import com.mycity.user.service.UserAuthenticationInterface;
+ 
+@SpringBootTest
+@ExtendWith(MockitoExtension.class)
+public class UserRegistrationControllerTest {
+ 
+    @Mock
+    private UserAuthenticationInterface userService;
+ 
+    @InjectMocks
+    private UserRegistrationController userRegistrationController;
+ 
+    private UserRegRequest userRegRequest;
+ 
+    @BeforeEach
+    public void setUp() {
+        userRegRequest = new UserRegRequest();
+        userRegRequest.setFirstname("John");
+        userRegRequest.setLastname("Doe");
+        userRegRequest.setEmail("john.doe@example.com");
+        userRegRequest.setPassword("Password123");
+        userRegRequest.setMobilenumber("1234567890");
+        userRegRequest.setOtpVerified(true);
+    }
+ 
+    @Test
+    public void testRegisterUser_Success() {
+ 
+        when(userService.registerUser(any(UserRegRequest.class))).thenReturn("User registered successfully");
+        
+        ResponseEntity<?> response = userRegistrationController.registerUser(userRegRequest);
+        
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("User registered successfully", response.getBody());
+    }
+ 
+    @Test
+    public void testRegisterUser_EmailAlreadyRegistered() {
+   
+        doThrow(new IllegalArgumentException("Email already registered"))
+                .when(userService).registerUser(any(UserRegRequest.class));
+ 
+   
+        ResponseEntity<?> response = userRegistrationController.registerUser(userRegRequest);
+ 
+ 
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        ErrorResponse errorResponse = (ErrorResponse) response.getBody();
+        assertEquals("Email already registered", errorResponse.getMessage());
+        assertEquals(400, errorResponse.getStatus()); // Updated to match `status` field
+    }
+ 
+    @Test
+    public void testRegisterUser_InvalidEmailFormat() {
+ 
+        userRegRequest.setEmail("invalid-email");
+        when(userService.registerUser(any(UserRegRequest.class)))
+                .thenThrow(new IllegalArgumentException("Invalid email format"));
+ 
+ 
+        ResponseEntity<?> response = userRegistrationController.registerUser(userRegRequest);
+ 
+ 
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        ErrorResponse errorResponse = (ErrorResponse) response.getBody();
+        assertEquals("Invalid email format", errorResponse.getMessage());
+        assertEquals(400, errorResponse.getStatus()); // Updated to match `status` field
+    }
+ 
+    @Test
+    public void testRegisterUser_InvalidMobileNumber() {
+     
+        userRegRequest.setMobilenumber("12345");
+        when(userService.registerUser(any(UserRegRequest.class)))
+                .thenThrow(new IllegalArgumentException("Mobile number must be 10 digits"));
+ 
+        ResponseEntity<?> response = userRegistrationController.registerUser(userRegRequest);
+ 
+ 
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        ErrorResponse errorResponse = (ErrorResponse) response.getBody();
+        assertEquals("Mobile number must be 10 digits", errorResponse.getMessage());
+        assertEquals(400, errorResponse.getStatus()); // Updated to match `status` field
+    }
+ 
+    @Test
+    public void testRegisterUser_ServerError() {
+   
+        when(userService.registerUser(any(UserRegRequest.class)))
+                .thenThrow(new RuntimeException("Unexpected error occurred"));
+ 
+     
+        ResponseEntity<?> response = userRegistrationController.registerUser(userRegRequest);
+ 
+    
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        ErrorResponse errorResponse = (ErrorResponse) response.getBody();
+        assertEquals("Unexpected error occurred", errorResponse.getMessage());
+        assertEquals(500, errorResponse.getStatus()); // Updated to match `status` field
+    }
+ 
+    @Test
+    public void testRegisterUser_MissingFirstName() {
+ 
+        userRegRequest.setFirstname("");
+        when(userService.registerUser(any(UserRegRequest.class)))
+                .thenThrow(new IllegalArgumentException("First name is required"));
+ 
+   
+        ResponseEntity<?> response = userRegistrationController.registerUser(userRegRequest);
+ 
+ 
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        ErrorResponse errorResponse = (ErrorResponse) response.getBody();
+        assertEquals("First name is required", errorResponse.getMessage());
+        assertEquals(400, errorResponse.getStatus());
+    }
+}
+ 
+ 
+ 

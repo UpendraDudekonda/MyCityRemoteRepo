@@ -46,19 +46,17 @@ public class ImageController {
 	public ResponseEntity<ImageDTO> getImage(@PathVariable Long id) {
 	    ImageDTO imageDTO = imageService.fetchImage(id);
 	    return ResponseEntity.ok(imageDTO);
-	}     
+	} 
 	
-	@GetMapping("/bycategory/image")
-	public Mono<ResponseEntity<String>> getCoverImageForCategory(@RequestParam String category) {
+	@GetMapping("/bycategory/image/{category}")
+	public Mono<String> getCoverImageForCategory(@PathVariable String category) {
+	    System.err.println("the request from category coming to media");
 	    return imageService.getFirstImageUrlByCategory(category)
-	            .doOnNext(imageUrl -> {
-	                // Log the image URL before returning it to make sure it's correct
-	                System.out.println("Image URL in controller: " + imageUrl);
-	            })
-	            .map(imageUrl -> imageUrl != null
-	                    ? ResponseEntity.ok(imageUrl)
-	                    : ResponseEntity.notFound().build()); // Return 404 if image URL is null
+	            .defaultIfEmpty(""); // Avoid nulls
 	}
+
+
+
 
 
 	

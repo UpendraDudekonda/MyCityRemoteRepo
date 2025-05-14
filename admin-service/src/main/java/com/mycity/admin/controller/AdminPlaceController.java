@@ -3,6 +3,7 @@ package com.mycity.admin.controller;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +27,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mycity.shared.admindto.AdminPlaceResponseDTO;
 import com.mycity.shared.placedto.PlaceCategoryDTO;
@@ -96,43 +97,56 @@ public class AdminPlaceController
 		     return new ResponseEntity<List<AdminPlaceResponseDTO>>(dtos,HttpStatus.OK); 
 	}
 	
-	@PostMapping(path = "/addPlace",
+	//88*********************************************************************************************
+	
+	@PostMapping(path = "/place/addPlace",
 	        consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
 	        produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> addPlaceDetails(
-	        @RequestPart PlaceDTO placeDto,
-	        @RequestPart("images") List<MultipartFile> images) throws JsonProcessingException {
-
+	        @RequestPart("placeDto") PlaceDTO placeDto, //JSON
+	        @RequestParam Map<String, MultipartFile> placeImages,
+	        @RequestParam Map<String, MultipartFile> cuisineImages
+	) throws JsonProcessingException {
+ 
 	    System.out.println("AdminPlaceController.addPlaceDetails()");
-	    System.out.println("From ADMIN--->PlaceName ::" + placeDto.getPlaceName());
-
-	    //Using ObjectMapper to Convert Java Object to JSON
+ 
+	    System.out.println("Placee DTO ::"+placeDto);
+	    // 🧱 Build multipart request
+	    MultipartBodyBuilder builder = new MultipartBodyBuilder();
+ 
+	    // ✅ Serialize PlaceDTO to JSON
 	    ObjectMapper objectMapper = new ObjectMapper();
 	    objectMapper.registerModule(new JavaTimeModule());
-	    objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
 	    String placeDtoJson = objectMapper.writeValueAsString(placeDto);
-
-	    MultipartBodyBuilder builder = new MultipartBodyBuilder();
+	    
+	    // Send placeDto as JSON in the multipart form
 	    builder.part("placeDto", placeDtoJson)
-	           .header("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-
-	    // Add the images to the builder
-	    for (MultipartFile image : images) {
-	        builder.part("images", image.getResource());
+	           .header("Content-Disposition", "form-data; name=placeDto")
+	           .contentType(MediaType.APPLICATION_JSON);
+ 
+	    // 🖼️ Add placeImages using their original keys
+	    for (Map.Entry<String, MultipartFile> entry : placeImages.entrySet()) {
+	        builder.part(entry.getKey(), entry.getValue().getResource());
 	    }
-
-	    //Use WebClient to send the request to Place-Service
+ 
+	    // 🍜 Add cuisineImages using their original keys
+	    for (Map.Entry<String, MultipartFile> entry : cuisineImages.entrySet()) {
+	        builder.part(entry.getKey(), entry.getValue().getResource());
+	    }
+ 
+	    // 🌐 Send to place-service
 	    String response = webClientBuilder.build()
 	            .post()
-	            .uri("lb://"+PLACE_SERVICE_NAME+PATH_TO_ADD_PLACE_WITH_IMAGES) 
+	            .uri("lb://" + PLACE_SERVICE_NAME + "/place/add-place") // Ensure this URL is correct
 	            .contentType(MediaType.MULTIPART_FORM_DATA)
 	            .body(BodyInserters.fromMultipartData(builder.build()))
 	            .retrieve()
 	            .bodyToMono(String.class)
 	            .block();
+ 
 	    return ResponseEntity.ok(response);
 	}
+ 
 
 
 	@GetMapping("/getplace/{placeId}")

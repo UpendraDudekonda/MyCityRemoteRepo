@@ -204,6 +204,7 @@ public class PlaceServiceImpl implements PlaceServiceInterface {
 	}
 
 	private PlaceResponseDTO convertToDTO(Place place) {
+		
 		PlaceResponseDTO dto = new PlaceResponseDTO();
 		dto.setPlaceId(place.getPlaceId());
 		dto.setPlaceName(place.getPlaceName());
@@ -264,8 +265,24 @@ public class PlaceServiceImpl implements PlaceServiceInterface {
 	}
 
 	@Override
-	public Place getPlaceById(Long id) {
-		return placeRepo.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid Place Id.."));
+	public PlaceDTO getPlaceById(Long id) {
+				
+		Place place = placeRepo.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid Place Id.."));
+	
+		PlaceDTO p = new PlaceDTO();
+		
+		p.setPlaceId(place.getPlaceId());
+		p.setPlaceName(place.getPlaceName());
+		p.setPlaceHistory(place.getPlaceHistory());
+		p.setPlaceDistrict(place.getPlaceDistrict());
+		//p.setPlaceCategoryDescription(place.);
+		p.setAboutPlace(place.getAboutPlace());
+		//p.setLocalCuisines(place.getLocalCuisines());
+		p.setCategoryName(place.getCategoryName());
+		//p.setCoordinate(place.getCoordinate());
+		
+	return p;
+	
 	}
 
 	@Override
