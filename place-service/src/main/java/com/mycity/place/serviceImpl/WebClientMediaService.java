@@ -67,10 +67,10 @@ public class WebClientMediaService
         }
     }
 
-    public CompletableFuture<List<AboutPlaceImageDTO>> getImagesForPlace(Long placeId) {
+    public CompletableFuture<List<AboutPlaceImageDTO>> getImagesForPlace(@lombok.NonNull String string) {
         return webClientBuilder.build()
                 .get()
-                .uri("lb://" + IMAGE_SERVICE + IMAGE_FETCH_PATH, placeId)
+                .uri("lb://" + IMAGE_SERVICE + IMAGE_FETCH_PATH, string)
                 .retrieve()
                 .bodyToFlux(AboutPlaceImageDTO.class) // Expecting list of DTOs instead of strings
                 .collectList()
