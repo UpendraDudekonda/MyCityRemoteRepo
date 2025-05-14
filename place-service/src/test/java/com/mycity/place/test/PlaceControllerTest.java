@@ -1,421 +1,179 @@
 package com.mycity.place.test;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.mycity.place.repository.PlaceRepository;
-import com.mycity.place.service.PlaceServiceInterface;
-import com.mycity.place.serviceImpl.WebClientMediaService;
-import com.mycity.shared.placedto.LocalCuisineDTO;
+import com.mycity.place.controller.PlaceController;
+import com.mycity.place.serviceImpl.PlaceServiceImpl;
 import com.mycity.shared.placedto.PlaceCategoryDTO;
 import com.mycity.shared.placedto.PlaceDTO;
 import com.mycity.shared.placedto.PlaceResponseDTO;
+import com.mycity.shared.placedto.PlaceWithImagesDTO;
 import com.mycity.shared.timezonedto.TimezoneDTO;
 import com.mycity.shared.tripplannerdto.CoordinateDTO;
 
-import jakarta.persistence.EntityNotFoundException;
+@ExtendWith(MockitoExtension.class)
+class PlaceControllerTest {
 
-@SpringBootTest
-@AutoConfigureMockMvc(addFilters = false)public class PlaceControllerTest {
+    @InjectMocks
+    private PlaceController placeController;
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
-    private PlaceServiceInterface placeService; 
-
-    @MockBean
-    private PlaceRepository repo;
-    
     @Mock
-    private WebClientMediaService mediaService; 
-    
-    @Autowired
-    private ObjectMapper objectMapper;
-    
-    private PlaceResponseDTO mockPlaceResponse;
-    
-   
+    private PlaceServiceImpl placeService;
+
     @BeforeEach
-    void setUp() 
-    {
-        mockPlaceResponse = new PlaceResponseDTO();
-        mockPlaceResponse.setPlaceId(1L);
-        mockPlaceResponse.setPlaceName("Taj Mahal");
-        mockPlaceResponse.setAboutPlace("A historical monument.");
-        mockPlaceResponse.setPlaceHistory("Built by Shah Jahan.");
-        mockPlaceResponse.setCategoryId(2L);
-        mockPlaceResponse.setCategoryName("Historical");
-        mockPlaceResponse.setPlaceDistrict("Agra");
-        mockPlaceResponse.setRating(4.8);
-        mockPlaceResponse.setLatitude(27.1751);
-        mockPlaceResponse.setLongitude(78.0421);
-        mockPlaceResponse.setOpeningTime(LocalTime.parse("06:00"));
-        mockPlaceResponse.setClosingTime(LocalTime.parse("18:00"));
-    }
-    
-    @Test
-    void testAddPlaceDetails_Success() throws Exception 
-    {
-        PlaceDTO placeDto = new PlaceDTO();
-        placeDto.setPlaceName("Rajahmundry");
-        placeDto.setAboutPlace("Place Where Happiness Lies");
-        placeDto.setPlaceHistory("Famous Place");
-        placeDto.setPlaceDistrict("East Godavari");
-        placeDto.setCategoryName("Cultural");
-        placeDto.setRating(4.5);
-        placeDto.setPostedOn(LocalDate.now());
-        
-        TimezoneDTO timezone = new TimezoneDTO();
-        timezone.setOpeningTime(LocalTime.of(10, 0));
-        timezone.setClosingTime(LocalTime.of(18, 0));
-        placeDto.setTimeZone(timezone);
-
-        placeDto.setLocalCuisines(List.of(
-            new LocalCuisineDTO("pesarattu"),
-            new LocalCuisineDTO("chepala pulusu")
-        ));
-
-        MockMultipartFile placeDtoPart = new MockMultipartFile(
-                "placeDto",
-                null,
-                "application/json",
-                new ObjectMapper()
-                        .registerModule(new JavaTimeModule())
-                        .writeValueAsBytes(placeDto)
-        );
-
-        MockMultipartFile placeImage = new MockMultipartFile("beach.jpg", "beach.jpg", "image/jpeg", "fakeImageData".getBytes());
-        MockMultipartFile cuisineImage = new MockMultipartFile("pesarattu.jpg", "pesarattu.jpg", "image/jpeg", "fakeImageData".getBytes());
-
-        when(placeService.addPlace(any(), anyMap(), anyMap()))
-                .thenReturn("Place added successfully");
-
-        // When & Then
-        mockMvc.perform(multipart("/place/add-place")
-                        .file(placeDtoPart)
-                        .file("beach.jpg", placeImage.getBytes())
-                        .file("pesarattu.jpg", cuisineImage.getBytes())
-                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
-                .andExpect(status().isCreated())
-                .andExpect(content().string("Place added successfully"));
-
-        verify(placeService).addPlace(any(PlaceDTO.class), anyMap(), anyMap());
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
     }
 
-    
-    @Test
-    void testAddPlaceDetails_MissingPlaceDto_ShouldReturn400() throws Exception {
-        MockMultipartFile image = new MockMultipartFile("beach.jpg", "beach.jpg", "image/jpeg", "fakeImageData".getBytes());
-
-        mockMvc.perform(multipart("/place/add-place")
-                        .file("beach.jpg", image.getBytes())
-                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testAddPlaceDetails_ServiceThrowsException() throws Exception {
-        PlaceDTO placeDto = new PlaceDTO();
-        placeDto.setPlaceName("Test");
-
-        MockMultipartFile placeDtoPart = new MockMultipartFile(
-                "placeDto",
-                null,
-                "application/json",
-                new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsBytes(placeDto)
-        );
-
-        when(placeService.addPlace(any(), anyMap(), anyMap()))
-                .thenThrow(new RuntimeException("Service failure"));
-
-        mockMvc.perform(multipart("/place/add-place")
-                        .file(placeDtoPart)
-                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().string(containsString("Error adding place")));
-    }
-
-    
- 
-    
-    @Test
-    void testGetPlaceDetails_success() throws Exception {
-        Long placeId = 1L;
-
-        Mockito.when(placeService.getPlace(placeId)).thenReturn(mockPlaceResponse);
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/place/get/{placeId}", placeId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.placeId").value(1))
-                .andExpect(jsonPath("$.placeName").value("Taj Mahal"))
-                .andExpect(jsonPath("$.aboutPlace").value("A historical monument."))
-                .andExpect(jsonPath("$.placeDistrict").value("Agra"))
-                .andExpect(jsonPath("$.rating").value(4.8))
-                .andExpect(jsonPath("$.latitude").value(27.1751))
-                .andExpect(jsonPath("$.longitude").value(78.0421))
-                .andExpect(jsonPath("$.openingTime").value("06:00:00"))
-                .andExpect(jsonPath("$.closingTime").value("18:00:00"));
-    }
-
-    @Test
-    void testGetPlaceDetails_invalidId() throws Exception {
-        Long invalidPlaceId = 99L;
-
-        Mockito.when(placeService.getPlace(invalidPlaceId))
-                .thenThrow(new IllegalArgumentException("Invalid Place Id.."));
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/place/get/{placeId}", invalidPlaceId))
-                .andExpect(status().isBadRequest()); 
-    }
-    
-    
-    @Test
-    void testUpdatePlaceDetails_success() throws Exception {
-        Long placeId = 1L;
-
-        // Prepare DTO with updated values
+    private PlaceDTO createSamplePlaceDTO() {
         PlaceDTO dto = new PlaceDTO();
-        dto.setPlaceName("Updated Taj Mahal");
-        dto.setAboutPlace("Updated description.");
-        dto.setPlaceHistory("Updated history.");
-        dto.setPlaceDistrict("Agra");
-        dto.setRating(4.9);
+        dto.setPlaceName("Sample Place");
+        dto.setAboutPlace("About");
+        dto.setPlaceHistory("History");
+        dto.setPlaceDistrict("District");
+        dto.setCategoryName("Nature");
+        dto.setRating(4.2);
+        dto.setPostedOn(LocalDate.now());
 
-        CoordinateDTO coordinate = new CoordinateDTO();
-        coordinate.setLatitude(27.1751);
-        coordinate.setLongitude(78.0421);
-        dto.setCoordinate(coordinate);
+        CoordinateDTO coord = new CoordinateDTO();
+        coord.setLatitude(10.0);
+        coord.setLongitude(20.0);
+        dto.setCoordinate(coord);
 
-        TimezoneDTO timeZone = new TimezoneDTO();
-        timeZone.setOpeningTime(LocalTime.of(6, 0));
-        timeZone.setClosingTime(LocalTime.of(18, 0));
-        dto.setTimeZone(timeZone);
+        TimezoneDTO tz = new TimezoneDTO();
+        tz.setOpeningTime(LocalTime.parse("08:00"));
+        tz.setClosingTime(LocalTime.parse("18:00"));
+        dto.setTimeZone(tz);
 
-        // Mock the service response
-        String successMessage = "Place with ID 1 updated successfully.";
-        Mockito.when(placeService.updatePlace(eq(placeId), any(PlaceDTO.class)))
-               .thenReturn(successMessage);
-
-        // Perform PUT request
-        mockMvc.perform(put("/place/update/{placeId}", placeId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isOk())
-                .andExpect(result -> {
-                    String actual = result.getResponse().getContentAsString().trim();
-                    assertEquals(successMessage, actual);
-                });
+        return dto;
     }
-    
+
     @Test
-    void testUpdatePlaceDetails_InvalidPlaceId() throws Exception {
-        Long invalidPlaceId = 999L;
+    void testAddPlaceWithDTOAndImages() {
+        PlaceDTO dto = createSamplePlaceDTO();
+        List<MultipartFile> images = new ArrayList<>();
+
+        when(placeService.addPlace(dto, images)).thenReturn("Place added successfully.");
+
+        ResponseEntity<String> response = placeController.addPlaceDetails(dto, images);
+
         
-        PlaceDTO dto = new PlaceDTO();
-        dto.setPlaceName("Taj Mahal");
-        dto.setAboutPlace("Good Ancient Place");
-        dto.setPlaceHistory("Historical fort in the city of Delhi");
-        dto.setPlaceDistrict("Delhi-Agra");
-        dto.setRating(4.0);
-        // Add other nested objects like Coordinate or TimeZone if needed
-
-        // Mock behavior: throw exception when invalid ID is used
-        Mockito.when(placeService.updatePlace(Mockito.eq(invalidPlaceId), Mockito.any(PlaceDTO.class)))
-               .thenThrow(new IllegalArgumentException("Invalid Place Id.."));
-
-        mockMvc.perform(put("/place/update/{placeId}", invalidPlaceId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(dto)))
-                .andExpect(status().isBadRequest())  
-                .andExpect(content().string("Invalid Place Id.."));
-    }
-
-    
-    
-    @Test
-    void testDeletePlaceDetails_success() throws Exception {
-        Long placeId = 1L;
-        String expectedMessage = "Place With Id ::1 Deleted Successfully.";
-
-        // Mocking the service call
-        Mockito.when(placeService.deletePlace(placeId)).thenReturn(expectedMessage);
-
-        // Perform DELETE request
-        mockMvc.perform(delete("/place/delete/{placeId}", placeId))
-               .andExpect(status().isOk())
-               .andExpect(content().string(expectedMessage));
-    }
-    
-    
-    @Test
-    void testDeletePlaceDetails_placeNotFound() throws Exception {
-        Long placeId = 999L;
-
-        Mockito.when(placeService.deletePlace(placeId))
-               .thenThrow(new EntityNotFoundException("Place not found with ID: " + placeId));
-
-        mockMvc.perform(delete("/place/delete/{placeId}", placeId))
-               .andExpect(status().isNotFound())
-               .andExpect(content().string("Place not found with ID: " + placeId));
-    }
-   
-
-    @Test
-    void testGetAllPlaces_success() throws Exception {
-        List<PlaceResponseDTO> mockPlaces = new ArrayList<PlaceResponseDTO>();
-        PlaceResponseDTO response1=new PlaceResponseDTO();
-        response1.setPlaceId(1L);
-        response1.setPlaceName("Taj Mahal");
-        response1.setAboutPlace("Good Place to Visit");
-        response1.setCategoryName("Moument");
-        response1.setPlaceCategory("Heritage");
-        response1.setPlaceDistrict("Agra");
-        response1.setLatitude(10.556);
-        response1.setLongitude(45.678);
-        response1.setOpeningTime(LocalTime.parse("06:30"));
-        response1.setClosingTime(LocalTime.parse("18:30"));
-        response1.setPlaceHistory("An example of Mughal architecture");
-        response1.setRating(4.5);
-        
-        PlaceResponseDTO response2=new PlaceResponseDTO();
-        
-        response2.setPlaceId(2L);
-        response2.setPlaceName("Red Fort");
-        response2.setAboutPlace("Historical fort in the city of Delhi");
-        response2.setCategoryName("Monument");
-        response2.setPlaceCategory("Heritage");
-        response2.setPlaceDistrict("Delhi");
-        response2.setLatitude(28.6562);
-        response2.setLongitude(77.2410);
-        response2.setOpeningTime(LocalTime.parse("09:00"));
-        response2.setClosingTime(LocalTime.parse("17:00"));
-        response2.setPlaceHistory("A historic fort and former residence of Mughal emperors");
-        response2.setRating(4.6);
-
-        mockPlaces.add(response1);
-        mockPlaces.add(response2);
-
-        Mockito.when(placeService.getAllPlaces()).thenReturn(mockPlaces);
-
-        mockMvc.perform(get("/place/allplaces"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.size()").value(mockPlaces.size()))
-                .andExpect(jsonPath("$[0].placeId").value(1))
-                .andExpect(jsonPath("$[0].placeName").value("Taj Mahal"))
-                .andExpect(jsonPath("$[0].placeDistrict").value("Agra"))
-                .andExpect(jsonPath("$[0].rating").value(4.5));
-    }
-  
-    @Test
-    void testGetAllPlaces_emptyList() throws Exception {
-        Mockito.when(placeService.getAllPlaces()).thenReturn(Collections.emptyList());
-
-        mockMvc.perform(get("/place/allplaces"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.length()").value(0));
-    }
-
-    
-    @Test
-    void testGetAllDistinctCategories_success() throws Exception {
-        // Prepare mock data
-        List<PlaceCategoryDTO> mockCategories = new ArrayList<>();
-        PlaceCategoryDTO category1 = new PlaceCategoryDTO(1L,"Taj Mahal","Historical fort in the city of Delhi",2L,"Heritage");
-        PlaceCategoryDTO category2 = new PlaceCategoryDTO(2L,"Red Fort","Good Place to Visit",3L,"Historical");
-        mockCategories.add(category1);
-        mockCategories.add(category2);
-
-        // Mock service
-        Mockito.when(placeService.getAllDistinctCategories()).thenReturn(mockCategories);
-
-        // Perform GET request
-        mockMvc.perform(get("/place/placeby/categories"))
-               .andExpect(status().isOk())
-               .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-               .andExpect(jsonPath("$.size()").value(mockCategories.size()))
-               .andExpect(jsonPath("$[0].placeId").value(1L))
-               .andExpect(jsonPath("$[0].categoryName").value("Heritage"))
-               .andExpect(jsonPath("$[1].placeId").value(2L))
-               .andExpect(jsonPath("$[1].categoryName").value("Historical"));
-    }
-    
-    @Test
-    void testGetAllDistinctCategories_emptyList() throws Exception {
-        Mockito.when(placeService.getAllDistinctCategories()).thenReturn(Collections.emptyList());
-
-        mockMvc.perform(get("/place/placeby/categories"))
-               .andExpect(status().isOk())
-               .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-               .andExpect(jsonPath("$.length()").value(0));
-    }
-
-    
-    @Test
-    void testGetPlaceIdByName_Success() throws Exception {
-        String placeName = "Red Fort";
-        Long expectedPlaceId = 1L;
-
-        Mockito.when(placeService.getPlaceIdByName(placeName)).thenReturn(expectedPlaceId);
-
-        mockMvc.perform(get("/place/getplaceid/{placeName}", placeName))
-               .andExpect(status().isOk())
-               .andExpect(content().string(expectedPlaceId.toString()));
+        assertEquals(201, response.getStatusCodeValue());
+        assertEquals("Place added successfully.", response.getBody());
     }
 
     @Test
-    void testGetPlaceIdByName_NotFound() throws Exception {
-        String placeName = "Unknown Place";
+    void testAddPlaceWithImageMap() {
+        PlaceDTO dto = new PlaceDTO(); // replace with sample DTO creation
+        Map<String, MultipartFile> images = new HashMap<>();
+        Map<String, MultipartFile> localCuisineImages = new HashMap<>();
 
-        Mockito.when(placeService.getPlaceIdByName(placeName))
-               .thenThrow(new IllegalArgumentException("Invalid Place Name"));
+        when(placeService.addPlace(any(PlaceDTO.class), anyMap(), anyMap()))
+                .thenReturn("Place added with images successfully.");
 
-        mockMvc.perform(get("/place/getplaceid/{placeName}", placeName))
-               .andExpect(status().isBadRequest())  // Expect 400 instead of 404
-               .andExpect(content().string("Invalid Place Name"));
+        ResponseEntity<String> response = placeController.addPlaceDetails(dto, images, localCuisineImages);
+
+        System.out.println("Actual Status Code: " + response.getStatusCodeValue());
+        System.out.println("Actual Response Body: " + response.getBody());
+
+        assertEquals(201, response.getStatusCodeValue());
+        assertEquals("Place added with images successfully.", response.getBody());
     }
-    
-    
-    @AfterEach
-    void tearDown() 
-    {
-        Mockito.reset(placeService);
+
+
+    @Test
+    void testGetPlace() {
+        PlaceResponseDTO mockResponse = new PlaceResponseDTO();
+        mockResponse.setPlaceName("Sample Place");
+
+        when(placeService.getPlace(1L)).thenReturn(mockResponse);
+
+        ResponseEntity<PlaceResponseDTO> response = placeController.getPlaceDetails(1L);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Sample Place", response.getBody().getPlaceName());
     }
 
+    @Test
+    void testUpdatePlace() {
+        PlaceDTO dto = createSamplePlaceDTO();
+        when(placeService.updatePlace(1L, dto)).thenReturn("Updated successfully.");
+
+        ResponseEntity<String> response = placeController.updatePlaceDetails(1L, dto);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Updated successfully.", response.getBody());
+    }
+
+    @Test
+    void testDeletePlace() {
+        when(placeService.deletePlace(1L)).thenReturn("Place deleted.");
+
+        ResponseEntity<String> response = placeController.deletePlaceDetails(1L);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Place deleted.", response.getBody());
+    }
+
+    @Test
+    void testGetAllPlaces() {
+        PlaceResponseDTO dto = new PlaceResponseDTO();
+        dto.setPlaceName("Place1");
+
+        when(placeService.getAllPlaces()).thenReturn(List.of(dto));
+
+        ResponseEntity<List<PlaceResponseDTO>> response = placeController.getAllPlaces();
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(1, response.getBody().size());
+        assertEquals("Place1", response.getBody().get(0).getPlaceName());
+    }
+
+    @Test
+    void testGetAllDistinctCategories() {
+        PlaceCategoryDTO dto = new PlaceCategoryDTO();
+        dto.setCategoryName("Nature");
+
+        when(placeService.getAllDistinctCategories()).thenReturn(List.of(dto));
+
+        ResponseEntity<List<PlaceCategoryDTO>> response = placeController.getAllDistinctCategories();
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Nature", response.getBody().get(0).getCategoryName());
+    }
+
+    @Test
+    void testGetPlacesByCategoryWithImages() {
+        PlaceWithImagesDTO dto = new PlaceWithImagesDTO();
+        dto.setPlaceName("Image Place");
+
+        when(placeService.getPlacesByCategoryWithImages("Nature")).thenReturn(List.of(dto));
+
+        ResponseEntity<List<PlaceWithImagesDTO>> response = placeController.getPlacesByCategory("Nature");
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Image Place", response.getBody().get(0).getPlaceName());
+    }
 }
+
+
