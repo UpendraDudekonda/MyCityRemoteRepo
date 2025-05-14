@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,19 +67,6 @@ class PlaceControllerTest {
         return dto;
     }
 
-    @Test
-    void testAddPlaceWithDTOAndImages() {
-        PlaceDTO dto = createSamplePlaceDTO();
-        List<MultipartFile> images = new ArrayList<>();
-
-        when(placeService.addPlace(dto, images)).thenReturn("Place added successfully.");
-
-        ResponseEntity<String> response = placeController.addPlaceDetails(dto, images);
-
-        
-        assertEquals(201, response.getStatusCodeValue());
-        assertEquals("Place added successfully.", response.getBody());
-    }
 
     @Test
     void testAddPlaceWithImageMap() {

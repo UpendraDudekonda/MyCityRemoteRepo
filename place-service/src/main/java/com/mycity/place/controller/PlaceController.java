@@ -1,6 +1,7 @@
 package com.mycity.place.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,25 +44,6 @@ public class PlaceController {
         this.globalExceptionHandler = globalExceptionHandler;
     }
 
-	@PostMapping(value = "/add-place", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> addPlaceDetails(@ModelAttribute PlaceDTO placeDto,
-			@RequestPart("images") List<MultipartFile> images) {
-		System.out.println("PlaceController.addPlaceDetails()");
-		System.out.println(placeDto.getCategoryName());
- 
-		try {
- 
-			// Use the service to add the place details and save the images
-			String msg = placeService.addPlace(placeDto, images);
-			return new ResponseEntity<>(msg, HttpStatus.CREATED);
- 
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new ResponseEntity<>("Error adding place with images", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-
-
  // Endpoint to add Place details
     @PostMapping(value = "/add-place", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> addPlaceDetails(
@@ -81,26 +64,7 @@ public class PlaceController {
         }
     }
 
-// // Endpoint to add Place details
-//    @PostMapping(value = "/add-place", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<String> addPlaceDetails(
-//            @ModelAttribute PlaceDTO placeDto,  // Bind the form data to the PlaceDTO
-//            @RequestParam Map<String, MultipartFile>  placeImages,  // Images for the Place itself
-//            @RequestParam Map<String, MultipartFile>  cuisineImages,  // Images for Cuisines
-//            @RequestParam Map<String, MultipartFile> hotelImages  // Images for Hotels
-//    ) {
-//        System.out.println("PlaceController.addPlaceDetails()");
-//        System.out.println(placeDto.getCategoryName());
-//
-//        try {
-//            // Call service method to add the Place and save images for cuisines and hotels
-//            String msg = placeService.addPlace(placeDto, placeImages, cuisineImages, hotelImages);
-//            return new ResponseEntity<>(msg, HttpStatus.CREATED);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return new ResponseEntity<>("Error adding place with images", HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+
 
 
 	
@@ -141,8 +105,8 @@ public class PlaceController {
 	}
 
 	@GetMapping("/placeby/{id}")
-	public ResponseEntity<Place> getPlaceById(@PathVariable Long id) {
-		Place place = placeService.getPlaceById(id);
+	public ResponseEntity<PlaceDTO> getPlaceById(@PathVariable Long id) {
+		PlaceDTO place = placeService.getPlaceById(id);
 		return place != null ? ResponseEntity.ok(place) : ResponseEntity.notFound().build();
 	}
 
@@ -172,6 +136,8 @@ public class PlaceController {
 	public Flux<PlaceResponseDTO> getPlacesByCategoryId(@PathVariable String categoryId) {
 	    return placeService.getPlacesByCategoryId(categoryId);
 	}
+
+	
 
 
 	
