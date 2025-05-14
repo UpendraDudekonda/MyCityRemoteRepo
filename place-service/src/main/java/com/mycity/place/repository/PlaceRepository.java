@@ -18,6 +18,7 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
 	@Query("SELECT p.placeId FROM Place p WHERE p.placeName = :placeName")
 	Long findPlaceIdByPlaceName(@Param("placeName") String placeName);
 
+	@Query("SELECT p.placeId FROM Place p WHERE LOWER(p.placeName) = LOWER(:placeName)")
 	Long findPlaceIdByPlaceNameIgnoreCase(String placeName);
 
 
