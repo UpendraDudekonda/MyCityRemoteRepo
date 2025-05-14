@@ -47,11 +47,11 @@ public class ClientPlaceController
 	
 	private static final String API_GATEWAY_SERVICE_NAME="API-GATEWAY";
 	
-	private static final String PLACE_REGISTRATION_PATH="/admin/addPlace";
+	private static final String PLACE_REGISTRATION_PATH="/admin/place/addPlace";
 	
     private static final String PLACE_ID_FINDING_PATH="/place/getid/{placeName}";
 	
-	private static final String PLACE_DETAILS_FINDING_PATH="/place/getplace/{placeId}";
+	private static final String PLACE_DETAILS_FINDING_PATH="/place/get/{placeId}";
 	
 	private static final String PLACE_UPDATING_PATH="/place/updateplace/{placeId}";
 	
@@ -59,43 +59,42 @@ public class ClientPlaceController
 	
 	private static final String ALL_PLACES_FINDING_PATH="/place/getall";
 	
-		
 	@PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Mono<String> addPlace(
 	        @ModelAttribute("placeDto") PlaceDTO placeDto,
 	        @RequestParam Map<String, MultipartFile> placeImages,
 	        @RequestParam Map<String, MultipartFile> cuisineImages,
-	        @RequestHeader(value = HttpHeaders.COOKIE) String cookie
+	        @RequestHeader(value = HttpHeaders.COOKIE, required = false) String cookie
 	) throws JsonProcessingException {
-
+ 
 	    System.out.println("ClientPlaceController.addPlace()");
-
+ 
 	    // 🔐 Extract token from cookie
 	    String token = extractor.extractTokenFromCookie(cookie);
-
+ 
 	    // 🧱 Build multipart request
 	    MultipartBodyBuilder builder = new MultipartBodyBuilder();
-
+ 
 	    // 🧾 Convert DTO to JSON
 	    ObjectMapper mapper = new ObjectMapper();
-	    mapper.registerModule(new JavaTimeModule()); 
+	    mapper.registerModule(new JavaTimeModule());
 	    mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 	    String placeDtoJson = mapper.writeValueAsString(placeDto);
-
+ 
 	    builder.part("placeDto", placeDtoJson)
 	           .header("Content-Disposition", "form-data; name=placeDto")
 	           .contentType(MediaType.APPLICATION_JSON);
-
+ 
 	    // 🖼️ Add placeImages
 	    for (Map.Entry<String, MultipartFile> entry : placeImages.entrySet()) {
 	        builder.part(entry.getKey(), entry.getValue().getResource());
 	    }
-
+ 
 	    // 🍜 Add cuisineImages
 	    for (Map.Entry<String, MultipartFile> entry : cuisineImages.entrySet()) {
 	        builder.part(entry.getKey(), entry.getValue().getResource());
 	    }
-
+ 
 	    // 🌐 Send to API Gateway → Admin → Place-Service
 	    return webClientBuilder.build()
 	            .post()
@@ -111,10 +110,9 @@ public class ClientPlaceController
 	            .bodyToMono(String.class)
 	            .onErrorResume(e -> Mono.just("Failed to Add Place: " + e.getMessage()));
 	}
-
-
-
+ 
 	
+
 
 	@GetMapping("/getid/{placeName}")
 	public Mono<String> getPlaceId(@PathVariable String placeName) {
@@ -130,21 +128,33 @@ public class ClientPlaceController
 	            .onErrorResume(e -> Mono.just("Failed to get Place Id: " + e.getMessage()));
 	}
 	
-	@GetMapping("/getplace/{placeId}")
-	public Mono<String> getPlaceDetailsById(@PathVariable Long placeId,@RequestHeader(value = HttpHeaders.COOKIE)String cookie) {
-		System.out.println("ClientPlaceController.addPlace()");
-		String token=extractor.extractTokenFromCookie(cookie);
-	    return webClientBuilder.build()
-	            .get()
-	            .uri("lb://" +API_GATEWAY_SERVICE_NAME + PLACE_DETAILS_FINDING_PATH,placeId)
-	            .header(HttpHeaders.AUTHORIZATION,"Bearer "+token)
-	            .retrieve()
-	            .onStatus(HttpStatusCode::isError, clientResponse ->
-	                    clientResponse.bodyToMono(String.class)
-	                            .flatMap(errorBody -> Mono.error(new RuntimeException("Failed to get Place Details: " + clientResponse.statusCode() + " - " + errorBody))))
-	            .bodyToMono(String.class)
-	            .onErrorResume(e -> Mono.just("Failed to get Place Details: " + e.getMessage()));
-	}
+	 // Corrected getPlaceDetailsById method
+    @GetMapping("/getplace/{placeId}")
+    public Mono<PlaceDTO> getPlaceDetailsById(
+            @PathVariable Long placeId,
+            @RequestHeader(value = HttpHeaders.COOKIE) String cookie) {
+
+        System.out.println("ClientPlaceController.getPlaceDetailsById()"); // Corrected print statement
+
+        // Extract token from cookie
+        String token = extractor.extractTokenFromCookie(cookie);
+
+        return webClientBuilder.build()
+                .get()
+                .uri("lb://" + API_GATEWAY_SERVICE_NAME + PLACE_DETAILS_FINDING_PATH, placeId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .onStatus(
+                    HttpStatusCode::isError, // Check if the status is error
+                    clientResponse -> clientResponse.bodyToMono(String.class) // Corrected: Specify String.class
+                        .flatMap(errorBody -> Mono.error(new RuntimeException("Failed to get Place Details: " + clientResponse.statusCode() + " - " + errorBody)))
+                )
+                .bodyToMono(PlaceDTO.class) // Corrected: Expect a PlaceDTO in the success case
+                .onErrorResume(e -> {
+                    System.err.println("Error in getPlaceDetailsById: " + e.getMessage()); // Log the error
+                    return Mono.error(new RuntimeException("Failed to get Place Details: " + e.getMessage())); // Propagate a meaningful error
+                });
+    }
 	
 	@PutMapping("/update/{placeId}")
 	public Mono<String> updatePlace(@PathVariable  Long placeId,@RequestBody PlaceDTO dto) 

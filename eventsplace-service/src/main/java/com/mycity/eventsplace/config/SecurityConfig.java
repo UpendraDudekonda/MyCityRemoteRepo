@@ -24,7 +24,7 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-            		 .requestMatchers( "/event/**").permitAll()
+            		 .requestMatchers( "/event/**","/event/place/{placeId}").permitAll()
                 .anyRequest().authenticated()
             );
         return http.build();

@@ -97,8 +97,9 @@ public class AdminPlaceController
 		     return new ResponseEntity<List<AdminPlaceResponseDTO>>(dtos,HttpStatus.OK); 
 	}
 	
+	//88*********************************************************************************************
 	
-	@PostMapping(path = "/addPlace",
+	@PostMapping(path = "/place/addPlace",
 	        consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
 	        produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> addPlaceDetails(
@@ -106,33 +107,33 @@ public class AdminPlaceController
 	        @RequestParam Map<String, MultipartFile> placeImages,
 	        @RequestParam Map<String, MultipartFile> cuisineImages
 	) throws JsonProcessingException {
-
+ 
 	    System.out.println("AdminPlaceController.addPlaceDetails()");
-
+ 
 	    System.out.println("Placee DTO ::"+placeDto);
 	    // 🧱 Build multipart request
 	    MultipartBodyBuilder builder = new MultipartBodyBuilder();
-
+ 
 	    // ✅ Serialize PlaceDTO to JSON
 	    ObjectMapper objectMapper = new ObjectMapper();
-	    objectMapper.registerModule(new JavaTimeModule()); 
+	    objectMapper.registerModule(new JavaTimeModule());
 	    String placeDtoJson = objectMapper.writeValueAsString(placeDto);
 	    
 	    // Send placeDto as JSON in the multipart form
 	    builder.part("placeDto", placeDtoJson)
 	           .header("Content-Disposition", "form-data; name=placeDto")
 	           .contentType(MediaType.APPLICATION_JSON);
-
+ 
 	    // 🖼️ Add placeImages using their original keys
 	    for (Map.Entry<String, MultipartFile> entry : placeImages.entrySet()) {
 	        builder.part(entry.getKey(), entry.getValue().getResource());
 	    }
-
+ 
 	    // 🍜 Add cuisineImages using their original keys
 	    for (Map.Entry<String, MultipartFile> entry : cuisineImages.entrySet()) {
 	        builder.part(entry.getKey(), entry.getValue().getResource());
 	    }
-
+ 
 	    // 🌐 Send to place-service
 	    String response = webClientBuilder.build()
 	            .post()
@@ -142,14 +143,10 @@ public class AdminPlaceController
 	            .retrieve()
 	            .bodyToMono(String.class)
 	            .block();
-
+ 
 	    return ResponseEntity.ok(response);
 	}
-
-
-
-
-
+ 
 
 
 	@GetMapping("/getplace/{placeId}")
