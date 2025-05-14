@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,7 @@ import com.mycity.shared.timezonedto.TimezoneDTO;
 import com.mycity.shared.tripplannerdto.CoordinateDTO;
 
 import jakarta.transaction.Transactional;
+import reactor.core.publisher.Flux;
 
 @Service
 public class PlaceServiceImpl implements PlaceServiceInterface {
@@ -469,5 +471,14 @@ public class PlaceServiceImpl implements PlaceServiceInterface {
 	        );
 	    }).collect(Collectors.toList());
 	}
+	
+	@Override
+	public Flux<PlaceResponseDTO> getPlacesByCategoryId(String categoryId) {
+	    Long categoryIdLong = Long.parseLong(categoryId); // ensure correct type
+	    return Flux.fromIterable(placeRepo.findAllByCategoryId(categoryIdLong))
+	               .map(this::convertToDTO); // convert to DTO
+	}
+
+
 
 }

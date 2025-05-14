@@ -1,7 +1,7 @@
 package com.mycity.place.controller;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +26,8 @@ import com.mycity.shared.placedto.PlaceCategoryDTO;
 import com.mycity.shared.placedto.PlaceDTO;
 import com.mycity.shared.placedto.PlaceResponseDTO;
 import com.mycity.shared.placedto.PlaceWithImagesDTO;
+
+import reactor.core.publisher.Flux;
 
 @RestController
 @RequestMapping("/place")
@@ -161,11 +162,18 @@ public class PlaceController {
 	    }
 	}
 	
-	@GetMapping("/placebycategory/{categoryName}")
+	@GetMapping("/places-by-category/{categoryName}")
 	public ResponseEntity<List<PlaceWithImagesDTO>> getPlacesByCategory(@PathVariable String categoryName) {
 	    List<PlaceWithImagesDTO> places = placeService.getPlacesByCategoryWithImages(categoryName);
 	    return ResponseEntity.ok(places);
 	}
+	
+	@GetMapping("/bycategory/{categoryId}")
+	public Flux<PlaceResponseDTO> getPlacesByCategoryId(@PathVariable String categoryId) {
+	    return placeService.getPlacesByCategoryId(categoryId);
+	}
+
+
 	
 	
 }
