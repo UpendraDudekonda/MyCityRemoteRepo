@@ -25,7 +25,8 @@ public class SecurityConfig {
 	                .requestMatchers(
 	                    "/admin/auth/internal/login",
 	                	"/admin/profile",
-	                	"/admin/event/**"
+	                	"/admin/event/**",
+	                	"/admin/addPlace"
 	                ).permitAll()
 	                .anyRequest().authenticated()
 	            );

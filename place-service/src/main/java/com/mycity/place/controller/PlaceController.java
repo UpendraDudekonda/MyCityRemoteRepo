@@ -59,6 +59,27 @@ public class PlaceController {
 		}
 	}
 
+
+ // Endpoint to add Place details
+    @PostMapping(value = "/add-place", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> addPlaceDetails(
+            @RequestPart PlaceDTO placeDto,  // Bind the form data to the PlaceDTO
+            @RequestParam Map<String, MultipartFile>  placeImages,  // Images for the Place itself
+            @RequestParam Map<String, MultipartFile>  cuisineImages  // Images for Cuisines
+    ) {
+        System.out.println("PlaceController.addPlaceDetails()");
+        System.out.println(placeDto.getCategoryName());
+
+        try {
+            // Call service method to add the Place and save images for cuisines and hotels
+            String msg = placeService.addPlace(placeDto, placeImages, cuisineImages);
+            return new ResponseEntity<>(msg, HttpStatus.CREATED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Error adding place with images", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 // // Endpoint to add Place details
 //    @PostMapping(value = "/add-place", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 //    public ResponseEntity<String> addPlaceDetails(
@@ -80,6 +101,8 @@ public class PlaceController {
 //        }
 //    }
 
+
+	
 
 	// Create a place using PlaceDTO
 	@PostMapping("/newplace/add")
