@@ -40,8 +40,8 @@ public interface PlaceServiceInterface {
 
 	String addPlace(PlaceDTO placeDto, List<MultipartFile> placeImages, Map<String, MultipartFile> cuisineImages);
 
-	String addPlace(PlaceDTO placeDto, Map<String, MultipartFile> placeImages, Map<String, MultipartFile> cuisineImages,
-			Map<String, MultipartFile> hotelImages);
+	String addPlace(PlaceDTO placeDto, Map<String, MultipartFile> placeImages, Map<String, MultipartFile> cuisineImages
+			);
 
 	List<PlaceWithImagesDTO> getPlacesByCategoryWithImages(String categoryName);
 

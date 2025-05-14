@@ -2,6 +2,7 @@ package com.mycity.place.serviceImpl;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -45,6 +46,7 @@ public class PlaceServiceImpl implements PlaceServiceInterface {
 	@Autowired
 	private WebClientLocationService clientLocationService;
 
+	
 	@Override
 	@Transactional
 	public String addPlace(PlaceDTO dto, List<MultipartFile> images) {
@@ -280,7 +282,7 @@ public class PlaceServiceImpl implements PlaceServiceInterface {
 	@Override
 	@Transactional
 	public String addPlace(PlaceDTO placeDto, Map<String, MultipartFile> placeImages,
-			Map<String, MultipartFile> cuisineImages, Map<String, MultipartFile> hotelImages) {
+			Map<String, MultipartFile> cuisineImages) {
 
 		if (placeDto == null)
 			throw new IllegalArgumentException("PlaceDTO cannot be null");
@@ -344,6 +346,8 @@ public class PlaceServiceImpl implements PlaceServiceInterface {
 				cuisine.setCuisineName(cuisineDTO.getCuisineName());
 				cuisine.setPlace(place);
 				cuisineList.add(cuisine);
+
+				
 			}
 		}
 		place.setLocalCuisines(cuisineList);
@@ -353,36 +357,51 @@ public class PlaceServiceImpl implements PlaceServiceInterface {
 		Place savedPlace = placeRepo.save(place);
 		placeRepo.flush();
 		
-		
-		// 📷 Upload Cuisine Images
+		//add cuisine images
 		if (placeDto.getLocalCuisines() != null && cuisineImages != null) {
+
+		    // Convert DTOs to a map for lookup by cuisine name
 		    Map<String, LocalCuisineDTO> cuisineMap = placeDto.getLocalCuisines().stream()
-		        .collect(Collectors.toMap(LocalCuisineDTO::getCuisineName, Function.identity()));
+		            .collect(Collectors.toMap(LocalCuisineDTO::getCuisineName, Function.identity(), (a, b) -> a));
+
+		    // Normalize cuisine image keys (remove extensions like jpg)
+		    Map<String, MultipartFile> normalizedCuisineImages = new HashMap<>();
+		    for (Map.Entry<String, MultipartFile> entry : cuisineImages.entrySet()) {
+		        String originalKey = entry.getKey();
+		        String normalizedKey = originalKey.contains(".") ? originalKey.substring(0, originalKey.lastIndexOf('.')) : originalKey;
+		        normalizedCuisineImages.put(normalizedKey, entry.getValue());
+		    }
 
 		    for (LocalCuisine cuisine : savedPlace.getLocalCuisines()) {
-		        LocalCuisineDTO cuisineDTO = cuisineMap.get(cuisine.getCuisineName());
+		        String cuisineName = cuisine.getCuisineName();
 
-		        if (cuisineDTO != null && cuisineImages.containsKey(cuisineDTO.getCuisineName())) {
-		            MultipartFile cuisineImage = cuisineImages.get(cuisineDTO.getCuisineName());
+		        if (cuisineMap.containsKey(cuisineName) && normalizedCuisineImages.containsKey(cuisineName)) {
+		            MultipartFile cuisineImage = normalizedCuisineImages.get(cuisineName);
 
 		            if (cuisineImage != null && !cuisineImage.isEmpty()) {
 		                try {
 		                    mediaService.uploadCuisineImage(
-		                        cuisineImage,
-		                        cuisineDTO.getCuisineName(),
-		                        savedPlace.getPlaceId(),
-		                        savedPlace.getPlaceName(),
-		                        savedPlace.getCategoryName()
-		               
+		                            cuisineImage,
+		                            cuisineName,
+		                            savedPlace.getPlaceId(),
+		                            savedPlace.getPlaceName(),
+		                            savedPlace.getCategoryName()
 		                    );
+		                    System.out.println("✅ Uploaded image for cuisine: " + cuisineName);
 		                } catch (Exception e) {
-		                    System.out.println("❌ Error uploading image for cuisine: " + cuisineDTO.getCuisineName());
+		                    System.err.println("❌ Error uploading image for cuisine: " + cuisineName);
 		                    e.printStackTrace();
 		                }
+		            } else {
+		                System.out.println("⚠️ Empty or missing image for cuisine: " + cuisineName);
 		            }
+		        } else {
+		            System.out.println("⚠️ No matching image found for cuisine: " + cuisineName);
 		        }
 		    }
 		}
+
+
 
 
 		// Save the updated place

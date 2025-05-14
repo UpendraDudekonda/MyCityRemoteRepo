@@ -25,8 +25,7 @@ public class WebClientMediaService
     // Define constants for image service URL and paths
     private static final String IMAGE_SERVICE = "MEDIA-SERVICE";
 //    private static final String IMAGE_UPLOAD_PATH = "/media/upload";
-    private static final String IMAGE_FETCH_PATH_BY_ID = "/media/images/{placeId}";
-    private static final String IMAGE_FETCH_PATH_BY_NAME = "/media/image-byplacename/{placeName}";
+    private static final String IMAGE_FETCH_PATH = "/media/images/{placeId}";
     private static final String IMAGE_DELETING_PATH="/media/images/delete/{placeId}"; 
     private static final String PATH_TO_ADD_IMAGES_TO_GALLERY="/media/gallery/upload";
     private static final String PATH_TO_GET_IMAGES="/media/gallery/getimages/{districtName}";
@@ -71,7 +70,7 @@ public class WebClientMediaService
     public CompletableFuture<List<AboutPlaceImageDTO>> getImagesForPlace(Long placeId) {
         return webClientBuilder.build()
                 .get()
-                .uri("lb://" + IMAGE_SERVICE + IMAGE_FETCH_PATH_BY_ID, placeId)
+                .uri("lb://" + IMAGE_SERVICE + IMAGE_FETCH_PATH, placeId)
                 .retrieve()
                 .bodyToFlux(AboutPlaceImageDTO.class) // Expecting list of DTOs instead of strings
                 .collectList()
@@ -145,7 +144,9 @@ public class WebClientMediaService
         }
 
     }
+    
     public String uploadCuisineImage(MultipartFile image, String cuisineName, long placeId, @NonNull String placeName, String placeCategory) {
+    	System.out.println("WebClientMediaService.uploadCuisineImage()");
         try {
             MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
             bodyBuilder.part("image", new ByteArrayResource(image.getBytes()) {
@@ -180,12 +181,13 @@ public class WebClientMediaService
         // Use Load Balancer routing to send a request to the IMAGE-SERVICE for fetching image URLs by placeId
         return webClientBuilder.build()
                 .get()
-                .uri("lb://" + IMAGE_SERVICE + IMAGE_FETCH_PATH_BY_ID, placeId) // Load balanced URI to fetch image URLs
+                .uri("lb://" + IMAGE_SERVICE + IMAGE_FETCH_PATH, placeId) // Load balanced URI to fetch image URLs
                 .retrieve() // Execute the request
                 .bodyToFlux(String.class) // Expect the response to be a list of image URLs (strings)
                 .collectList() // Collect the URLs into a list
                 .toFuture(); // Return the result as a CompletableFuture
     }
+
     public List<String> getPhotoUrlsByPlaceId(long placeId) {
         try {
             return getImageUrlsForPlace(placeId).get(); // Waits for the result
@@ -193,16 +195,6 @@ public class WebClientMediaService
             e.printStackTrace();
             return List.of(); // Return empty list on error
         }
-    }
-
-    public CompletableFuture<List<AboutPlaceImageDTO>> getImagesForPlace(@NonNull String placeName) {
-        return webClientBuilder.build()
-                .get()
-                .uri("lb://" + IMAGE_SERVICE + IMAGE_FETCH_PATH_BY_NAME, placeName)
-                .retrieve()
-                .bodyToFlux(AboutPlaceImageDTO.class) // Expecting list of DTOs instead of strings
-                .collectList()
-                .toFuture();
     }
 
    
