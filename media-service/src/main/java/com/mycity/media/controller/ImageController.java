@@ -19,7 +19,6 @@ import com.mycity.shared.mediadto.AboutPlaceImageDTO;
 import com.mycity.shared.mediadto.ImageDTO;
 
 import jakarta.ws.rs.core.MediaType;
-import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/media")
@@ -31,12 +30,14 @@ public class ImageController {
 	
 	@PostMapping(value = "/upload/places", consumes = MediaType.MULTIPART_FORM_DATA)
 	public ResponseEntity<String> uploadImageForPlaces(
+		
 	        @RequestPart("image") MultipartFile file,
 	        @RequestParam Long placeId,
 	        @RequestParam String placeName,
 	        @RequestParam String category,
 	        @RequestParam String imageName) {
 		
+		System.out.println("ImageController.uploadImageForPlaces()");
 		imageService.uploadImageForPlaces(file,placeId,placeName,category,imageName);
 
 	    return ResponseEntity.ok("Image uploaded successfully");
@@ -46,29 +47,17 @@ public class ImageController {
 	public ResponseEntity<ImageDTO> getImage(@PathVariable Long id) {
 	    ImageDTO imageDTO = imageService.fetchImage(id);
 	    return ResponseEntity.ok(imageDTO);
-	} 
+	}     
 	
-	@GetMapping("/bycategory/image/{category}")
-	public Mono<String> getCoverImageForCategory(@PathVariable String category) {
-	    System.err.println("the request from category coming to media");
-	    return imageService.getFirstImageUrlByCategory(category)
-	            .defaultIfEmpty(""); // Avoid nulls
+	@GetMapping("/cover-image")
+	public ResponseEntity<String> getCoverImageForCategory(@RequestParam String category) {
+	    String imageUrl = imageService.getFirstImageUrlByCategory(category);
+	    return ResponseEntity.ok(imageUrl);
 	}
-
-
-
-
-
 	
 	@GetMapping("/images/{placeId}")
 	public ResponseEntity<List<AboutPlaceImageDTO>> getAboutPlaceImages(@PathVariable Long placeId) {
 	    List<AboutPlaceImageDTO> images = imageService.getAboutPlaceImages(placeId);
-	    return ResponseEntity.ok(images);
-	}
-	
-	@GetMapping("/image-byplacename/{placeName}")
-	public ResponseEntity<List<AboutPlaceImageDTO>> getAboutPlaceImages(@PathVariable String placeName) {
-	    List<AboutPlaceImageDTO> images = imageService.getAboutPlaceImages(placeName);
 	    return ResponseEntity.ok(images);
 	}
 	
@@ -77,6 +66,25 @@ public class ImageController {
 	{
 		String result=imageService.deleteImage(placeId);
 		return ResponseEntity.ok(result);
+
 	}
 	
+	@GetMapping("/findby/place")
+	public Mono<ResponseEntity<List<String>>> getImagesByPlaceId(@RequestParam Long placeId) {
+	    return imageService.getImagesByPlaceId(placeId)
+	        .map(imageUrls -> {
+	            if (imageUrls.isEmpty()) {
+	                return ResponseEntity.noContent().<List<String>>build();
+	            } else {
+	                return ResponseEntity.ok(imageUrls);
+	            }
+	        })
+	        .defaultIfEmpty(ResponseEntity.noContent().<List<String>>build());
+	}
+
+
+
+
+	}	
+
 }

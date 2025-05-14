@@ -2,7 +2,6 @@ package com.mycity.category.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mycity.category.service.CategoryService;
 import com.mycity.shared.categorydto.CategoryDTO;
 import com.mycity.shared.categorydto.CategoryImageDTO;
+import com.mycity.shared.categorydto.CategoryWithPlacesDTO;
 
 import reactor.core.publisher.Mono;
 
@@ -23,8 +23,11 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/category")
 public class CategoryController {
 
-    @Autowired
-    private CategoryService categoryService;
+	private final CategoryService categoryService;
+
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
     @GetMapping("/unique/images")
     public Mono<ResponseEntity<List<CategoryImageDTO>>> getCategoriesWithImages() {
@@ -53,6 +56,16 @@ public class CategoryController {
         CategoryDTO category = categoryService.getCategoryByName(categoryName);
         return ResponseEntity.ok(category);
     }
+    
+    @GetMapping("/category-by-name/{categoryName}")
+    public Mono<ResponseEntity<List<CategoryWithPlacesDTO>>> getCategoriesWithPlacesAndImages(@PathVariable String categoryName) {
+        return categoryService.getSingleCategoryWithPlacesAndImages(categoryName)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+
+
 
     // Save (or update) category directly
     @PostMapping("/save")

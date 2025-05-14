@@ -11,7 +11,6 @@ import com.mycity.media.entity.Images;
 public interface ImageServiceRepository extends JpaRepository<Images, Long>{
 	
 
-	List<String> findImageUrlsByPlaceId(Long placeId);
 
 	Optional<Images> findFirstByCategoryIgnoreCaseOrderByImageIdAsc(String category);
 
@@ -22,6 +21,9 @@ public interface ImageServiceRepository extends JpaRepository<Images, Long>{
     List<Long> findImageIdsByPlaceId(Long placeId);
 
 	List<Images> findImagesByPlaceName(String placeName);
+
+
+	List<Images> findByPlaceId(Long placeId);
 
 
 }

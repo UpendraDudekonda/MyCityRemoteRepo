@@ -203,6 +203,10 @@ public class ReviewServiceimpl implements ReviewServiceInterface {
             reviewDTO.setReviewDescription(review.getReviewDescription());
             reviewDTO.setUserName(review.getUserName());
             reviewDTO.setPostedOn(review.getPostedOn());
+            
+            
+            String imageUrl = mediaService.getImageUrlByPlaceId(review.getPlaceId());
+            reviewDTO.setImageUrl(imageUrl);
 
             // Optional: You can add more logic here for fetching extra fields, like user images, etc.
             reviewDTOs.add(reviewDTO);

@@ -236,6 +236,7 @@ public class EventsPlaceService implements EventsPlaceServiceInterface {
            data.put("date", eventsList.getDate());
          // Directly a list of strings
            data.put("city", eventsList.getCity());
+           data.put("eventId",eventsList.getEventId());
           
     // assuming Event has getPlace()
            try {
