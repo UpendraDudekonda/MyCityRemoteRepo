@@ -1,7 +1,8 @@
 package com.mycity.apigateway.config;
  
 import java.nio.charset.StandardCharsets;
- 
+import java.util.List;
+
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -10,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.server.ServerWebExchange;
- 
+
 import io.jsonwebtoken.Claims;
 import reactor.core.publisher.Mono;
  
@@ -31,9 +32,16 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         System.out.println(" Request path: " + path);
  
         // Allow public auth paths
-        if (path.startsWith("/auth/") || path.startsWith("/place/")) {
+        if (path.startsWith("/auth/") || path.startsWith("/place/") || path.startsWith("/user/")) {
             System.out.println(" Public path - skipping token validation");
             return chain.filter(exchange);
+        }
+        List<String> publicPaths = List.of("/auth/", "/client/", "/public/", "/tripplanner/","/category/","/place/**","/place/discoveries/getall");
+
+        boolean isPublic = publicPaths.stream().anyMatch(path::startsWith);
+
+        if (isPublic) {
+            System.out.println("Public path - skipping token validation: " + path);
         }
  
         if(path.startsWith("/event/internal/fetch")) {

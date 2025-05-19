@@ -67,10 +67,10 @@ public class WebClientMediaService
         }
     }
 
-    public CompletableFuture<List<AboutPlaceImageDTO>> getImagesForPlace(Long placeId) {
+    public CompletableFuture<List<AboutPlaceImageDTO>> getImagesForPlace(@lombok.NonNull String string) {
         return webClientBuilder.build()
                 .get()
-                .uri("lb://" + IMAGE_SERVICE + IMAGE_FETCH_PATH, placeId)
+                .uri("lb://" + IMAGE_SERVICE + IMAGE_FETCH_PATH, string)
                 .retrieve()
                 .bodyToFlux(AboutPlaceImageDTO.class) // Expecting list of DTOs instead of strings
                 .collectList()
@@ -144,7 +144,9 @@ public class WebClientMediaService
         }
 
     }
+    
     public String uploadCuisineImage(MultipartFile image, String cuisineName, long placeId, @NonNull String placeName, String placeCategory) {
+    	System.out.println("WebClientMediaService.uploadCuisineImage()");
         try {
             MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
             bodyBuilder.part("image", new ByteArrayResource(image.getBytes()) {

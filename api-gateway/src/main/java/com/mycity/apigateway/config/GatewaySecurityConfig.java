@@ -47,7 +47,7 @@ public class GatewaySecurityConfig {
  
  
     @Bean
-
+    
     public CorsWebFilter corsWebFilter() {
 
         CorsConfiguration config = new CorsConfiguration();
@@ -69,9 +69,8 @@ public class GatewaySecurityConfig {
     }
  
     @Bean
-
+    
     @LoadBalanced
-
     public WebClient.Builder webClientBuilder() {
 
         return WebClient.builder();

@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.mycity.eventsplace.service.EventsPlaceServiceInterface;
 import com.mycity.shared.eventsdto.EventsDTO;
-
+import com.mycity.shared.placedto.AboutPlaceEventDTO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -84,7 +84,7 @@ public class EventsPlaceController {
  	    }
 
  	    return ResponseEntity.ok(response);
- 	    
- 	    
     }
+    
+   
 }

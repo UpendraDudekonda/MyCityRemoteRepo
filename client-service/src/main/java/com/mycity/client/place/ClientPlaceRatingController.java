@@ -40,7 +40,7 @@ public class ClientPlaceRatingController
 		String token=extractor.extractTokenFromCookie(cookie);
 	    return webClientBuilder.build()
 	            .post()
-	            .uri("lb://" +API_GATEWAY_SERVICE_NAME +USER_RATING_ADDING_PATH)
+	            .uri("lb://" +API_GATEWAY_SERVICE_NAME +USER_RATING_ADDING_PATH,cookie)
 	            .header(HttpHeaders.AUTHORIZATION,"Bearer "+token)
 	            .bodyValue(dto)
 	            .retrieve()

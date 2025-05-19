@@ -66,7 +66,7 @@ class UserReviewControllerTest {
 
     @Test
     void testAddReview_Success() throws Exception {
-        ReviewDTO reviewDTO = new ReviewDTO(1L, 2L, 3L, "Test Place", "TestUser", "Amazing experience!", LocalDate.now());
+        ReviewDTO reviewDTO = new ReviewDTO( "Test Place", "TestUser", "Amazing experience!", null, LocalDate.now());
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
@@ -91,7 +91,7 @@ class UserReviewControllerTest {
 
     @Test
     void testAddReview_Failure() throws Exception {
-        ReviewDTO reviewDTO = new ReviewDTO(1L, 2L, 3L, "Test Place", "TestUser", "Bad experience", LocalDate.now());
+        ReviewDTO reviewDTO = new ReviewDTO("Test Place", "TestUser", "Bad experience", null, LocalDate.now());
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());

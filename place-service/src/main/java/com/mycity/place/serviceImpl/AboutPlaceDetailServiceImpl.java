@@ -79,7 +79,7 @@ public class AboutPlaceDetailServiceImpl implements PlaceDetailService {
 
 		try {
 			// Fetching data from different services asynchronously
-			CompletableFuture<List<AboutPlaceImageDTO>> imagesFuture = mediaService.getImagesForPlace(placeId);
+			CompletableFuture<List<AboutPlaceImageDTO>> imagesFuture = mediaService.getImagesForPlace(placeId.toString());
 			CompletableFuture<List<ReviewDTO>> reviewsFuture = reviewService.fetchReviews(placeId);
 			CompletableFuture<List<AboutPlaceEventDTO>>  eventFuture= eventService.fetchEvents(placeId);
 			// Blocking to get the results
@@ -106,7 +106,7 @@ public class AboutPlaceDetailServiceImpl implements PlaceDetailService {
 			about.setLocalCuisines(localCuisineDTOs);
 
 			// ✅ Fetch nearby places and convert to DTOs
-			List<Place> nearbyPlaces = getNearbyPlaces(place.getPlaceName(), 20.0); // radius in KM
+			List<Place> nearbyPlaces = getNearbyPlaces(place.getPlaceName(), 200.0); // radius in KM
 
 			List<NearbyPlaceDTO> nearbyPlaceDTOs = new ArrayList<>();
 			for (Place p : nearbyPlaces) {

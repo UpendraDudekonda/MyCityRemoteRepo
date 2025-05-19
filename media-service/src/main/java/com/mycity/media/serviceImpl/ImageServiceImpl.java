@@ -3,6 +3,7 @@ package com.mycity.media.serviceImpl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,8 @@ import com.mycity.media.service.ImageService;
 import com.mycity.shared.mediadto.AboutPlaceImageDTO;
 import com.mycity.shared.mediadto.ImageDTO;
 
+import reactor.core.publisher.Mono;
+
 @Service
 public class ImageServiceImpl implements ImageService {
 
@@ -25,8 +28,22 @@ public class ImageServiceImpl implements ImageService {
     @Autowired
     private ImageServiceRepository imageServiceRepository;
 
+    @Override
+	public void uploadImageForPlaces(MultipartFile file, Long placeId, String placeName, String category,
+			String imageName) {
+ 
+		String imageUrl = cloudinaryHelper.saveImage(file); // your Cloudinary logic
+ 
+		Images img = new Images();
+		img.setImageUrl(imageUrl);
+		img.setPlaceId(placeId);
+		img.setPlaceName(placeName);
+		img.setCategory(category);
+		img.setImageName(imageName);
+ 
+		imageServiceRepository.save(img);
+	}
    
-    
     @Override
 	public void uploadImageForCuisines(MultipartFile file, Long placeId, Long cuisineId, String placeName,
 			String category, String cuisineName) {
@@ -59,14 +76,23 @@ public class ImageServiceImpl implements ImageService {
 		return new ImageDTO(image.getImageId(), image.getImageUrl(), image.getCategory(), image.getPlaceName(),
 				image.getPlaceId());
 	}
+    public Mono<String> getFirstImageUrlByCategory(String category) {
+        return Mono.defer(() -> {
+            Optional<Images> imageOptional = imageServiceRepository
+                    .findFirstByCategoryIgnoreCaseOrderByImageIdAsc(category);
+            
+            // Log the result for debugging
+            if (imageOptional.isEmpty()) {
+                System.out.println("No image found for category: " + category);
+            } else {
+                System.out.println("Found image URL: " + imageOptional.get().getImageUrl());
+            }
 
-    @Override
-    public String getFirstImageUrlByCategory(String category) {
-        return imageServiceRepository
-                .findFirstByCategoryIgnoreCaseOrderByImageIdAsc(category)
-                .map(Images::getImageUrl)
-                .orElse(null);
+            return Mono.justOrEmpty(imageOptional.map(Images::getImageUrl).orElse(null));
+        });
     }
+
+
 
     @Override
 	public List<AboutPlaceImageDTO> getAboutPlaceImages(Long placeId) {
@@ -127,13 +153,37 @@ public class ImageServiceImpl implements ImageService {
 		return null;
 	}
 
+	@Override
+	public List<AboutPlaceImageDTO> getAboutPlaceImages(String placeName) {
+		  // Fetch all images associated with the placeId
+	    List<Images> images = imageServiceRepository.findImagesByPlaceName(placeName);
+
+	    // Map to DTOs
+	    List<AboutPlaceImageDTO> imageDTOs = new ArrayList<>();
+	    for (Images image : images) {
+	        if ("placeimagemain".equals(image.getImageName())) {
+	            AboutPlaceImageDTO dto = new AboutPlaceImageDTO();
+	            dto.setImageUrl(image.getImageUrl());   // Assuming Images has getImageUrl()
+	            dto.setImageName(image.getImageName()); // Assuming Images has getImageName()
+	            imageDTOs.add(dto);
+	        }
+	    }
+
+	    return imageDTOs;
+	}
 
 	@Override
-	public void uploadImageForPlaces(MultipartFile file, Long placeId, String placeName, String category,
-			String imageName) {
-		// TODO Auto-generated method stub
-		
+	public Mono<List<String>> getImagesByPlaceId(Long placeId) {
+	    return Mono.fromCallable(() -> {
+	        List<Images> images = imageServiceRepository.findByPlaceId(placeId);
+	        return images.stream()
+	                     .map(Images::getImageUrl)
+	                     .collect(Collectors.toList());
+	    });
 	}
+
+
+	
 
 
 }

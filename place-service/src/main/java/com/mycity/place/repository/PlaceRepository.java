@@ -18,6 +18,7 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
 	@Query("SELECT p.placeId FROM Place p WHERE p.placeName = :placeName")
 	Long findPlaceIdByPlaceName(@Param("placeName") String placeName);
 
+	@Query("SELECT p.placeId FROM Place p WHERE LOWER(p.placeName) = LOWER(:placeName)")
 	Long findPlaceIdByPlaceNameIgnoreCase(String placeName);
 
 
@@ -25,6 +26,10 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
 
 	@Query("SELECT p FROM Place p WHERE LOWER(p.categoryName) = LOWER(:categoryName)")
 	List<Place> findByCategoryName(@Param("categoryName") String categoryName);
+
+	List<Place> findAllByCategoryId(Long categoryId); // now it matches the entity field type
+
+
 
 
 

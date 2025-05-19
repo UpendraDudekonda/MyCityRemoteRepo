@@ -18,6 +18,8 @@ public class WebClientMediaService
     private static final String IMAGE_SERVICE = "MEDIA-SERVICE";
     private static final String IMAGE_ADDING_PATH="/media/review/upload";
     private static final String IMAGE_DELETING_PATH="/media/review/delete/{reviewId}";
+    private static final String IMAGE_FETCH_PATH = "/media/review/image/place/{placeId}";
+
     
     // Method to upload an image for review
     public void uploadImageForReview(MultipartFile image,Long reviewId,Long placeId,String placeName,Long userId,String userName) {
@@ -69,4 +71,21 @@ public class WebClientMediaService
     	
     	return result;
     }
+    
+    public String getImageUrlByPlaceId(Long placeId) {
+        try {
+            return webClientBuilder
+                    .build()
+                    .get()
+                    .uri("lb://" + IMAGE_SERVICE + IMAGE_FETCH_PATH, placeId)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+        } catch (Exception e) {
+            System.err.println("Failed to fetch image for placeId " + placeId + ": " + e.getMessage());
+            return null;
+        }
+    }
+
+
 }

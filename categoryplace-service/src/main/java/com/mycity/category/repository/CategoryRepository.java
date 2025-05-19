@@ -18,11 +18,20 @@ public interface CategoryRepository extends JpaRepository<Category, Long>
 	
 	Optional<Category> findByNameIgnoreCase(String categoryName);
 	
+	
+	
 	@Query("SELECT c.description FROM Category c WHERE LOWER(c.name) = LOWER(:categoryName)")
 	List<String> findDescriptionsByNameIgnoreCase(@Param("categoryName") String categoryName);	
 	
 
 	List<Category> findAllByName(String categoryName);
+
+	// Returns a single category by name (case-insensitive)
+	@Query("SELECT c FROM Category c WHERE LOWER(c.name) = LOWER(:name)")
+	List<Category> findAllByNameIgnoreCase(@Param("name") String name);
+
+
+
 
 
 }
