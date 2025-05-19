@@ -252,8 +252,4 @@ public class EventsPlaceService implements EventsPlaceServiceInterface {
            
        }
 
-
-
-
-
 } 
