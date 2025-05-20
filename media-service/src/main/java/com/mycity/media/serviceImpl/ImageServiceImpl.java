@@ -181,8 +181,6 @@ public class ImageServiceImpl implements ImageService {
 	                     .collect(Collectors.toList());
 	    });
 	}
-
-
 	
 
 

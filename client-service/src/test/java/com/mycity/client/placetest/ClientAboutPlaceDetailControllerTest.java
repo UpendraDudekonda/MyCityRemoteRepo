@@ -53,6 +53,7 @@ public class ClientAboutPlaceDetailControllerTest {
     @Test
     public void testGetPlaceDetails_Success() {
         Long placeId = 1L;
+        String placeName="andhra pradesh";
         Map<String, Object> mockResponse = Map.of("placeName", "City Park");
 
         Mockito.when(uriSpec.uri(Mockito.anyString(), Mockito.eq(placeId))).thenReturn(headersSpec);
@@ -60,7 +61,7 @@ public class ClientAboutPlaceDetailControllerTest {
         Mockito.when(responseSpec.bodyToMono(Mockito.any(ParameterizedTypeReference.class)))
                 .thenReturn(Mono.just(mockResponse));
 
-        Mono<ResponseEntity<Map<String, Object>>> result = controller.getPlaceDetails(placeId);
+        Mono<ResponseEntity<Map<String, Object>>> result = controller.getPlaceDetails(placeName);
 
         StepVerifier.create(result)
                 .expectNextMatches(response ->
@@ -74,13 +75,13 @@ public class ClientAboutPlaceDetailControllerTest {
     @Test
     public void testGetPlaceDetails_NotFound() {
         Long placeId = 2L;
-
+        String placeName="andhra pradesh";
         Mockito.when(uriSpec.uri(Mockito.anyString(), Mockito.eq(placeId))).thenReturn(headersSpec);
         Mockito.when(headersSpec.retrieve()).thenReturn(responseSpec);
         Mockito.when(responseSpec.bodyToMono(Mockito.any(ParameterizedTypeReference.class)))
                 .thenReturn(Mono.empty());
 
-        Mono<ResponseEntity<Map<String, Object>>> result = controller.getPlaceDetails(placeId);
+        Mono<ResponseEntity<Map<String, Object>>> result = controller.getPlaceDetails(placeName);
 
         StepVerifier.create(result)
                 .expectNextMatches(response ->
