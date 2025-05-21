@@ -38,6 +38,7 @@ public class EventImageController {
 	        @RequestParam Long eventId,
 	        @RequestParam String eventName
 	) {
+		System.out.println("request come here to add the images in media for event...");
 	    imageService.uploadImages(files,names, eventId, eventName); // Pass files to the service
 
 	    return ResponseEntity.ok("Images uploaded successfully");
