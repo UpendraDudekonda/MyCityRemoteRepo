@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.mycity.place.entity.PlaceDiscoveries;
+import com.mycity.place.exception.MediaServiceUnavailableException;
 import com.mycity.place.exception.TooManyPlacesException;
 import com.mycity.place.repository.PlaceDiscoveryRepository;
 import com.mycity.place.service.PlaceDiscoveriesInterface;
@@ -19,94 +20,103 @@ import com.mycity.shared.placedto.PlaceDiscoveriesDTO;
 import com.mycity.shared.placedto.PlaceDiscoveriesResponeDTO;
 import com.mycity.shared.placedto.PlaceResponseDTO;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class PlaceDiscoveriesServiceimpl implements PlaceDiscoveriesInterface {
-	@Autowired
-	private PlaceDiscoveryRepository discoveryRepo;
 
-	@Autowired
-	private PlaceServiceInterface service;
-	
-	@Autowired
-	private WebClientMediaService mediaService;
+    @Autowired
+    private PlaceDiscoveryRepository discoveryRepo;
 
-	
-	@Override
-	public String addPlaceToDiscoveries(PlaceDiscoveriesDTO dto) {
-		// Limiting Places to add upto 10 ONLY
-		Long no_of_places = discoveryRepo.count();
-		 
-	
+    @Autowired
+    private PlaceServiceInterface service;
 
-		if (no_of_places > 10)
-			throw new TooManyPlacesException("Cannot add more than top 10 places to discoveries");
+    @Autowired
+    private WebClientMediaService mediaService;
 
-		if (dto.getPlaceName() == null || dto.getPlaceName().trim().isEmpty())
-			throw new IllegalArgumentException("Place Name Cannot be Empty");
-		else if (dto.getPlaceCategory() == null || dto.getPlaceCategory().trim().isEmpty())
-			throw new IllegalArgumentException("Place Category Cannot be Empty");
+    @Override
+    public String addPlaceToDiscoveries(PlaceDiscoveriesDTO dto) {
+        Long no_of_places = discoveryRepo.count();
+        log.info("Attempting to add a place to discoveries. Current count: {}", no_of_places);
 
-		PlaceDiscoveries discovery = new PlaceDiscoveries();
-		// copy data from dto discovery
-		BeanUtils.copyProperties(dto, discovery);
-		Long pId = discoveryRepo.save(discovery).getPlaceId();
-		return "Place with Id " + pId + " added to top 10 discoveries";
-		
-		
-	}
+        if (no_of_places >= 10) {
+            log.warn("Too many places in discoveries: {}", no_of_places);
+            throw new TooManyPlacesException("Cannot add more than top 10 places to discoveries");
+        }
+
+        if (dto.getPlaceName() == null || dto.getPlaceName().trim().isEmpty()) {
+            log.error("Validation failed: Place Name is empty");
+            throw new IllegalArgumentException("Place Name Cannot be Empty");
+        } else if (dto.getPlaceCategory() == null || dto.getPlaceCategory().trim().isEmpty()) {
+            log.error("Validation failed: Place Category is empty");
+            throw new IllegalArgumentException("Place Category Cannot be Empty");
+        }
+
+        PlaceDiscoveries discovery = new PlaceDiscoveries();
+        BeanUtils.copyProperties(dto, discovery);
+        Long pId = discoveryRepo.save(discovery).getPlaceId();
+
+        log.info("Place added to discoveries: ID={}, Name={}", pId, dto.getPlaceName());
+        return "Place with Id " + pId + " added to top 10 discoveries";
+    }
+    @Override
+    public List<PlaceDiscoveriesResponeDTO> getAllTopDisoveries() {
+        List<PlaceDiscoveriesResponeDTO> places = new ArrayList<>();
+        List<PlaceDiscoveries> discoveries = discoveryRepo.findAll();
+        log.info("Fetching all top discoveries, total records: {}", discoveries.size());
+
+        for (PlaceDiscoveries place : discoveries) {
+            PlaceDiscoveriesResponeDTO discovery = new PlaceDiscoveriesResponeDTO();
+            BeanUtils.copyProperties(place, discovery);
+
+            try {
+                CompletableFuture<List<AboutPlaceImageDTO>> imagesFuture = mediaService.getImagesForTop10Descoveries(place.getPlaceName());
+                List<AboutPlaceImageDTO> images = imagesFuture.get();
+
+                discovery.setPlaceRelatedImages(images);
+
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                log.error("Image fetch interrupted for {}", place.getPlaceName(), e);
+
+                discovery.setPlaceRelatedImages(
+                    List.of(new AboutPlaceImageDTO("Media service was interrupted while fetching images.")) // placeholder
+                );
+
+            } catch (ExecutionException e) {
+                log.error("Media service unavailable while fetching images for {}", place.getPlaceName(), e);
+
+                discovery.setPlaceRelatedImages(
+                    List.of(new AboutPlaceImageDTO("Media service is currently unavailable.")) // placeholder
+                );
+
+            } catch (Exception e) {
+                log.error("Unexpected error while processing place: {}", place.getPlaceName(), e);
+
+                discovery.setPlaceRelatedImages(
+                    List.of(new AboutPlaceImageDTO("Unexpected error while fetching images.")) // placeholder
+                );
+            }
+
+            places.add(discovery);
+        }
+
+        return places;
+    }
 
 
-	@Override
-	public List<PlaceDiscoveriesResponeDTO> getAllTopDisoveries() {
-	    List<PlaceDiscoveriesResponeDTO> places = new ArrayList<>();
-	    List<PlaceDiscoveries> discoveries = discoveryRepo.findAll();
+    @Override
+    public PlaceResponseDTO getPlaceDetailsByName(String placeName) {
+        log.warn("Method getPlaceDetailsByName is not implemented yet for placeName: {}", placeName);
+        return null;
+    }
 
-	    for (PlaceDiscoveries place : discoveries) {
-	        PlaceDiscoveriesResponeDTO discovery = new PlaceDiscoveriesResponeDTO();
-
-	        BeanUtils.copyProperties(place, discovery);
-	        discovery.setPlaceCategory(place.getPlaceCategory());
-	        discovery.setPlaceName(place.getPlaceName());
-
-	        try {
-	            CompletableFuture<List<AboutPlaceImageDTO>> imagesFuture = mediaService.getImagesForPlace(place.getPlaceName());
-	            List<AboutPlaceImageDTO> images = imagesFuture.get();
-
-	            // Check if any image has imageName = "placeimagemain"
-	            boolean hasMainImage = images.stream()
-	                    .anyMatch(img -> "placeimagemain".equals(img.getImageName()));
-
-	            if (hasMainImage) {
-	                discovery.setPlaceRelatedImages(images); // include all images
-	                places.add(discovery);
-	            }
-
-	        } catch (InterruptedException e) {
-	            Thread.currentThread().interrupt();
-	            e.printStackTrace();
-	        } catch (ExecutionException e) {
-	            e.printStackTrace();
-	        }
-	    }
-
-	    return places;
-	}
-
-
-	@Override
-	public PlaceResponseDTO getPlaceDetailsByName(String placeName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-//	@Override
-//	public PlaceDTO getPlaceDetailsByName(String placeName) 
-//	{
-//	   //using placeService to get place Id from place_db using place name
-//	   Long pId=service.getPlaceIdByName(placeName);
-//	   //using placeId to get Complete info about Place
-//	   PlaceDTO place=service.getPlace(pId);
-//	   return place;
-//	}
-
+    // Optional: remove or implement this properly if you need it in the future
+//    @Override
+//    public PlaceDTO getPlaceDetailsByName(String placeName) {
+//        Long pId = service.getPlaceIdByName(placeName);
+//        PlaceDTO place = service.getPlace(pId);
+//        return place;
+//    }
 }

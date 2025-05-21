@@ -10,11 +10,14 @@ import com.mycity.media.entity.EventSubImages;
 public interface EventSubImagesRepository extends JpaRepository<EventSubImages, Long> {
 	
 
-	List<EventSubImages> findAllByEventId(Long eventId);
+	List<EventSubImages> findAllByEventId(Long eventId); // by this we can use --upendra
 
 	
 
-	List<EventSubImages> findImageUrlsByEventId(Long eventId);
+	 List<EventSubImages> findImageUrlsByEventId(Long eventId);
+	
+
+
 
 
 

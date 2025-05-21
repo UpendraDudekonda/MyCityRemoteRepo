@@ -55,23 +55,41 @@ public class CloudinaryHelper {
                 uploadOptions.put("folder", "Events");
 
                 Map<String, Object> uploadResult = cloudinary.uploader().upload(file.getBytes(), uploadOptions);
-                String url = (String) uploadResult.get(" url");
+                String url = (String) uploadResult.get("url"); // ✅ Corrected here (no space)
 
                 if (url != null) {
                     imageUrls.add(url);
+                    System.out.println("Uploaded to Cloudinary URL: " + url); // Optional log
                 }
 
             } catch (IOException e) {
                 e.printStackTrace();
-                // Optional: continue uploading others or throw exception
             }
         }
 
         return imageUrls;
     }
 
-//	public void deleteImage(String publicId) {
-//		// TODO Auto-generated method stub
-//		
-//	}
+
+	public void deleteImage(String imageUrl) {
+	    String publicId = extractPublicIdFromUrl(imageUrl);  // e.g., "foldername/imagename"
+	    try {
+			cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private String extractPublicIdFromUrl(String url) {
+	    // Assuming URL format: https://res.cloudinary.com/your-cloud-name/image/upload/v123456789/folder/imagename.jpg
+	    // Extract "folder/imagename" (without extension)
+	    String[] parts = url.split("/");
+	    String filename = parts[parts.length - 1];
+	    String folder = parts[parts.length - 2];
+	    return folder + "/" + filename.split("\\.")[0];
+	}
+
+
+
 }

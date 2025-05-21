@@ -4,9 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
@@ -16,14 +14,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 
 
-
-
 @Configuration
-@EnableWebFluxSecurity
+@EnableWebSecurity
 public class TripPlannerSecurityConfig {
 
-	  @Value("${external.trip-planner.base-url}") // Inject the base URL
-	    private String externalApiBaseUrl;
+//	  @Value("${external.trip-planner.base-url}") // Inject the base URL
+//	    private String externalApiBaseUrl;
 
 
 	@Bean
@@ -31,7 +27,7 @@ public class TripPlannerSecurityConfig {
 	    return http
 	        .csrf(ServerHttpSecurity.CsrfSpec::disable)
 	        .authorizeExchange(exchange -> exchange
-	        	.pathMatchers("/tripplanner/public/**","/tripplanner/trip-plan").permitAll()
+	        	.pathMatchers("/tripplanner/public/**","/tripplanner/trip-plan","/api/**").permitAll()
 	            .anyExchange().authenticated()
 	        )
 	        .build();
@@ -58,15 +54,15 @@ public class TripPlannerSecurityConfig {
     }
     
     
-    @Bean
-    // Spring will inject the 'webClientBuilder' bean defined above
-    public WebClient externalTripPlannerWebClient(WebClient.Builder webClientBuilder) {
-        return webClientBuilder
-                .baseUrl(externalApiBaseUrl) // Use the injected base URL
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                // You can add more specific configurations here if needed for this WebClient
-                .build(); // Build the actual WebClient instance
-    }
+//    @Bean
+//    // Spring will inject the 'webClientBuilder' bean defined above
+//    public WebClient externalTripPlannerWebClient(WebClient.Builder webClientBuilder) {
+//        return webClientBuilder
+//                .baseUrl(externalApiBaseUrl) // Use the injected base URL
+//                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+//                .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+//                // You can add more specific configurations here if needed for this WebClient
+//                .build(); // Build the actual WebClient instance
+//    }
     
 }

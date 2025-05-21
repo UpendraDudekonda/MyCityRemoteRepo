@@ -15,6 +15,10 @@ import org.springframework.stereotype.Service;
 
 import com.mycity.place.entity.LocalCuisine;
 import com.mycity.place.entity.Place;
+import com.mycity.place.exception.EventServiceUnavailableException;
+import com.mycity.place.exception.MediaServiceUnavailableException;
+import com.mycity.place.exception.PlaceNotFoundException;
+import com.mycity.place.exception.ReviewServiceUnavailableException;
 import com.mycity.place.repository.PlaceRepository;
 import com.mycity.place.service.PlaceDetailService;
 
@@ -43,6 +47,8 @@ public class AboutPlaceDetailServiceImpl implements PlaceDetailService {
 	
 	@Autowired
 	private WebClientEventService eventService;
+	
+	
 
 	public Map<String, Object> getPlaceDetails(Long placeId) {
 		Map<String, Object> response = new HashMap<>();
@@ -58,84 +64,97 @@ public class AboutPlaceDetailServiceImpl implements PlaceDetailService {
 		response.put("sections", sections);
 		return response;
 	}
-
 	private Map<String, Object> createAboutAndMapSection(Long placeId, Place place) {
-		Map<String, Object> aboutMapSection = new HashMap<>();
-		aboutMapSection.put("sectionId", "aboutAndMap");
-		aboutMapSection.put("title", "About and Map");
-		Map<String, Object> data = new HashMap<>();
+	    Map<String, Object> aboutMapSection = new HashMap<>();
+	    aboutMapSection.put("sectionId", "aboutAndMap");
+	    aboutMapSection.put("title", "About and Map");
+	    Map<String, Object> data = new HashMap<>();
 
-		AboutPlaceResponseDTO about = new AboutPlaceResponseDTO();
-		about.setPlaceId(place.getPlaceId());
-		about.setName(place.getPlaceName());
-		about.setAbout(place.getAboutPlace());
-		about.setHistory(place.getPlaceHistory());
-		about.setOpeningTime(place.getTimeZone().getOpeningTime());
-		about.setCloingTime(place.getTimeZone().getClosingTime()); // Make sure DTO has the correct spelling
-		about.setRating(place.getRating());
-		about.setLatitude(place.getCoordinate().getLatitude());
-		about.setLongitude(place.getCoordinate().getLongitude());
-	
+	    AboutPlaceResponseDTO about = new AboutPlaceResponseDTO();
+	    about.setPlaceId(place.getPlaceId());
+	    about.setName(place.getPlaceName());
+	    about.setAbout(place.getAboutPlace());
+	    about.setHistory(place.getPlaceHistory());
+	    about.setOpeningTime(place.getTimeZone().getOpeningTime());
+	    about.setCloingTime(place.getTimeZone().getClosingTime());
+	    about.setRating(place.getRating());
+	    about.setLatitude(place.getCoordinate().getLatitude());
+	    about.setLongitude(place.getCoordinate().getLongitude());
 
-		try {
-			// Fetching data from different services asynchronously
-			CompletableFuture<List<AboutPlaceImageDTO>> imagesFuture = mediaService.getImagesForPlace(placeId.toString());
-			CompletableFuture<List<ReviewDTO>> reviewsFuture = reviewService.fetchReviews(placeId);
-			CompletableFuture<List<AboutPlaceEventDTO>>  eventFuture= eventService.fetchEvents(placeId);
-			// Blocking to get the results
-			List<AboutPlaceImageDTO> images = imagesFuture.get();
-			List<ReviewDTO> reviews = reviewsFuture.get();
-			List<AboutPlaceEventDTO> events = eventFuture.get();
+	    try {
+	        // Fetching data from different services asynchronously
+	        CompletableFuture<List<AboutPlaceImageDTO>> imagesFuture = mediaService.getImagesForPlace(placeId);
+	        CompletableFuture<List<ReviewDTO>> reviewsFuture = reviewService.fetchReviews(placeId);
+	        CompletableFuture<List<AboutPlaceEventDTO>> eventFuture = eventService.fetchEvents(placeId);
 
-			// Set images and reviews
-			about.setPlaceRelatedImages(images);
-			about.setReviews(reviews);
-            about.setEvents(events);
-			
-			// ✅ Fetch and map local cuisines directly from the Place entity
-			List<LocalCuisine> localCuisines = place.getLocalCuisines();
+	        List<AboutPlaceImageDTO> images;
+	        List<ReviewDTO> reviews;
+	        List<AboutPlaceEventDTO> events;
 
-			List<AboutPlaceCuisineImageDTO> localCuisineDTOs = new ArrayList<>();
-			for (LocalCuisine cuisine : localCuisines) {
-				AboutPlaceCuisineImageDTO dto = new AboutPlaceCuisineImageDTO();
-				dto.setCuisineName(cuisine.getCuisineName()); // assuming getter exists
-				dto.setImageUrl(images); // assuming getter exists
-				localCuisineDTOs.add(dto);
-			}
+	        try {
+	            images = imagesFuture.get();
+	        } catch (ExecutionException e) {
+	            Throwable cause = e.getCause() != null ? e.getCause() : e;
+	            logger.error("Media service error for placeId {}: {}", placeId, cause.getMessage());
+	            throw new MediaServiceUnavailableException("Failed to fetch media for placeId: " + placeId, cause);
+	        }
 
-			about.setLocalCuisines(localCuisineDTOs);
+	        try {
+	            reviews = reviewsFuture.get();
+	        } catch (ExecutionException e) {
+	            Throwable cause = e.getCause() != null ? e.getCause() : e;
+	            logger.error("Review service error for placeId {}: {}", placeId, cause.getMessage());
+	            throw new ReviewServiceUnavailableException("Failed to fetch reviews for placeId: " + placeId, cause);
+	        }
 
-			// ✅ Fetch nearby places and convert to DTOs
-			List<Place> nearbyPlaces = getNearbyPlaces(place.getPlaceName(), 200.0); // radius in KM
 
-			List<NearbyPlaceDTO> nearbyPlaceDTOs = new ArrayList<>();
-			for (Place p : nearbyPlaces) {
-				NearbyPlaceDTO dto = new NearbyPlaceDTO();
-				dto.setPlaceId(p.getPlaceId());
-				dto.setPlaceName(p.getPlaceName());
-				dto.setLatitude(p.getCoordinate().getLatitude());
-				dto.setLongitude(p.getCoordinate().getLongitude());
+	        try {
+	            events = eventFuture.get();
+	        } catch (ExecutionException e) {
+	            Throwable cause = e.getCause() != null ? e.getCause() : e;
+	            logger.error("Event service error for placeId {}: {}", placeId, cause.getMessage());
+	            throw new EventServiceUnavailableException("Failed to fetch events for placeId: " + placeId, cause);
+	        }
 
-				dto.setImageUrls(images);
+	        // Set all the fetched data
+	        about.setPlaceRelatedImages(images);
+	        about.setReviews(reviews);
+	        about.setEvents(events);
 
-				nearbyPlaceDTOs.add(dto);
-			}
+	        // Local cuisines
+	        List<AboutPlaceCuisineImageDTO> localCuisineDTOs = place.getLocalCuisines().stream().map(cuisine -> {
+	            AboutPlaceCuisineImageDTO dto = new AboutPlaceCuisineImageDTO();
+	            dto.setCuisineName(cuisine.getCuisineName());
+	            dto.setImageUrl(images); // Using same images for simplicity
+	            return dto;
+	        }).collect(Collectors.toList());
 
-			about.setNearByPlaces(nearbyPlaceDTOs);
+	        about.setLocalCuisines(localCuisineDTOs);
 
-		} catch (InterruptedException | ExecutionException e) {
-			logger.error("Error fetching data from services: {}", e.getMessage());
+	        // Nearby places
+	        List<NearbyPlaceDTO> nearbyPlaceDTOs = getNearbyPlaces(place.getPlaceName(), 200.0).stream().map(p -> {
+	            NearbyPlaceDTO dto = new NearbyPlaceDTO();
+	            dto.setPlaceId(p.getPlaceId());
+	            dto.setPlaceName(p.getPlaceName());
+	            dto.setLatitude(p.getCoordinate().getLatitude());
+	            dto.setLongitude(p.getCoordinate().getLongitude());
+	            dto.setImageUrls(images);
+	            return dto;
+	        }).collect(Collectors.toList());
 
-			// Fallback values
-			about.setPlaceRelatedImages(new ArrayList<>());
-			about.setReviews(new ArrayList<>());
-			about.setNearByPlaces(new ArrayList<>());
-		}
+	        about.setNearByPlaces(nearbyPlaceDTOs);
 
-		data.put("about", about);
-		aboutMapSection.put("data", data);
-		return aboutMapSection;
+	    } catch (InterruptedException e) {
+	        Thread.currentThread().interrupt();
+	        logger.error("Thread was interrupted while fetching place details for placeId {}: {}", placeId, e.getMessage());
+	        throw new RuntimeException("Thread interrupted", e);
+	    }
+
+	    data.put("about", about);
+	    aboutMapSection.put("data", data);
+	    return aboutMapSection;
 	}
+
 
 	@Override
 	public List<Place> getNearbyPlaces(String placeName, double radiusInKm) {
@@ -167,7 +186,14 @@ public class AboutPlaceDetailServiceImpl implements PlaceDetailService {
 		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 		return R * c;
 	}
+	
+	@Override
+	public Map<String, Object> getPlaceId(String placeName) {
+		Place place = placeRepository.findByPlaceName(placeName)
+                .orElseThrow(() -> new PlaceNotFoundException(placeName)); // ✅ Exception here
 
+        return getPlaceDetails(place.getPlaceId());
+	}
    
 
 }
