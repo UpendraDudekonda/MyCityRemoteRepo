@@ -1,6 +1,5 @@
 package com.mycity.admin.controller;
 
-
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -26,10 +25,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.mycity.admin.config.MultipartInputStreamFileResource;
 import com.mycity.shared.eventsdto.EventsDTO;
+import com.mycity.shared.response.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
-
 
 @RestController
 @RequestMapping("/admin")
@@ -40,62 +39,48 @@ public class AdminEventController {
     private static final String ADD_EVENT_PATH = "/event/internal/add";
     private static final String UPDATE_EVENT_PATH = "/event/internal/update/";
     private static final String DELETE_EVENT_PATH = "/event/internal/delete/";
-    
+
     @Autowired
     private final WebClient.Builder webClientBuilder;
 
     @PostMapping(value = "/event/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Mono<ResponseEntity<String>> addEvent(
+    public Mono<ResponseEntity<ApiResponse<String>>> addEvent(
             @RequestHeader("Authorization") String authHeader,
             @ModelAttribute EventsDTO eventDTO,
             @RequestParam(name = "imageNames", required = false) List<String> imageNames,
             @RequestPart("galleryImages") List<MultipartFile> galleryImages
     ) {
-        // Extract the token from the Authorization header
         String finalToken = authHeader.startsWith("Bearer ") ? authHeader.substring(7) : null;
-        
+
         try {
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            // Add fields from eventDTO individually
-	            if (eventDTO.getEventName() != null) body.add("eventName", eventDTO.getEventName());
-	            if (eventDTO.getDate() != null) body.add("date", eventDTO.getDate());
-	            if (eventDTO.getDuration() != null) {
-	                
-	                body.add("duration", eventDTO.getDuration().format(formatter));  // Custom format
-	            }
-	            if (eventDTO.getDescription() != null) body.add("description", eventDTO.getDescription());
-	            if (eventDTO.getCity() != null) body.add("city", eventDTO.getCity());
-	
-	            // If eventPlaces is a List<String>, add each event place as separate value
-//	            if (eventDTO.getEventPlaces() != null) {
-//	                for (String place : eventDTO.getEventPlaces()) {
-//	                    body.add("eventPlaces", place);
-//	                }
-//	            }
-	
-	            // If schedule is List<ScheduleDTO>, add each schedule item individually
-	            if (eventDTO.getSchedule() != null) {
-	                for (int i = 0; i < eventDTO.getSchedule().size(); i++) {
-	                    var sched = eventDTO.getSchedule().get(i);
-	                    body.add("schedule[" + i + "].date", sched.getDate());
-	                    body.add("schedule[" + i + "].time", sched.getTime().format(formatter));
-	                    body.add("schedule[" + i + "].activityName", sched.getActivityName());
-	                }
-	            }
-	
-	            // Add gallery images
+
+            if (eventDTO.getEventName() != null) body.add("eventName", eventDTO.getEventName());
+            if (eventDTO.getDate() != null) body.add("date", eventDTO.getDate());
+            if (eventDTO.getDuration() != null) body.add("duration", eventDTO.getDuration().format(formatter));
+            if (eventDTO.getDescription() != null) body.add("description", eventDTO.getDescription());
+            if (eventDTO.getCity() != null) body.add("city", eventDTO.getCity());
+
+            if (eventDTO.getSchedule() != null) {
+                for (int i = 0; i < eventDTO.getSchedule().size(); i++) {
+                    var sched = eventDTO.getSchedule().get(i);
+                    body.add("schedule[" + i + "].date", sched.getDate());
+                    body.add("schedule[" + i + "].time", sched.getTime().format(formatter));
+                    body.add("schedule[" + i + "].activityName", sched.getActivityName());
+                }
+            }
+
             for (MultipartFile file : galleryImages) {
                 body.add("galleryImages", new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
             }
 
-            // Add image names if provided
-            for (String name : imageNames) {
-                body.add("imageNames", name);
+            if (imageNames != null) {
+                for (String name : imageNames) {
+                    body.add("imageNames", name);
+                }
             }
 
-            // Make the request to the event service
             return webClientBuilder.build()
                     .post()
                     .uri("lb://" + EVENT_SERVICE_NAME + ADD_EVENT_PATH)
@@ -104,17 +89,18 @@ public class AdminEventController {
                     .body(BodyInserters.fromMultipartData(body))
                     .retrieve()
                     .bodyToMono(String.class)
-                    .map(ResponseEntity::ok)
-                    .onErrorResume(e -> Mono.just(ResponseEntity.status(500).body("Failed to add event: " + e.getMessage())));
+                    .map(bodyResponse -> ResponseEntity.ok(new ApiResponse<>(200, "Event added successfully", bodyResponse)))
+                    .onErrorResume(e -> Mono.just(ResponseEntity.status(500)
+                            .body(new ApiResponse<>(500, "Failed to add event", e.getMessage()))));
 
         } catch (Exception e) {
-            return Mono.just(ResponseEntity.status(500).body("Exception occurred: " + e.getMessage()));
+            return Mono.just(ResponseEntity.status(500)
+                    .body(new ApiResponse<>(500, "Exception occurred", e.getMessage())));
         }
-    
     }
-    
+
     @PutMapping(value = "/event/update/{eventId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Mono<ResponseEntity<String>> updateEvent(
+    public Mono<ResponseEntity<ApiResponse<String>>> updateEvent(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable Long eventId,
             @ModelAttribute EventsDTO eventDTO,
@@ -132,12 +118,6 @@ public class AdminEventController {
             if (eventDTO.getDuration() != null) body.add("duration", eventDTO.getDuration().format(formatter));
             if (eventDTO.getDescription() != null) body.add("description", eventDTO.getDescription());
             if (eventDTO.getCity() != null) body.add("city", eventDTO.getCity());
-
-//            if (eventDTO.getEventPlaces() != null) {
-//                for (String place : eventDTO.getEventPlaces()) {
-//                    body.add("eventPlaces", place);
-//                }
-//            }
 
             if (eventDTO.getSchedule() != null) {
                 for (int i = 0; i < eventDTO.getSchedule().size(); i++) {
@@ -168,16 +148,18 @@ public class AdminEventController {
                     .body(BodyInserters.fromMultipartData(body))
                     .retrieve()
                     .bodyToMono(String.class)
-                    .map(ResponseEntity::ok)
-                    .onErrorResume(e -> Mono.just(ResponseEntity.status(500).body("Update failed: " + e.getMessage())));
+                    .map(resp -> ResponseEntity.ok(new ApiResponse<>(200, "Event updated successfully", resp)))
+                    .onErrorResume(e -> Mono.just(ResponseEntity.status(500)
+                            .body(new ApiResponse<>(500, "Update failed", e.getMessage()))));
 
         } catch (Exception e) {
-            return Mono.just(ResponseEntity.status(500).body("Exception: " + e.getMessage()));
+            return Mono.just(ResponseEntity.status(500)
+                    .body(new ApiResponse<>(500, "Exception occurred", e.getMessage())));
         }
     }
 
     @DeleteMapping("/event/delete/{eventId}")
-    public Mono<ResponseEntity<String>> deleteEvent(
+    public Mono<ResponseEntity<ApiResponse<String>>> deleteEvent(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable Long eventId
     ) {
@@ -189,8 +171,8 @@ public class AdminEventController {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + finalToken)
                 .retrieve()
                 .bodyToMono(String.class)
-                .map(ResponseEntity::ok)
-                .onErrorResume(e -> Mono.just(ResponseEntity.status(500).body("Delete failed: " + e.getMessage())));
+                .map(resp -> ResponseEntity.ok(new ApiResponse<>(200, "Event deleted successfully", resp)))
+                .onErrorResume(e -> Mono.just(ResponseEntity.status(500)
+                        .body(new ApiResponse<>(500, "Delete failed", e.getMessage()))));
     }
-
 }
