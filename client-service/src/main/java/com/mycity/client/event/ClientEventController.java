@@ -35,6 +35,7 @@ import com.mycity.client.config.MultipartInputStreamFileResource;
 import com.mycity.client.config.CookieTokenExtractor;
 
 import com.mycity.shared.eventsdto.EventsDTO;
+import com.mycity.shared.response.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -57,194 +58,174 @@ public class ClientEventController {
     
 
 
-    @PostMapping(value = "/event/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Mono<ResponseEntity<String>> addEvent(
-            @RequestHeader(value = HttpHeaders.COOKIE, required = false) String cookie,
-            @ModelAttribute EventsDTO eventDTO, 
-            @RequestParam(name="imageNames", required=false) List<String> imageNames,
-            @RequestPart("galleryImages") List<MultipartFile> galleryImages) {
+  
+        @PostMapping(value = "/event/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+        public Mono<ResponseEntity<ApiResponse<String>>> addEvent(
+                @RequestHeader(value = HttpHeaders.COOKIE, required = false) String cookie,
+                @ModelAttribute EventsDTO eventDTO,
+                @RequestParam(name = "imageNames", required = false) List<String> imageNames,
+                @RequestPart("galleryImages") List<MultipartFile> galleryImages) {
 
-        String token = cookieTokenExtractor.extractTokenFromCookie(cookie);
-        if (token == null || token.isEmpty()) {
-            return Mono.just(ResponseEntity.badRequest().body("Authorization token is missing"));
-        }
-
-        try {
-            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            // Add fields from eventDTO individually
-            if (eventDTO.getEventName() != null) body.add("eventName", eventDTO.getEventName());
-            if (eventDTO.getDate() != null) body.add("date", eventDTO.getDate());
-            if (eventDTO.getDuration() != null) {
-                body.add("duration", eventDTO.getDuration().format(formatter));  // Custom format
+            String token = cookieTokenExtractor.extractTokenFromCookie(cookie);
+            if (token == null || token.isEmpty()) {
+                return Mono.just(ResponseEntity.badRequest()
+                        .body(new ApiResponse<>(400, "Authorization token is missing", null)));
             }
-            if (eventDTO.getDescription() != null) body.add("description", eventDTO.getDescription());
-            if (eventDTO.getCity() != null) body.add("city", eventDTO.getCity());
 
-            // If eventPlaces is a List<String>, add each event place as separate value
-//            if (eventDTO.getEventPlaces() != null) {
-//                for (String place : eventDTO.getEventPlaces()) {
-//                    body.add("eventPlaces", place);
-//                }
-//            }
+            try {
+                MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
-            // If schedule is List<ScheduleDTO>, add each schedule item individually
-            if (eventDTO.getSchedule() != null) {
-                for (int i = 0; i < eventDTO.getSchedule().size(); i++) {
-                    var sched = eventDTO.getSchedule().get(i);
-                    body.add("schedule[" + i + "].date", sched.getDate());
-                    body.add("schedule[" + i + "].time", sched.getTime().format(formatter));
-                    body.add("schedule[" + i + "].activityName", sched.getActivityName());
+                if (eventDTO.getEventName() != null) body.add("eventName", eventDTO.getEventName());
+                if (eventDTO.getDate() != null) body.add("date", eventDTO.getDate());
+                if (eventDTO.getDuration() != null) body.add("duration", eventDTO.getDuration().format(formatter));
+                if (eventDTO.getDescription() != null) body.add("description", eventDTO.getDescription());
+                if (eventDTO.getCity() != null) body.add("city", eventDTO.getCity());
+
+                if (eventDTO.getSchedule() != null) {
+                    for (int i = 0; i < eventDTO.getSchedule().size(); i++) {
+                        var sched = eventDTO.getSchedule().get(i);
+                        body.add("schedule[" + i + "].date", sched.getDate());
+                        body.add("schedule[" + i + "].time", sched.getTime().format(formatter));
+                        body.add("schedule[" + i + "].activityName", sched.getActivityName());
+                    }
                 }
-            }
 
-            // Add gallery images
-            for (MultipartFile file : galleryImages) {
-                body.add("galleryImages", new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
-            }
-
-            // Add image names if provided
-            for (String name : imageNames) {
-                body.add("imageNames", name);
-            }
-
-            // Make the request to the API Gateway (which forwards to the admin service)
-            return webClientBuilder.build()
-                    .post()
-                    .uri("lb://" + API_GATEWAY_SERVICE_NAME + ADMIN_EVENT_PATH)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                    .contentType(MediaType.MULTIPART_FORM_DATA)
-                    .body(BodyInserters.fromMultipartData(body))
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .map(ResponseEntity::ok)
-                    .onErrorResume(e -> Mono.just(ResponseEntity.status(500).body("Failed to add event: " + e.getMessage())));
-
-        } catch (Exception e) {
-            return Mono.just(ResponseEntity.status(500).body("Exception occurred: " + e.getMessage()));
-        }
-    }
-
-    
-    
-    @PutMapping(value = "/event/update/{eventId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Mono<ResponseEntity<String>> updateEvent(
-            @RequestHeader(value = HttpHeaders.COOKIE, required = false) String cookie,
-            @PathVariable Long eventId,
-            @ModelAttribute EventsDTO eventDTO,
-            @RequestParam(name = "imageNames", required = false) List<String> imageNames,
-            @RequestPart(name = "galleryImages", required = false) List<MultipartFile> galleryImages) {
-
-        String token = cookieTokenExtractor.extractTokenFromCookie(cookie);
-        if (token == null || token.isEmpty()) {
-            return Mono.just(ResponseEntity.status(401).body("Unauthorized: Missing token"));
-        }
-
-        try {
-            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-
-            if (eventDTO.getEventName() != null) body.add("eventName", eventDTO.getEventName());
-            if (eventDTO.getDate() != null) body.add("date", eventDTO.getDate());
-            if (eventDTO.getDuration() != null) body.add("duration", eventDTO.getDuration().toString());
-            if (eventDTO.getDescription() != null) body.add("description", eventDTO.getDescription());
-            if (eventDTO.getCity() != null) body.add("city", eventDTO.getCity());
-//
-//            if (eventDTO.getEventPlaces() != null) {
-//                for (String place : eventDTO.getEventPlaces()) {
-//                    body.add("eventPlaces", place);
-//                }
-//            }
-
-            if (eventDTO.getSchedule() != null) {
-                for (int i = 0; i < eventDTO.getSchedule().size(); i++) {
-                    var sched = eventDTO.getSchedule().get(i);
-                    body.add("schedule[" + i + "].date", sched.getDate());
-                    body.add("schedule[" + i + "].time", sched.getTime().toString());
-                    body.add("schedule[" + i + "].activityName", sched.getActivityName());
-                }
-            }
-
-            if (galleryImages != null) {
                 for (MultipartFile file : galleryImages) {
-                    body.add("galleryImages", new com.mycity.client.config.MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
+                    body.add("galleryImages", new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
                 }
+
+                if (imageNames != null) {
+                    for (String name : imageNames) {
+                        body.add("imageNames", name);
+                    }
+                }
+
+                return webClientBuilder.build()
+                        .post()
+                        .uri("lb://" + API_GATEWAY_SERVICE_NAME + ADMIN_EVENT_PATH)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .body(BodyInserters.fromMultipartData(body))
+                        .retrieve()
+                        .bodyToMono(String.class)
+                        .map(res -> ResponseEntity.ok(new ApiResponse<>(200, "Event added successfully", res)))
+                        .onErrorResume(e -> Mono.just(ResponseEntity.status(500)
+                                .body(new ApiResponse<>(500, "Failed to add event: " + e.getMessage(), null))));
+            } catch (Exception e) {
+                return Mono.just(ResponseEntity.status(500)
+                        .body(new ApiResponse<>(500, "Exception occurred: " + e.getMessage(), null)));
+            }
+        }
+
+        @PutMapping(value = "/event/update/{eventId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+        public Mono<ResponseEntity<ApiResponse<String>>> updateEvent(
+                @RequestHeader(value = HttpHeaders.COOKIE, required = false) String cookie,
+                @PathVariable Long eventId,
+                @ModelAttribute EventsDTO eventDTO,
+                @RequestParam(name = "imageNames", required = false) List<String> imageNames,
+                @RequestPart(name = "galleryImages", required = false) List<MultipartFile> galleryImages) {
+
+            String token = cookieTokenExtractor.extractTokenFromCookie(cookie);
+            if (token == null || token.isEmpty()) {
+                return Mono.just(ResponseEntity.status(401)
+                        .body(new ApiResponse<>(401, "Unauthorized: Missing token", null)));
             }
 
-            if (imageNames != null) {
-                for (String name : imageNames) {
-                    body.add("imageNames", name);
+            try {
+                MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
+                if (eventDTO.getEventName() != null) body.add("eventName", eventDTO.getEventName());
+                if (eventDTO.getDate() != null) body.add("date", eventDTO.getDate());
+                if (eventDTO.getDuration() != null) body.add("duration", eventDTO.getDuration().format(formatter));
+                if (eventDTO.getDescription() != null) body.add("description", eventDTO.getDescription());
+                if (eventDTO.getCity() != null) body.add("city", eventDTO.getCity());
+
+                if (eventDTO.getSchedule() != null) {
+                    for (int i = 0; i < eventDTO.getSchedule().size(); i++) {
+                        var sched = eventDTO.getSchedule().get(i);
+                        body.add("schedule[" + i + "].date", sched.getDate());
+                        body.add("schedule[" + i + "].time", sched.getTime().format(formatter));
+                        body.add("schedule[" + i + "].activityName", sched.getActivityName());
+                    }
                 }
+
+                if (galleryImages != null) {
+                    for (MultipartFile file : galleryImages) {
+                        body.add("galleryImages", new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
+                    }
+                }
+
+                if (imageNames != null) {
+                    for (String name : imageNames) {
+                        body.add("imageNames", name);
+                    }
+                }
+
+                return webClientBuilder.build()
+                        .put()
+                        .uri("lb://" + API_GATEWAY_SERVICE_NAME + UPDATE_PATH + eventId)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .body(BodyInserters.fromMultipartData(body))
+                        .retrieve()
+                        .bodyToMono(String.class)
+                        .map(res -> ResponseEntity.ok(new ApiResponse<>(200, "Event updated successfully", res)))
+                        .onErrorResume(e -> Mono.just(ResponseEntity.status(500)
+                                .body(new ApiResponse<>(500, "Update failed: " + e.getMessage(), null))));
+            } catch (Exception e) {
+                return Mono.just(ResponseEntity.status(500)
+                        .body(new ApiResponse<>(500, "Exception: " + e.getMessage(), null)));
+            }
+        }
+
+        @DeleteMapping("/event/delete/{eventId}")
+        public Mono<ResponseEntity<ApiResponse<String>>> deleteEvent(
+                @RequestHeader(value = HttpHeaders.COOKIE, required = false) String cookie,
+                @PathVariable Long eventId) {
+
+            String token = cookieTokenExtractor.extractTokenFromCookie(cookie);
+            if (token == null || token.isEmpty()) {
+                return Mono.just(ResponseEntity.status(401)
+                        .body(new ApiResponse<>(401, "Unauthorized: Missing token", null)));
             }
 
             return webClientBuilder.build()
-                    .put()
-                    .uri("lb://" + API_GATEWAY_SERVICE_NAME + UPDATE_PATH + eventId)
+                    .delete()
+                    .uri("lb://" + API_GATEWAY_SERVICE_NAME + DELETE_PATH + eventId)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                    .contentType(MediaType.MULTIPART_FORM_DATA)
-                    .body(BodyInserters.fromMultipartData(body))
                     .retrieve()
                     .bodyToMono(String.class)
-                    .map(ResponseEntity::ok)
-                    .onErrorResume(e -> Mono.just(ResponseEntity.status(500).body("Update failed: " + e.getMessage())));
-
-        } catch (Exception e) {
-            return Mono.just(ResponseEntity.status(500).body("Exception: " + e.getMessage()));
-        }
-    }
-
-    // ✅ Delete Event
-    @DeleteMapping("/event/delete/{eventId}")
-    public Mono<ResponseEntity<String>> deleteEvent(
-            @RequestHeader(value = HttpHeaders.COOKIE, required = false) String cookie,
-            @PathVariable Long eventId) {
-
-        String token = cookieTokenExtractor.extractTokenFromCookie(cookie);
-        if (token == null || token.isEmpty()) {
-            return Mono.just(ResponseEntity.status(401).body("Unauthorized: Missing token"));
+                    .map(res -> ResponseEntity.ok(new ApiResponse<>(200, "Event deleted successfully", res)))
+                    .onErrorResume(e -> Mono.just(ResponseEntity.status(500)
+                            .body(new ApiResponse<>(500, "Delete failed: " + e.getMessage(), null))));
         }
 
-        return webClientBuilder.build()
-                .delete()
-                .uri("lb://" + API_GATEWAY_SERVICE_NAME + DELETE_PATH + eventId)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                .retrieve()
-                .bodyToMono(String.class)
-                .map(ResponseEntity::ok)
-                .onErrorResume(e -> Mono.just(ResponseEntity.status(500).body("Delete failed: " + e.getMessage())));
+        @GetMapping("/event/fetch/{eventId}")
+        public Mono<ResponseEntity<ApiResponse<Map<String, Object>>>> fetchEventDetails(
+                @PathVariable Long eventId) {
+
+            return webClientBuilder.build()
+                    .get()
+                    .uri("lb://" + API_GATEWAY_SERVICE_NAME + EVENTS_FETCH_DETAILS + eventId)
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                    .map(res -> ResponseEntity.ok(new ApiResponse<>(200, "Fetched event details", res)))
+                    .onErrorResume(e -> Mono.just(ResponseEntity.status(500)
+                            .body(new ApiResponse<>(500, "Failed to fetch event details: " + e.getMessage(), null))));
+        }
+
+        @GetMapping("/event/fetch")
+        public Mono<ResponseEntity<ApiResponse<Map<String, Object>>>> fetchEventCarts() {
+
+            return webClientBuilder.build()
+                    .get()
+                    .uri("lb://" + API_GATEWAY_SERVICE_NAME + EVENTS_FETCH_CARTS)
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                    .map(res -> ResponseEntity.ok(new ApiResponse<>(200, "Fetched event carts", res)))
+                    .onErrorResume(e -> Mono.just(ResponseEntity.status(500)
+                            .body(new ApiResponse<>(500, "Failed to fetch event carts: " + e.getMessage(), null))));
+        }
     }
-
-
-    
-    @GetMapping("/event/fetch/{eventId}")
-    public Mono<ResponseEntity<Map<String, Object>>> fetchEventDetails(
-            @PathVariable Long eventId){
-    
-    
-        return webClientBuilder.build()
-                .get()
-                .uri("lb://" + API_GATEWAY_SERVICE_NAME + EVENTS_FETCH_DETAILS + eventId)
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
-                .map(ResponseEntity::ok)
-                .onErrorResume(e -> Mono.just(ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR)
-                        .body(Map.of("error", "Failed to fetch event details: " + e.getMessage()))));
-    }
-
-    @GetMapping("/event/fetch")
-    public Mono<ResponseEntity<Map<String, Object>>> fetchEventCarts(){
-
-        return webClientBuilder.build()
-                .get()
-                .uri("lb://" + API_GATEWAY_SERVICE_NAME + EVENTS_FETCH_CARTS)
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
-                .map(ResponseEntity::ok)
-                .onErrorResume(e -> Mono.just(ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR)
-                        .body(Map.of("error", "Failed to fetch event carts: " + e.getMessage()))));
-    }
-
-
-
-
-}
