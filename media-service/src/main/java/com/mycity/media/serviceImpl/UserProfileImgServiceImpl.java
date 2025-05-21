@@ -24,6 +24,18 @@ public class UserProfileImgServiceImpl implements UserProfileImgService {
     @Override
     public void uploadUserImage(MultipartFile file, String userId) {
     	
+    	//check if user had already profile image
+    	Optional<UserProfileImg> existUserPic = userProfileImgRepository.findByUserId(userId);
+    	
+    	//if the user already exist deleteit from cloudinary and db 
+    	
+    	existUserPic.ifPresent(thatImg -> {
+    		
+    		cloudinaryHelper.deleteImage(thatImg.getImageUrl());
+    		userProfileImgRepository.delete(thatImg);
+    	});
+    	
+    	
         String url = cloudinaryHelper.saveImage(file);
 
         UserProfileImg image = new UserProfileImg();

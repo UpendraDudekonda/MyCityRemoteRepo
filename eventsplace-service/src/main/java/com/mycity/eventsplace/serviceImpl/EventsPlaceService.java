@@ -193,9 +193,11 @@ public class EventsPlaceService implements EventsPlaceServiceInterface {
                     cartData.put("eventName", ev.getEventName());
                     cartData.put("date", ev.getDate());
                     cartData.put("city", ev.getCity());
+                     
 
                     try {
                         List<String> cartImages = mediaService.getImageUrlsForEvent(ev.getEventId());
+                        System.err.println(cartImages);
                         cartData.put("cartImages", cartImages);
                     } catch (Exception ex) {
                         System.out.println("Failed to fetch images for cart event " + ev.getEventId());
@@ -266,7 +268,7 @@ public class EventsPlaceService implements EventsPlaceServiceInterface {
 	}
 
 
-
+  
 
 
 } 

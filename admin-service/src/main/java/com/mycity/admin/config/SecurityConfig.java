@@ -26,7 +26,9 @@ public class SecurityConfig {
 	                    "/admin/auth/internal/login",
 	                	"/admin/profile",
 	                	"/admin/event/**",
-	                	"/admin/place/addPlace"
+	                	"/admin/place/addPlace",
+	                	"/admin/profile/upload-picture",
+	                	"/admin/profile-picture"
 	                ).permitAll()
 	                .anyRequest().authenticated()
 	            );
