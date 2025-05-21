@@ -2,6 +2,8 @@ package com.mycity.trip.entity;
 
 import java.util.List;
 
+import com.mycity.place.entity.Coordinate;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
