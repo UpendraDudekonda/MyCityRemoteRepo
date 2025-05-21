@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -29,7 +31,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.mycity.admin.serviceImpl.WebClientMediaService;
 import com.mycity.shared.admindto.AdminPlaceResponseDTO;
+import com.mycity.shared.mediadto.AboutPlaceImageDTO;
 import com.mycity.shared.placedto.PlaceCategoryDTO;
 import com.mycity.shared.placedto.PlaceDTO;
 import com.mycity.shared.placedto.PlaceResponseDTO;
@@ -50,6 +54,9 @@ public class AdminPlaceController
 	
 	@Autowired
 	public WebClient.Builder webClientBuilder;
+	
+	@Autowired 
+	private WebClientMediaService mediaService;
 
 //	- `addPlace(@RequestBody PlaceDTO placeDTO)` : Adds a new place.
 //	- `updatePlace(@PathVariable Long placeId, @RequestBody PlaceDTO placeDTO)` : Updates an existing place.
@@ -86,9 +93,21 @@ public class AdminPlaceController
 	             //Copying data from PlaceDTO to AdminPlaceResponseDTO...to display only name,Time,image,posted on details
 		    	 AdminPlaceResponseDTO response=new AdminPlaceResponseDTO();
 		    	 response.setCurrentDate(LocalDate.now());
-		    	 response.setImageUrl("");
 		    	 response.setPlaceName(place.getPlaceName());
-		    	 response.setLocation("");
+		    	 response.setLocation(place.getPlaceDistrict());
+		    	 
+			        try {
+			            CompletableFuture<List<AboutPlaceImageDTO>> imagesFuture = mediaService.getImagesForPlace(place.getPlaceName());
+			            List<AboutPlaceImageDTO> images = imagesFuture.get();
+
+			            response.setPlaceRelatedImages(images);
+			        } catch (InterruptedException e) {
+			            Thread.currentThread().interrupt();
+			            e.printStackTrace();
+			        } catch (ExecutionException e) {
+			            e.printStackTrace();
+			        }
+			        
 		    	 
 		    	 System.out.println("Admin Response Data====> ::"+response);
 		    	 //add response to List
