@@ -47,8 +47,7 @@ public class EventsPlaceControllerTests {
     private EventsPlaceServiceInterface eventsPlaceService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-
-    @Test
+  @Test
     void testAddEvent() throws Exception {
         EventsDTO dto = new EventsDTO("Music Night", LocalTime.of(2, 0), "A fun event", LocalTime.of(18, 0), "Mumbai", "2025-05-20",
                 Collections.singletonList(new EventHighlightsDTO("2025-05-20", LocalTime.of(18, 0), "DJ Start")));

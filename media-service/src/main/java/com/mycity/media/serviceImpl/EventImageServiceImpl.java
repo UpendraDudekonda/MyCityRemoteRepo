@@ -99,27 +99,7 @@ public void deleteAssociatedImages(Long eventId) {
 }
 
 
-//public EventSubImagesDTO fetchImages(Long eventId) {
-//	EventSubImages image = eventSubImagesRepository.findById(eventId)
-//        .orElseThrow(() -> new RuntimeException("Image not found with ID: " + eventId));
-//
-//    return new EventSubImagesDTO(
-//        image.getImageId(),
-//       image.getImageUrls(),
-//        image.getEventName(),
-//        image.getEventId()
-//    );
-//}
 
-
-
-
-//@Override
-//public List getEventImages(Long eventId) {
-//	List<EventSubImages> images = eventSubImagesRepository.findImageUrlsByEventId(eventId);
-//	return images;
-//	
-//}
 
 @Override
 public List<EventSubImages> getEventImages(Long eventId) {

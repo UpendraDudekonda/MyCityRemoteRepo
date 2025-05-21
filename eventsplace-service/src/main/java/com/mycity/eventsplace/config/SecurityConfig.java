@@ -54,6 +54,7 @@ public class SecurityConfig {
                         .allowedOrigins("*")  // or your frontend URL
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("*");
+                
             }
         };
     }

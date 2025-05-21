@@ -27,6 +27,7 @@ import java.util.*;
 @ExtendWith(MockitoExtension.class)
 public class EventsPlaceServiceTests {
 
+	
     @Mock
     private EventsRepository eventRepo;
 

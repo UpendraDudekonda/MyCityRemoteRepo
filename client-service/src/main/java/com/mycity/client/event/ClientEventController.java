@@ -227,6 +227,5 @@ public class ClientEventController {
                     .map(res -> ResponseEntity.ok(new ApiResponse<>(200, "Fetched event carts", res)))
                     .onErrorResume(e -> Mono.just(ResponseEntity.status(500)
                             .body(new ApiResponse<>(500, "Failed to fetch event carts: " + e.getMessage(), null))));
-      
         }
     }
