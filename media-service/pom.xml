@@ -117,6 +117,7 @@
 			<artifactId>admin-service</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+
 		
 		<!-- SLF4J API -->
 <dependency>
@@ -130,6 +131,12 @@
     <groupId>ch.qos.logback</groupId>
     <artifactId>logback-classic</artifactId>
     <version>1.4.11</version>
+
+		<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-test</artifactId>
+    <scope>test</scope>
+
 </dependency>
 
 	</dependencies>

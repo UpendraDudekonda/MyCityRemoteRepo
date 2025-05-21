@@ -7,6 +7,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AboutPlaceImageDTO {
 	
+	public AboutPlaceImageDTO(String string) {
+		// TODO Auto-generated constructor stub
+	}
+
 	private String imageUrl;
  
 	private String imageName;
