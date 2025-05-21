@@ -57,7 +57,6 @@ public class EventsPlaceControllerTests {
 //        MockMultipartFile eventJson = new MockMultipartFile("eventDTO", "", "application/json", objectMapper.writeValueAsBytes(dto));
 
         when(eventsPlaceService.addEvent(any(), any(), any())).thenReturn("Event added");
-
         mockMvc.perform(multipart("/event/internal/add")
                         .file(image)
                         .param("imageNames", "img1.jpg")

@@ -174,5 +174,6 @@ public class AdminEventController {
                 .map(resp -> ResponseEntity.ok(new ApiResponse<>(200, "Event deleted successfully", resp)))
                 .onErrorResume(e -> Mono.just(ResponseEntity.status(500)
                         .body(new ApiResponse<>(500, "Delete failed", e.getMessage()))));
+        
     }
 }

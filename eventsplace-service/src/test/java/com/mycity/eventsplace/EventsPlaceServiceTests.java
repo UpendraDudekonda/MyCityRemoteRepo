@@ -30,6 +30,7 @@ public class EventsPlaceServiceTests {
     @Mock
     private EventsRepository eventRepo;
 
+    
     @Mock
     private MediaServiceConfig mediaService;
 
