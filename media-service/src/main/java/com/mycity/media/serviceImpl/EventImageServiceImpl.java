@@ -38,7 +38,16 @@ public class EventImageServiceImpl implements EventImageService {
 	public void uploadImages(List<MultipartFile> files, List<String> names,Long eventId, String eventName) {
 	    // Upload images to Cloudinary and get URLs
 	    List<String> imageUrls = cloudinaryHelper.saveImages(files); // Now accepts a List<MultipartFile> 
+	    
+	 
+	    System.out.println("Uploaded Image URLs: " + imageUrls);
 
+	    if(imageUrls == null || imageUrls.isEmpty()) {
+	        System.out.println("Image upload failed or returned empty list");
+	    }
+	    
+	    
+	    System.err.println(imageUrls);
 	    // Create EventSubImages object
 	    EventSubImages img = new EventSubImages();
 	    img.setImageUrls(imageUrls);
@@ -90,13 +99,33 @@ public void deleteAssociatedImages(Long eventId) {
 }
 
 
+//public EventSubImagesDTO fetchImages(Long eventId) {
+//	EventSubImages image = eventSubImagesRepository.findById(eventId)
+//        .orElseThrow(() -> new RuntimeException("Image not found with ID: " + eventId));
+//
+//    return new EventSubImagesDTO(
+//        image.getImageId(),
+//       image.getImageUrls(),
+//        image.getEventName(),
+//        image.getEventId()
+//    );
+//}
+
+
+
+
+//@Override
+//public List getEventImages(Long eventId) {
+//	List<EventSubImages> images = eventSubImagesRepository.findImageUrlsByEventId(eventId);
+//	return images;
+//	
+//}
 
 @Override
-public List getEventImages(Long eventId) {
-	List<EventSubImages> images = eventSubImagesRepository.findImageUrlsByEventId(eventId);
-	return images;
-	
+public List<EventSubImages> getEventImages(Long eventId) {
+    return eventSubImagesRepository.findAllByEventId(eventId);
 }
+
 
 
 	
