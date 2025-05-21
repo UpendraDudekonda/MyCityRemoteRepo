@@ -11,4 +11,6 @@ public interface PlaceDetailService {
 
 	List<Place> getNearbyPlaces(String placeName, double radiusKm);
 
+	Map<String, Object> getPlaceId(String placeName);
+
 }
