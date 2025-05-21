@@ -157,7 +157,7 @@ public class AdminPlaceController
 	    // 🌐 Send to place-service
 	    String response = webClientBuilder.build()
 	            .post()
-	            .uri("lb://" + PLACE_SERVICE_NAME + "/place/add-place") // Ensure this URL is correct
+	            .uri("lb://" + PLACE_SERVICE_NAME + PATH_TO_ADD_PLACE_WITH_IMAGES) // Ensure this URL is correct
 	            .contentType(MediaType.MULTIPART_FORM_DATA)
 	            .body(BodyInserters.fromMultipartData(builder.build()))
 	            .retrieve()
