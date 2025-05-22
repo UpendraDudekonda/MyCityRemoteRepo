@@ -238,7 +238,6 @@ public class EventsPlaceService implements EventsPlaceServiceInterface {
            data.put("date", eventsList.getDate());
          // Directly a list of strings
            data.put("city", eventsList.getCity());
-           data.put("eventId",eventsList.getEventId());
           
     // assuming Event has getPlace()
            try {
@@ -257,18 +256,6 @@ public class EventsPlaceService implements EventsPlaceServiceInterface {
        }
 
 
-
-
-
-
-	@Override
-	public List<AboutPlaceEventDTO> fetchEvents(Long placeId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-  
 
 
 } 

@@ -86,8 +86,5 @@ public class EventsPlaceController {
  	    return ResponseEntity.ok(response);
     }
     
-    @GetMapping("/place/{placeId}")
-    public List<AboutPlaceEventDTO> getEventsForPlace(@PathVariable Long placeId) {
-        return eventsPlaceService.fetchEvents(placeId);
-    }
+   
 }

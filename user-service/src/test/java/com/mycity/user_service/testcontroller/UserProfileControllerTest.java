@@ -93,58 +93,7 @@ public class UserProfileControllerTest { // Renamed class for clarity
         when(webClientBuilder.build()).thenReturn(mockWebClient);
     }
 
-    // --- Tests for uploadPictureToMediaService ---
 
-
-//    @Test
-//    public void testUploadPictureToMediaService_Success() {
-//        // Arrange WebClient mocking for POST success
-//        when(mockWebClient.post()).thenReturn(mockRequestBodyUriSpec);
-//        when(mockRequestBodyUriSpec.uri(anyString())).thenReturn(mockRequestBodySpec);
-//        when(mockRequestBodySpec.contentType(eq(MediaType.MULTIPART_FORM_DATA))).thenReturn(mockRequestBodySpec);
-//
-//        // FIX: Cast the returned mock to the expected generic type RequestHeadersSpec<RequestBodySpec>
-//        when(mockRequestBodySpec.bodyValue(any())).thenReturn((RequestHeadersSpec<RequestBodySpec>) mockRequestHeadersSpecAfterBody);
-//
-//        // Chain retrieve() from the correctly typed mock 
-//        when(mockRequestHeadersSpecAfterBody.retrieve()).thenReturn(mockResponseSpec);
-//
-//        Mono<String> mockResponseMono = Mono.just("Upload successful: http://media-service/uploaded-image.jpg");
-//        when(mockResponseSpec.bodyToMono(String.class)).thenReturn(mockResponseMono);
-//
-//        // Act: Call the controller method
-//        ResponseEntity<String> response = userProfileController.uploadPictureToMediaService(userId, mockImageFile);
-//
-//        // Assert: Verify the response
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//        assertEquals("Upload successful: http://media-service/uploaded-image.jpg", response.getBody());
-//    }
-//
-//    @Test
-//    public void testUploadPictureToMediaService_WebClientError() {
-//        // Arrange WebClient mocking for an error scenario
-//        when(mockWebClient.post()).thenReturn(mockRequestBodyUriSpec);
-//        when(mockRequestBodyUriSpec.uri(anyString())).thenReturn(mockRequestBodySpec);
-//        when(mockRequestBodySpec.contentType(eq(MediaType.MULTIPART_FORM_DATA))).thenReturn(mockRequestBodySpec);
-//
-//        // FIX: Cast the returned mock to the expected generic type RequestHeadersSpec<RequestBodySpec>
-//        when(mockRequestBodySpec.bodyValue(any())).thenReturn((RequestHeadersSpec<RequestBodySpec>) mockRequestHeadersSpecAfterBody);
-//
-//        // Chain retrieve() from the correctly typed mock
-//        when(mockRequestHeadersSpecAfterBody.retrieve()).thenReturn(mockResponseSpec);
-//
-//        // Simulate a Mono that throws an exception when blocked (simulates WebClient error)
-//        Mono<String> errorMono = Mono.error(new RuntimeException("Simulated Media Service Error"));
-//        when(mockResponseSpec.bodyToMono(String.class)).thenReturn(errorMono);
-//
-//
-//        // Act: Call the controller method
-//        ResponseEntity<String> response = userProfileController.uploadPictureToMediaService(userId, mockImageFile);
-//
-//        // Assert: Verify the response for an error
-//        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-//        assertEquals("Upload failed: Simulated Media Service Error", response.getBody());
-//    }
 
 
     @Test
@@ -155,7 +104,11 @@ public class UserProfileControllerTest { // Renamed class for clarity
         when(mockRequestBodySpec.contentType(eq(MediaType.MULTIPART_FORM_DATA))).thenReturn(mockRequestBodySpec);
 
         // FIX: Cast the returned mock to the expected generic type RequestHeadersSpec<RequestBodySpec>
+
     //    when(mockRequestBodySpec.bodyValue(any())).thenReturn((RequestHeadersSpec<RequestBodySpec>) mockRequestHeadersSpecAfterBody);
+
+//        when(mockRequestBodySpec.bodyValue(any())).thenReturn(mockRequestHeadersSpecAfterBody);
+
 
         // Chain retrieve() from the correctly typed mock
         when(mockRequestHeadersSpecAfterBody.retrieve()).thenReturn(mockResponseSpec);
@@ -198,55 +151,6 @@ public class UserProfileControllerTest { // Renamed class for clarity
     }
 
 
-//    @Test
-//    public void testUploadPictureToMediaService_Success() {
-//        // Arrange WebClient mocking for POST success
-//        when(mockWebClient.post()).thenReturn(mockRequestBodyUriSpec);
-//        when(mockRequestBodyUriSpec.uri(anyString())).thenReturn(mockRequestBodySpec);
-//        when(mockRequestBodySpec.contentType(eq(MediaType.MULTIPART_FORM_DATA))).thenReturn(mockRequestBodySpec);
-//
-//        // FIX: Cast the returned mock to the expected generic type RequestHeadersSpec<RequestBodySpec>
-//        when(mockRequestBodySpec.bodyValue(any())).thenReturn((RequestHeadersSpec<RequestBodySpec>) mockRequestHeadersSpecAfterBody);
-//
-//        // Chain retrieve() from the correctly typed mock
-//        when(mockRequestHeadersSpecAfterBody.retrieve()).thenReturn(mockResponseSpec);
-//
-//        Mono<String> mockResponseMono = Mono.just("Upload successful: http://media-service/uploaded-image.jpg");
-//        when(mockResponseSpec.bodyToMono(String.class)).thenReturn(mockResponseMono);
-//
-//        // Act: Call the controller method
-//        ResponseEntity<String> response = userProfileController.uploadPictureToMediaService(userId, mockImageFile);
-//
-//        // Assert: Verify the response
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//        assertEquals("Upload successful: http://media-service/uploaded-image.jpg", response.getBody());
-//    }
-//
-//    @Test
-//    public void testUploadPictureToMediaService_WebClientError() {
-//        // Arrange WebClient mocking for an error scenario
-//        when(mockWebClient.post()).thenReturn(mockRequestBodyUriSpec);
-//        when(mockRequestBodyUriSpec.uri(anyString())).thenReturn(mockRequestBodySpec);
-//        when(mockRequestBodySpec.contentType(eq(MediaType.MULTIPART_FORM_DATA))).thenReturn(mockRequestBodySpec);
-//
-//        // FIX: Cast the returned mock to the expected generic type RequestHeadersSpec<RequestBodySpec>
-//        when(mockRequestBodySpec.bodyValue(any())).thenReturn((RequestHeadersSpec<RequestBodySpec>) mockRequestHeadersSpecAfterBody);
-//
-//        // Chain retrieve() from the correctly typed mock
-//        when(mockRequestHeadersSpecAfterBody.retrieve()).thenReturn(mockResponseSpec);
-//
-//        // Simulate a Mono that throws an exception when blocked (simulates WebClient error)
-//        Mono<String> errorMono = Mono.error(new RuntimeException("Simulated Media Service Error"));
-//        when(mockResponseSpec.bodyToMono(String.class)).thenReturn(errorMono);
-//
-//
-//        // Act: Call the controller method
-//        ResponseEntity<String> response = userProfileController.uploadPictureToMediaService(userId, mockImageFile);
-//
-//        // Assert: Verify the response for an error
-//        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-//        assertEquals("Upload failed: Simulated Media Service Error", response.getBody());
-//    }
 
 
      @Test

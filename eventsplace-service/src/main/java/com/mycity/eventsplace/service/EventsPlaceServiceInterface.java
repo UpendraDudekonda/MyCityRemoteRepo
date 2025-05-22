@@ -30,5 +30,5 @@ public interface EventsPlaceServiceInterface {
 		Map<String, Object> createEventDetailsSection(Long eventId);
 
 
-		List<AboutPlaceEventDTO> fetchEvents(Long placeId);
+		
 }
