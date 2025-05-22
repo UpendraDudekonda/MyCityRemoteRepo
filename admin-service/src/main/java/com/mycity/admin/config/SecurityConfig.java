@@ -29,9 +29,10 @@ public class SecurityConfig {
 	                	"/admin/place/addPlace",
 
 	                	"/admin/profile/upload-picture",
-	                	"/admin/profile-picture"
+	                	"/admin/profile-picture",
 
-	                	"admin/getallplaces"
+	                	"admin/getallplaces",
+	                	"/admin/profile/update"
 
 	                ).permitAll()
 	                .anyRequest().authenticated()

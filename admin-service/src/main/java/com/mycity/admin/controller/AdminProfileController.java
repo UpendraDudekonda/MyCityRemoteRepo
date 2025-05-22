@@ -12,7 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,6 +25,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.mycity.admin.service.AdminProfileService;
 import com.mycity.shared.admindto.AdminProfileResponse;
+import com.mycity.shared.admindto.AdminProfileUpdateDTO;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -111,6 +115,17 @@ public class AdminProfileController {
 
         AdminProfileResponse admin = adminProfile.getAdminById(adminId);
         return ResponseEntity.ok(admin);
+    }
+    
+    @PatchMapping("/profile/update")
+    public ResponseEntity<String> updateAdminDetails(
+        @RequestHeader("X-User-Id") String adminId,
+        @RequestBody AdminProfileUpdateDTO request
+    ) {
+    	
+    	System.err.println("admin id : " + adminId);
+    	adminProfile.updateAdminFields(adminId, request);
+        return ResponseEntity.ok("Admin details updated successfully!");
     }
 
 }

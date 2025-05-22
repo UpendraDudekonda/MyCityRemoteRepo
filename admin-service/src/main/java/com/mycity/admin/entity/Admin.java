@@ -1,5 +1,7 @@
 package com.mycity.admin.entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,14 +14,25 @@ import lombok.Data;
 @Data
 public class Admin {
 
+			@Id
+	        @GeneratedValue(strategy = GenerationType.IDENTITY)
+	        private Long id;
 
-	    @Id
-	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    private Long id;
-	    private String username;
-	    private String email;
-	    private String password; 
-	    private String role;
+	        private String firstName;
+	        private String lastName;
+	        private String email;
+	        private String phoneNumber;
+	        private LocalDate dateOfBirth;
+	        private String role;
+	        private String password;
+
+	        private String country;
+	        private String city;
+	        private String postalCode;
+
+	        // Getters and setters...
+	    
+
 
 	}
 	

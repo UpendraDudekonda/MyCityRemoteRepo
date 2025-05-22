@@ -155,7 +155,7 @@ public class UserProfileControllerTest { // Renamed class for clarity
         when(mockRequestBodySpec.contentType(eq(MediaType.MULTIPART_FORM_DATA))).thenReturn(mockRequestBodySpec);
 
         // FIX: Cast the returned mock to the expected generic type RequestHeadersSpec<RequestBodySpec>
-        when(mockRequestBodySpec.bodyValue(any())).thenReturn((RequestHeadersSpec<RequestBodySpec>) mockRequestHeadersSpecAfterBody);
+    //    when(mockRequestBodySpec.bodyValue(any())).thenReturn((RequestHeadersSpec<RequestBodySpec>) mockRequestHeadersSpecAfterBody);
 
         // Chain retrieve() from the correctly typed mock
         when(mockRequestHeadersSpecAfterBody.retrieve()).thenReturn(mockResponseSpec);
