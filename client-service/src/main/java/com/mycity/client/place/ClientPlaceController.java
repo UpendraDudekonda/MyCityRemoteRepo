@@ -57,7 +57,7 @@ public class ClientPlaceController
 	
 	private static final String PLACE_DELETING_PATH="/place/deleteplace/{placeId}";
 	
-	private static final String ALL_PLACES_FINDING_PATH="/place/getall";
+	private static final String ALL_PLACES_FINDING_PATH="/place/discoveries/getall";
 	
 	@PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Mono<String> addPlace(

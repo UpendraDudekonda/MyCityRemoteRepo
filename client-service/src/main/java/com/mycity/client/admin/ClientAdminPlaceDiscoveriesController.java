@@ -52,7 +52,7 @@ public class ClientAdminPlaceDiscoveriesController
                 .toEntity(String.class)
                 .map(response -> ResponseEntity.status(response.getStatusCode()).body(response.getBody()));
     }
-	
+	//RESOLVE THIS IS AN PUBLIC ENDPOINT WHY USING THE COOKIE HERE IF IT IS DEFINED ESPECIALLY FOR ADMIN THE WHAT ABOUT USER PUBLIC ENDPOINT
 	@GetMapping("/getall")
     public Mono<ResponseEntity<List<PlaceDiscoveriesResponeDTO>>> getAllPlaces(@RequestHeader(value=HttpHeaders.COOKIE,required = false) String cookie) 
  	{
